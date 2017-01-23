@@ -1,8 +1,5 @@
 package controller;
 
-
-import org.apache.commons.io.IOUtils;
-
 import java.io.*;
 
 /**
@@ -32,14 +29,6 @@ public abstract class AbstractLoadCommand extends AbstractFileCommand {
             in.close();
         }
         catch (UnsupportedEncodingException e)
-        {
-            System.out.println(e.getMessage());
-        }
-        catch (IOException e)
-        {
-            System.out.println(e.getMessage());
-        }
-        catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
