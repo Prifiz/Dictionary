@@ -1,10 +1,11 @@
+package gui.swingui;
+
 import datamodel.Dictionary;
 import datamodel.Record;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.*;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;

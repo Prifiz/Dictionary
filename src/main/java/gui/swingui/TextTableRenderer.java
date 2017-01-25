@@ -1,3 +1,5 @@
+package gui.swingui;
+
 import sun.swing.DefaultLookup;
 
 import javax.swing.*;

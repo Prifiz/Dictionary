@@ -1,6 +1,7 @@
+package gui.swingui;
+
 import datamodel.Word;
 
-import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.util.HashSet;

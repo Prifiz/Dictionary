@@ -1,3 +1,5 @@
+package utils;
+
 /**
  * Created by PrifizGamer on 14.01.2017.
  */

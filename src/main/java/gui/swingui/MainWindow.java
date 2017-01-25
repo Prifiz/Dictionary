@@ -1,11 +1,15 @@
+package gui.swingui;
 
 import controller.*;
 import datamodel.Dictionary;
 import datamodel.Record;
-import datamodel.Similarity;
+import utils.Constants;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -173,7 +177,7 @@ public class MainWindow extends JFrame {
 
         resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-//                ((MainTableModel)model).setDictionary(dictionary);
+//                ((gui.swingui.MainTableModel)model).setDictionary(dictionary);
 //                mainTable.updateUI();
                 sorter.setRowFilter(null);
                 byTopicCombo.setSelectedItem(Constants.NO_TOPIC);

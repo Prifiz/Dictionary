@@ -1,4 +1,5 @@
-import controller.AddCommand;
+package gui.swingui;
+
 import controller.Command;
 import controller.EditCommand;
 import datamodel.EmptyTheme;
