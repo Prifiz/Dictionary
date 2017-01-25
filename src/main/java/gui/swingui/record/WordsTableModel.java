@@ -1,4 +1,4 @@
-package gui.swingui;
+package gui.swingui.record;
 
 import datamodel.Word;
 

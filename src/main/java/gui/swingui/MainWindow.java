@@ -3,6 +3,8 @@ package gui.swingui;
 import controller.*;
 import datamodel.Dictionary;
 import datamodel.Record;
+import gui.swingui.record.AddRecordWindow;
+import gui.swingui.record.EditRecordWindow;
 import utils.Constants;
 
 import javax.swing.*;

@@ -1,6 +1,7 @@
-package gui.swingui;
+package gui.swingui.record;
 
 import datamodel.Word;
+import gui.swingui.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,19 +54,19 @@ public abstract class RecordWindow extends JFrame {
     protected void initUmlauts() {
         java.util.List<JButton> umlauts = new ArrayList<>();
 
-        umlaut_a = new JButton("\u00e4");
+        umlaut_a = new JButton("\u00e4"); // ä
         umlauts.add(umlaut_a);
-        umlaut_A = new JButton("\u00c4");
+        umlaut_A = new JButton("\u00c4"); // Ä
         umlauts.add(umlaut_A);
-        umlaut_o = new JButton("\u00f6");
+        umlaut_o = new JButton("\u00f6"); // ö
         umlauts.add(umlaut_o);
-        umlaut_O = new JButton("\u00d6");
+        umlaut_O = new JButton("\u00d6"); // Ö
         umlauts.add(umlaut_O);
-        umlaut_u = new JButton("\u00fc");
+        umlaut_u = new JButton("\u00fc"); // ü
         umlauts.add(umlaut_u);
-        umlaut_U = new JButton("\u00dc");
+        umlaut_U = new JButton("\u00dc"); // Ü
         umlauts.add(umlaut_U);
-        umlaut_B = new JButton("\u00df");
+        umlaut_B = new JButton("\u00df"); // ß
         umlauts.add(umlaut_B);
 
         for(JButton umlaut : umlauts) {
