@@ -1,3 +1,4 @@
+import datamodel.Dictionary;
 import gui.swingui.MainWindow;
 
 /**
@@ -6,6 +7,8 @@ import gui.swingui.MainWindow;
 public class Main {
 
     public static void main(String[] args) {
+
+        Dictionary dictionary = new Dictionary();
         MainWindow mainWindow = new MainWindow();
         mainWindow.setVisible(true);
     }

@@ -8,7 +8,6 @@ import gui.swingui.record.EditRecordWindow;
 import utils.Constants;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -27,7 +26,54 @@ import java.util.TreeSet;
  */
 public class MainWindow extends JFrame {
 
-    TableRowSorter<MainTableModel> sorter;
+    private Dictionary dictionary = new Dictionary();
+
+    private TableModel model;
+    private TableRowSorter<MainTableModel> sorter;
+    private JTable mainTable;
+    private JLabel byTopicLabel;
+
+    private JScrollPane scrollPane;
+    private JButton newButton;
+    private JButton removeButton;
+    private JButton removeTopicButton;
+
+
+    private JButton resetButton;
+    private JComboBox byTopicCombo;
+    private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
+    private java.util.Set<String> topics = new TreeSet<>();
+
+    private ComboBoxModel comboBoxModel = new DefaultComboBoxModel(topics.toArray());
+
+    public MainWindow() throws HeadlessException {
+        initMainForm();
+        initControls();
+        initMainTable();
+        initButtonsActions();
+        initMenu();
+        initLayout();
+    }
+
+    private void initMainForm() {
+        setTitle("Dictionary - Main Page");
+        setSize(1024, 768);
+        setResizable(false);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    private void initControls() {
+        model = new MainTableModel(dictionary);
+        sorter = new TableRowSorter<>((MainTableModel) model);
+        mainTable = new JTable(model);
+        scrollPane = new JScrollPane(mainTable);
+        byTopicLabel = new JLabel("By Topic");
+        newButton = new JButton("New...");
+        removeButton = new JButton("Remove");
+        resetButton = new JButton("Show All");
+        byTopicCombo = new JComboBox(comboBoxModel);
+        removeTopicButton = new JButton("Remove Topic");
+    }
 
     public Dictionary getDictionary() {
         return dictionary;
@@ -36,8 +82,6 @@ public class MainWindow extends JFrame {
     public void setDictionary(Dictionary dictionary) {
         this.dictionary = dictionary;
     }
-
-    private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
 
     public void refresh() {
         mainTable.updateUI();
@@ -49,67 +93,29 @@ public class MainWindow extends JFrame {
         byTopicCombo.updateUI();
     }
 
-    private Dictionary dictionary = new Dictionary();
-    private JLabel byTopicLabel = new JLabel("By Topic");
-    final TableModel model = new MainTableModel(dictionary);
-    final JTable mainTable = new JTable(model);
-    private JButton removeTopicButton;
-
 
     public Set<String> getTopics() {
         return topics;
     }
 
-    public void setTopics(Set<String> topics) {
-        this.topics = topics;
-    }
-
-    java.util.Set<String> topics = new TreeSet<>();
-
-
-    private JComboBox byTopicCombo;
-
     private void createNewRecord() {
         final AddRecordWindow addRecordWindow = new AddRecordWindow(this);
     }
 
-    private void editRecord(Record record) {
+    private void editRecord(int recordIdx) {
+        Record record = dictionary.getAllRecordsAsList().get(recordIdx);
         final EditRecordWindow editRecordWindow = new EditRecordWindow(this, record);
     }
 
 
-//
-
-    private void initLayout() {
-        Container pane = getContentPane();
-        GroupLayout gl = new GroupLayout(pane);
-
-        pane.setLayout(gl);
-
-        gl.setAutoCreateGaps(true);
-        gl.setAutoCreateContainerGaps(true);
-
-        JButton newButton = new JButton("New...");
+    private void initButtonsActions() {
         newButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 createNewRecord();
             }
         });
 
-//        JComboBox similarityCombo = new JComboBox();
-//        for(Similarity similarity : Similarity.values()) {
-//            similarityCombo.addItem(similarity.toString());
-//        }
-        //mainTable.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(similarityCombo));
-        JScrollPane scrollPane = new JScrollPane(mainTable);
-        mainTable.getColumnModel().getColumn(4).setMinWidth(0);
-        mainTable.getColumnModel().getColumn(4).setMaxWidth(0);
-
-
-
-        JButton removeButton = new JButton("Remove");
         removeButton.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 if (mainTable.getSelectedRow() != -1) {
                     int viewIndex = mainTable.getSelectedRow();
@@ -126,19 +132,29 @@ public class MainWindow extends JFrame {
             }
         });
 
-        try {
-            Command loadCommand = new LoadFromXmlCommand("Dictionary.xml");
-            loadCommand.execute(dictionary);
-            mainTable.updateUI();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
-        topics.add(Constants.NO_TOPIC);
-        topics.addAll(new SimpleSearch().findAllTopics(dictionary));
-        final ComboBoxModel comboBoxModel = new DefaultComboBoxModel(topics.toArray());
-        byTopicCombo = new JComboBox(comboBoxModel);
+        resetButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sorter.setRowFilter(null);
+                byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
+                mainTable.setRowSorter(sorter);
+            }
+        });
 
-        sorter = new TableRowSorter<MainTableModel>((MainTableModel) model);
+        removeTopicButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!topics.isEmpty()) {
+                    String topic = byTopicCombo.getSelectedItem().toString();
+                    if (!topic.equals(Constants.NO_TOPIC)) {
+                        topics.remove(topic);
+                        byTopicCombo.removeItem(topic);
+                        byTopicCombo.updateUI();
+                        // FIXME
+                        dictionary.removeAllTopicOccurences(topic);
+                    }
+                }
+            }
+        });
 
         byTopicCombo.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
@@ -158,91 +174,35 @@ public class MainWindow extends JFrame {
                 byTopicComboCurrentlySelected = byTopicCombo.getSelectedItem().toString();
             }
         });
+    }
 
-        removeTopicButton = new JButton("Remove Topic");
-        removeTopicButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!topics.isEmpty()) {
-                    String topic = byTopicCombo.getSelectedItem().toString();
-                    if (!topic.equals(Constants.NO_TOPIC)) {
-                        topics.remove(topic);
-                        byTopicCombo.removeItem(topic);
-                        byTopicCombo.updateUI();
-                        dictionary.removeAllTopicOccurences(topic);
-                    }
-                }
-            }
-        });
-
-        JButton resetButton = new JButton("Show All");
-
-        resetButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-//                ((gui.swingui.MainTableModel)model).setDictionary(dictionary);
-//                mainTable.updateUI();
-                sorter.setRowFilter(null);
-                byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
-                mainTable.setRowSorter(sorter);
-            }
-        });
-        mainTable.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
-                if (me.getClickCount() == 2 && me.getButton() == 1) {
-                    JTable table = (JTable) me.getSource();
-                    Point p = me.getPoint();
-                    int row = table.rowAtPoint(p);
-                    if (row != -1) {
-                        int modelIndex = mainTable.convertRowIndexToModel(row);
-                        MainTableModel model = (MainTableModel) mainTable.getModel();
-                        editRecord(dictionary.getAllRecordsAsList().get(modelIndex));
-                        model.setDictionary(dictionary);
-                    }
-                }
-            }
-//            public void mouseReleased(MouseEvent e) {
-//                int r = mainTable.rowAtPoint(e.getPoint());
-//                if (r >= 0 && r < mainTable.getRowCount()) {
-//                    mainTable.setRowSelectionInterval(r, r);
-//                } else {
-//                    mainTable.clearSelection();
-//                }
-//
-//                int rowindex = mainTable.getSelectedRow();
-//                if (rowindex < 0)
-//                    return;
-//                if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
-//                    JPopupMenu popup = new JPopupMenu();
-//                    JMenuItem makeIdenticalItem = new JMenuItem("Mark as IDENTICAL");
-//                    JMenuItem makeSimilarItem = new JMenuItem("Mark as SIMALAR");
-//                    JMenuItem makeDifferentItem = new JMenuItem("Mark as SIMALAR");
-//                    popup.add();
-//                    popup.show(e.getComponent(), e.getX(), e.getY());
-//                }
-//            }
-
-        });
-
-
+    private void initMainTable() {
+        mainTable.setRowHeight(160);
+        mainTable.getColumnModel().getColumn(4).setMinWidth(0);
+        mainTable.getColumnModel().getColumn(4).setMaxWidth(0);
         mainTable.setAutoCreateRowSorter(true);
         mainTable.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 20));
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        centerRenderer.setVerticalAlignment(JLabel.CENTER);
+//        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+//        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+//        centerRenderer.setVerticalAlignment(JLabel.CENTER);
         mainTable.setDefaultRenderer(String.class, new TextTableRenderer());
-        mainTable.setDefaultRenderer(File.class, centerRenderer);
+        //mainTable.setDefaultRenderer(File.class, centerRenderer);
+
         mainTable.setDefaultRenderer(
                 File.class,
                 new TableCellRenderer() {
                     public Component getTableCellRendererComponent
                             (JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                        final int IMAGE_WIDTH = 150;
+                        final int IMAGE_HEIGHT = IMAGE_WIDTH;
                         try {
                             JLabel label = new JLabel();
                             Image fullSize = new ImageIcon(((File) value).getCanonicalPath()).getImage();
-                            Image resized = ImageUtils.resize(ImageUtils.toBufferedImage(fullSize), 150, 150);
+                            Image resized = ImageUtils.resize(
+                                    ImageUtils.toBufferedImage(fullSize), IMAGE_WIDTH, IMAGE_HEIGHT);
                             if (resized != null) {
                                 ImageIcon imageIcon = new ImageIcon(
-                                        resized.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
+                                        resized.getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH));
                                 label.setIcon(imageIcon);
                             }
                             return label;
@@ -253,48 +213,81 @@ public class MainWindow extends JFrame {
                     }
                 }
         );
-        mainTable.setRowHeight(160);
 
-        GroupLayout.SequentialGroup horizontalGroup = gl.createSequentialGroup();
-        horizontalGroup.addGroup(gl.createParallelGroup()
-                .addGroup(gl.createSequentialGroup()
+
+
+
+        try {
+            Command loadCommand = new LoadFromXmlCommand("Dictionary.xml");
+            loadCommand.execute(dictionary);
+            mainTable.updateUI();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        // FIXME update at every change
+        topics.add(Constants.NO_TOPIC);
+        topics.addAll(new SimpleSearch().findAllTopics(dictionary));
+
+        mainTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent me) {
+                if (me.getClickCount() == 2 && me.getButton() == 1) {
+                    JTable table = (JTable) me.getSource();
+                    Point p = me.getPoint();
+                    int row = table.rowAtPoint(p);
+                    if (row != -1) {
+                        int modelIndex = mainTable.convertRowIndexToModel(row);
+                        MainTableModel model = (MainTableModel) mainTable.getModel();
+                        editRecord(modelIndex);
+                        // FIXME
+                        model.setDictionary(dictionary);
+                    }
+                }
+            }
+        });
+
+
+    }
+
+    private void initLayout() {
+        Container pane = getContentPane();
+        GroupLayout groupLayout = new GroupLayout(pane);
+        pane.setLayout(groupLayout);
+
+        groupLayout.setAutoCreateGaps(true);
+        groupLayout.setAutoCreateContainerGaps(true);
+
+        GroupLayout.SequentialGroup horizontalGroup = groupLayout.createSequentialGroup();
+        horizontalGroup.addGroup(groupLayout.createParallelGroup()
+                .addGroup(groupLayout.createSequentialGroup()
                         .addComponent(newButton)
                         .addComponent(removeButton))
                 .addComponent(scrollPane));
-        horizontalGroup.addGroup(gl.createParallelGroup()
+        horizontalGroup.addGroup(groupLayout.createParallelGroup()
                 .addComponent(byTopicLabel)
-                .addGroup(gl.createSequentialGroup()
+                .addGroup(groupLayout.createSequentialGroup()
                         .addComponent(byTopicCombo)
                         .addComponent(removeTopicButton))
                 .addComponent(resetButton));
 
-        gl.setHorizontalGroup(horizontalGroup);
+        groupLayout.setHorizontalGroup(horizontalGroup);
 
-        GroupLayout.SequentialGroup vGroup = gl.createSequentialGroup();
-        vGroup.addGroup(gl.createParallelGroup()
+        GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
+        vGroup.addGroup(groupLayout.createParallelGroup()
                 .addComponent(newButton)
                 .addComponent(removeButton)
                 .addComponent(byTopicLabel));
-        vGroup.addGroup(gl.createParallelGroup()
+        vGroup.addGroup(groupLayout.createParallelGroup()
                 .addComponent(scrollPane)
-                .addGroup(gl.createSequentialGroup()
-                        .addGroup(gl.createParallelGroup()
+                .addGroup(groupLayout.createSequentialGroup()
+                        .addGroup(groupLayout.createParallelGroup()
                                 .addComponent(byTopicCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(removeTopicButton))
                         .addComponent(resetButton)));
 
-
-        gl.setVerticalGroup(vGroup);
+        groupLayout.setVerticalGroup(vGroup);
     }
 
-
-    private void initMainForm() {
-        setTitle("Dictionary - Main Page");
-        setSize(1024, 768);
-        setResizable(false);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-
+    private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Dictionary Actions");
         menuBar.add(menu);
@@ -306,6 +299,7 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    // FIXME
                     new SaveToXmlCommand("Dictionary.xml").execute(dictionary);
                     JOptionPane.showMessageDialog(null, "Successfully saved!");
                 } catch (IOException ex) {
@@ -313,12 +307,7 @@ public class MainWindow extends JFrame {
                 }
             }
         });
-
         this.setJMenuBar(menuBar);
-        initLayout();
     }
 
-    public MainWindow() throws HeadlessException {
-        initMainForm();
-    }
 }
