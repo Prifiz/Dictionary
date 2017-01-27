@@ -1,12 +1,10 @@
-package controller;
+package controller.filesystem;
 
+import controller.DictionaryXmlBuilder;
 import datamodel.Dictionary;
 
 import java.io.IOException;
 
-/**
- * Created by vaba1010 on 10.01.2017.
- */
 public class SaveToXmlCommand extends AbstractSaveCommand {
 
     public SaveToXmlCommand(String filePath) throws IOException {

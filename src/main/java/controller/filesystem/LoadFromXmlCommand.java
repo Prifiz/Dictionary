@@ -1,12 +1,10 @@
-package controller;
+package controller.filesystem;
 
+import controller.DictionaryFileReader;
 import datamodel.Dictionary;
 
 import java.io.IOException;
 
-/**
- * Created by vaba1010 on 10.01.2017.
- */
 public class LoadFromXmlCommand extends AbstractLoadCommand {
 
     public LoadFromXmlCommand(String filePath) throws IOException {

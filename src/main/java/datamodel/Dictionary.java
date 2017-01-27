@@ -3,9 +3,6 @@ package datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
 public class Dictionary {
 
     private List<Record> records;

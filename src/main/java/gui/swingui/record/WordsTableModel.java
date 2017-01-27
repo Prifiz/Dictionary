@@ -8,9 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by PrifizGamer on 10.01.2017.
- */
 public class WordsTableModel implements TableModel {
 
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();

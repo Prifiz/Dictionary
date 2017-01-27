@@ -1,4 +1,4 @@
-package controller;
+package controller.search;
 
 import datamodel.Dictionary;
 import datamodel.Record;

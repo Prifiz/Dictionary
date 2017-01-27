@@ -1,7 +1,5 @@
 package gui.swingui.record;
 
-import controller.AddCommand;
-import controller.Command;
 import datamodel.EmptyTheme;
 import datamodel.Language;
 import datamodel.Theme;
@@ -19,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-/**
- * Created by PrifizGamer on 09.01.2017.
- */
 public class AddRecordWindow extends RecordWindow {
 
     protected void initPictureChooser() {
@@ -71,16 +66,13 @@ public class AddRecordWindow extends RecordWindow {
                 if(copiedPictureFile == null || !copiedPictureFile.exists()) {
                     JOptionPane.showMessageDialog(null, "Please, select the picture");
                 } else {
-                    Command addCommand = new AddCommand(words, copiedPictureFile.getName());
-                    datamodel.Dictionary dictionary = mainWindow.getDictionary();
                     try {
-                        addCommand.execute(dictionary);
+                        appController.addRecord(words, copiedPictureFile.getName());
+                        mainWindow.updateFormData();
+                        dispose();
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
-                    mainWindow.setDictionary(dictionary);
-                    mainWindow.refresh();
-                    dispose();
                 }
             }
         });
@@ -102,10 +94,10 @@ public class AddRecordWindow extends RecordWindow {
 
     @Override
     protected List<Word> initWords() {
-        final java.util.List<Word> words = new ArrayList<Word>(3);
-        words.add(new Word("", Language.ENGLISH, new EmptyTheme()));
-        words.add(new Word("", Language.GERMAN, new EmptyTheme()));
-        words.add(new Word("", Language.RUSSIAN, new EmptyTheme()));
+        final java.util.List<Word> words = new ArrayList<>();
+        for(Language language : Language.values()) {
+            words.add(new Word("", language, new EmptyTheme()));
+        }
         return words;
     }
 

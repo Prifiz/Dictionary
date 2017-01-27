@@ -4,9 +4,6 @@ import exceptions.RecordHasNotSingleThemeException;
 
 import java.util.List;
 
-/**
- * Created by Prifiz on 01.01.2017.
- */
 public class Record {
     public List<Word> getWords() {
         return words;

@@ -1,4 +1,6 @@
-package controller;
+package controller.filesystem;
+
+import controller.Command;
 
 import java.io.*;
 

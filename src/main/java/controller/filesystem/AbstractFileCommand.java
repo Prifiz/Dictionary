@@ -1,4 +1,6 @@
-package controller;
+package controller.filesystem;
+
+import controller.Command;
 
 /**
  * Created by vaba1010 on 10.01.2017.

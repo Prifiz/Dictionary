@@ -1,14 +1,12 @@
-package controller;
+package controller.record;
 
+import controller.Command;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
 
 import java.util.List;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
 public class AddCommand implements Command {
 
     private Record record;

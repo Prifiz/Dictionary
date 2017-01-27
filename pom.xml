@@ -5,20 +5,20 @@
     <groupId>com.myhomeapps</groupId>
     <artifactId>dictionary</artifactId>
     <version>2.0.0-SNAPSHOT</version>
-	
+
 	<properties>
 		<deploy.snapshot.repo.path>c:\testMavenDeploySnapshots</deploy.snapshot.repo.path>
 		<deploy.release.repo.path>c:\testMavenDeployReleases</deploy.release.repo.path>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<scm>
         <connection>scm:git:https://github.com/Prifiz/Dictionary.git</connection>
         <developerConnection>scm:git:https://github.com/Prifiz/Dictionary.git</developerConnection>
         <url>https://github.com/Prifiz/Dictionary.git</url>
       <tag>HEAD</tag>
   </scm>
-	
+
 	<distributionManagement>
         <repository>
             <id>releases</id>
@@ -136,7 +136,7 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <jar>${project.build.directory}/distributive/${artifactId}-${version}.jar</jar>
+                            <jar>${project.build.directory}/distributive/${project.artifactId}-${project.version}.jar</jar>
                             <outfile>${project.build.directory}/Dictionary.exe</outfile>
                             <chdir>.</chdir>
                             <priority>normal</priority>
@@ -169,31 +169,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin-->
-            <!-- LAUNCH4J END -->
         </plugins>
     </build>
 

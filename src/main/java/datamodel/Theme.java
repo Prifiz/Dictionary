@@ -1,8 +1,5 @@
 package datamodel;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
 public class Theme {
     public String getName() {
         return name;

@@ -1,5 +1,7 @@
 package gui.swingui.record;
 
+import controller.Controller;
+import controller.SwingApplicationController;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 
@@ -10,10 +12,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by vaba1010 on 11.01.2017.
- */
 public abstract class RecordWindow extends JFrame {
+
+    protected Controller appController = SwingApplicationController.getInstance();
 
     protected JTable wordsTable;
     protected JLabel topicLabel, newTopicLabel;

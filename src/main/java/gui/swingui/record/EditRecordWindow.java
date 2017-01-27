@@ -1,7 +1,7 @@
 package gui.swingui.record;
 
 import controller.Command;
-import controller.EditCommand;
+import controller.record.EditCommand;
 import datamodel.EmptyTheme;
 import datamodel.Record;
 import datamodel.Theme;
@@ -18,9 +18,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-/**
- * Created by vaba1010 on 11.01.2017.
- */
 public class EditRecordWindow extends RecordWindow {
 
     private Record recordToEdit;
@@ -91,10 +88,8 @@ public class EditRecordWindow extends RecordWindow {
     }
 
     protected void initSaveOperation(final List<Word> words) {
-        // FIXME
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 if (wordsTable.hasFocus() || wordsTable.isEditing()) {
                     wordsTable.getCellEditor().stopCellEditing();
                 }
@@ -106,17 +101,10 @@ public class EditRecordWindow extends RecordWindow {
                     }
                 }
 
-                    Command editCommand = new EditCommand(recordToEdit, words, copiedPictureFile.getName());
-                    datamodel.Dictionary dictionary = mainWindow.getDictionary();
-                    try {
-                        editCommand.execute(dictionary);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                    }
-                    mainWindow.setDictionary(dictionary);
-                    mainWindow.refresh();
-                    dispose();
-
+                Command editCommand = new EditCommand(recordToEdit, words, copiedPictureFile.getName());
+                editCommand.execute(appController.getDictionary());
+                mainWindow.updateFormData();
+                dispose();
             }
         });
     }

@@ -1,11 +1,13 @@
 package gui.swingui;
 
-import controller.*;
-import datamodel.Dictionary;
+import controller.Controller;
+import controller.SwingApplicationController;
+import controller.search.SimpleSearch;
 import datamodel.Record;
 import gui.swingui.record.AddRecordWindow;
 import gui.swingui.record.EditRecordWindow;
 import utils.Constants;
+import utils.ImageUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -21,12 +23,9 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
 public class MainWindow extends JFrame {
 
-    private Dictionary dictionary = new Dictionary();
+    private Controller appController = SwingApplicationController.getInstance();
 
     private TableModel model;
     private TableRowSorter<MainTableModel> sorter;
@@ -53,6 +52,7 @@ public class MainWindow extends JFrame {
         initButtonsActions();
         initMenu();
         initLayout();
+        loadDictionaryData();
     }
 
     private void initMainForm() {
@@ -63,7 +63,7 @@ public class MainWindow extends JFrame {
     }
 
     private void initControls() {
-        model = new MainTableModel(dictionary);
+        model = new MainTableModel(appController.getDictionary());
         sorter = new TableRowSorter<>((MainTableModel) model);
         mainTable = new JTable(model);
         scrollPane = new JScrollPane(mainTable);
@@ -75,16 +75,9 @@ public class MainWindow extends JFrame {
         removeTopicButton = new JButton("Remove Topic");
     }
 
-    public Dictionary getDictionary() {
-        return dictionary;
-    }
-
-    public void setDictionary(Dictionary dictionary) {
-        this.dictionary = dictionary;
-    }
-
-    public void refresh() {
-        mainTable.updateUI();
+    // FIXME update topics & table at every change
+    public void updateFormData() {
+        updateMainTable();
         java.util.Set<String> topics = new TreeSet<>();
         topics.add(Constants.NO_TOPIC);
         topics.addAll(new SimpleSearch().findAllTopics(dictionary));
@@ -99,7 +92,7 @@ public class MainWindow extends JFrame {
     }
 
     private void createNewRecord() {
-        final AddRecordWindow addRecordWindow = new AddRecordWindow(this);
+        new AddRecordWindow(this);
     }
 
     private void editRecord(int recordIdx) {
@@ -149,8 +142,12 @@ public class MainWindow extends JFrame {
                         topics.remove(topic);
                         byTopicCombo.removeItem(topic);
                         byTopicCombo.updateUI();
-                        // FIXME
-                        dictionary.removeAllTopicOccurences(topic);
+                        try {
+                            appController.removeTopic(topic);
+                            updateMainTable();
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, ex.getMessage());
+                        }
                     }
                 }
             }
@@ -176,17 +173,36 @@ public class MainWindow extends JFrame {
         });
     }
 
+    private void updateMainTable() {
+        ((MainTableModel)mainTable.getModel()).setDictionary(appController.getDictionary());
+        mainTable.updateUI();
+    }
+
+    private void loadDictionaryData() {
+        try {
+            appController.loadDictionary();
+            updateMainTable();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }
+
+    private void saveDictionaryData() {
+        try {
+            appController.saveDictionary();
+            JOptionPane.showMessageDialog(null, "Successfully saved!");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }
+
     private void initMainTable() {
         mainTable.setRowHeight(160);
         mainTable.getColumnModel().getColumn(4).setMinWidth(0);
         mainTable.getColumnModel().getColumn(4).setMaxWidth(0);
         mainTable.setAutoCreateRowSorter(true);
         mainTable.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 20));
-//        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-//        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-//        centerRenderer.setVerticalAlignment(JLabel.CENTER);
         mainTable.setDefaultRenderer(String.class, new TextTableRenderer());
-        //mainTable.setDefaultRenderer(File.class, centerRenderer);
 
         mainTable.setDefaultRenderer(
                 File.class,
@@ -207,26 +223,13 @@ public class MainWindow extends JFrame {
                             }
                             return label;
                         } catch (IOException e) {
+                            // FIXME change to logger
                             e.printStackTrace();
                         }
                         return new JLabel("Error: " + value);
                     }
                 }
         );
-
-
-
-
-        try {
-            Command loadCommand = new LoadFromXmlCommand("Dictionary.xml");
-            loadCommand.execute(dictionary);
-            mainTable.updateUI();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
-        // FIXME update at every change
-        topics.add(Constants.NO_TOPIC);
-        topics.addAll(new SimpleSearch().findAllTopics(dictionary));
 
         mainTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent me) {
@@ -238,14 +241,11 @@ public class MainWindow extends JFrame {
                         int modelIndex = mainTable.convertRowIndexToModel(row);
                         MainTableModel model = (MainTableModel) mainTable.getModel();
                         editRecord(modelIndex);
-                        // FIXME
-                        model.setDictionary(dictionary);
+                        model.setDictionary(appController.getDictionary());
                     }
                 }
             }
         });
-
-
     }
 
     private void initLayout() {
@@ -298,13 +298,7 @@ public class MainWindow extends JFrame {
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    // FIXME
-                    new SaveToXmlCommand("Dictionary.xml").execute(dictionary);
-                    JOptionPane.showMessageDialog(null, "Successfully saved!");
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
+                saveDictionaryData();
             }
         });
         this.setJMenuBar(menuBar);
