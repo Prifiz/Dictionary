@@ -3,6 +3,7 @@ package controller.search;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,10 @@ public class SimpleSearch implements Search {
         Set<String> result = new TreeSet<>();
         for(Record record : dictionary.getAllRecordsAsList()) {
             if(!record.getWords().isEmpty()) {
-                result.add(record.getWords().get(0).getTheme().getName());
+                String topic = record.getWords().get(0).getTheme().getName();
+                if(StringUtils.isNoneBlank(topic)) {
+                    result.add(topic);
+                }
             }
         }
         return result;

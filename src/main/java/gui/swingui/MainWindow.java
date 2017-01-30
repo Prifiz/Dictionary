@@ -89,11 +89,6 @@ public class MainWindow extends JFrame {
         byTopicCombo.updateUI();
     }
 
-
-//    public Set<String> getTopics() {
-//        return topics;
-//    }
-
     private void createNewRecord() {
         RecordWindow addRecordWindow = new AddRecordWindow(this);
         addRecordWindow.setVisible(true);
