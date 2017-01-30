@@ -7,6 +7,8 @@ import datamodel.Record;
 import gui.swingui.record.AddRecordWindow;
 import gui.swingui.record.EditRecordWindow;
 import gui.swingui.record.RecordWindow;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utils.Constants;
 import utils.ImageUtils;
 
@@ -24,6 +26,8 @@ import java.io.IOException;
 import java.util.TreeSet;
 
 public class MainWindow extends JFrame {
+
+    private static final Logger LOGGER = LogManager.getLogger(MainWindow.class);
 
     private Controller appController = SwingApplicationController.getInstance();
 
@@ -43,7 +47,7 @@ public class MainWindow extends JFrame {
     private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
     private java.util.Set<String> topics = new TreeSet<>();
 
-    private ComboBoxModel comboBoxModel = new DefaultComboBoxModel(topics.toArray());
+    private ComboBoxModel comboBoxModel = new DefaultComboBoxModel<>(topics.toArray());
 
     public MainWindow() throws HeadlessException {
         initMainForm();
@@ -80,7 +84,7 @@ public class MainWindow extends JFrame {
         topics.clear();
         topics.add(Constants.NO_TOPIC);
         topics.addAll(new SimpleSearch().findAllTopics(appController.getDictionary()));
-        byTopicCombo.setModel(new DefaultComboBoxModel(topics.toArray()));
+        byTopicCombo.setModel(new DefaultComboBoxModel<>(topics.toArray()));
         if(topics.contains(byTopicComboCurrentlySelected)) {
             byTopicCombo.setSelectedItem(byTopicComboCurrentlySelected);
         } else {
@@ -118,6 +122,7 @@ public class MainWindow extends JFrame {
                             appController.removeRecord(modelIndex);
                             updateFormData();
                         } catch (IOException ex) {
+                            LOGGER.error(ex.getMessage());
                             JOptionPane.showMessageDialog(null, ex.getMessage());
                         }
                     }
@@ -147,6 +152,7 @@ public class MainWindow extends JFrame {
                             appController.removeTopic(topic);
                             updateFormData();
                         } catch (IOException ex) {
+                            LOGGER.error(ex.getMessage());
                             JOptionPane.showMessageDialog(null, ex.getMessage());
                         }
                     }
@@ -184,6 +190,7 @@ public class MainWindow extends JFrame {
             appController.loadDictionary();
             updateFormData();
         } catch (IOException ex) {
+            LOGGER.error(ex.getMessage());
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
     }
@@ -193,6 +200,7 @@ public class MainWindow extends JFrame {
             appController.saveDictionary();
             JOptionPane.showMessageDialog(null, "Successfully saved!");
         } catch (IOException ex) {
+            LOGGER.error(ex.getMessage());
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
     }
@@ -223,9 +231,8 @@ public class MainWindow extends JFrame {
                                 label.setIcon(imageIcon);
                             }
                             return label;
-                        } catch (IOException e) {
-                            // FIXME change to logger in all such places!
-                            e.printStackTrace();
+                        } catch (IOException ex) {
+                            LOGGER.error(ex.getMessage());
                         }
                         return new JLabel("Error: " + value);
                     }

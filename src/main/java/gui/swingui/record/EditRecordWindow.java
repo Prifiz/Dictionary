@@ -1,7 +1,5 @@
 package gui.swingui.record;
 
-import controller.Command;
-import controller.record.EditCommand;
 import datamodel.EmptyTheme;
 import datamodel.Record;
 import datamodel.Theme;
@@ -9,6 +7,8 @@ import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utils.Constants;
 
 import javax.swing.*;
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 public class EditRecordWindow extends RecordWindow {
+
+    private static final Logger LOGGER = LogManager.getLogger(EditRecordWindow.class);
 
     private Record recordToEdit;
 
@@ -83,6 +85,7 @@ public class EditRecordWindow extends RecordWindow {
                     try {
                         FileUtils.copyFile(pictureFile, copiedPictureFile);
                     } catch (IOException ex) {
+                        LOGGER.error(ex.getMessage());
                         JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
 
@@ -115,6 +118,7 @@ public class EditRecordWindow extends RecordWindow {
                     mainWindow.updateFormData();
                     dispose();
                 } catch (IOException ex) {
+                    LOGGER.error(ex.getMessage());
                     JOptionPane.showMessageDialog(null, ex.getMessage());
                 }
             }

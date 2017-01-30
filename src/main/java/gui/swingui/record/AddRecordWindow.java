@@ -6,6 +6,8 @@ import datamodel.Theme;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 public class AddRecordWindow extends RecordWindow {
+
+    private static final Logger LOGGER = LogManager.getLogger(AddRecordWindow.class);
 
     protected void initPictureChooser() {
         final String LAST_USED_FOLDER = ".";
@@ -35,6 +39,7 @@ public class AddRecordWindow extends RecordWindow {
                     try {
                         FileUtils.copyFile(pictureFile, copiedPictureFile);
                     } catch (IOException ex) {
+                        LOGGER.error(ex.getMessage());
                         JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
 
@@ -71,6 +76,7 @@ public class AddRecordWindow extends RecordWindow {
                         mainWindow.updateFormData();
                         dispose();
                     } catch (IOException ex) {
+                        LOGGER.error(ex.getMessage());
                         JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
                 }
