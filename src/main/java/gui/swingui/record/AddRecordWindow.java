@@ -84,7 +84,6 @@ public class AddRecordWindow extends RecordWindow {
         initOperations();
         initLayout();
         this.pack();
-        this.setVisible(true);
     }
 
     @Override

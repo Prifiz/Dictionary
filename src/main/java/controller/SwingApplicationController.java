@@ -3,6 +3,8 @@ package controller;
 import controller.filesystem.LoadFromXmlCommand;
 import controller.filesystem.SaveToXmlCommand;
 import controller.record.AddCommand;
+import controller.record.EditCommand;
+import controller.record.RemoveCommand;
 import controller.record.RemoveTopicCommand;
 import datamodel.Dictionary;
 import datamodel.Record;
@@ -59,5 +61,16 @@ public class SwingApplicationController implements Controller {
         addCommand.execute(dictionary);
     }
 
+    @Override
+    public void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName) throws IOException {
+        Command editCommand = new EditCommand(recordToEdit, editedWords, editedPictureName);
+        editCommand.execute(dictionary);
+    }
+
+    @Override
+    public void removeRecord(int recordId) throws IOException {
+        Command removeCommand = new RemoveCommand(recordId);
+        removeCommand.execute(dictionary);
+    }
 
 }

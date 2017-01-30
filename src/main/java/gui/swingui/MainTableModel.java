@@ -81,9 +81,9 @@ public class MainTableModel implements TableModel {
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {}
 
-    public void removeRow(int row) {
-        dictionary.removeRecord(row);
-    }
+//    public void removeRow(int row) {
+//        dictionary.removeRecord(row);
+//    }
 
     public void addTableModelListener(TableModelListener listener) {
         listeners.add(listener);

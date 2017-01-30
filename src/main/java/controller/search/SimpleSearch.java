@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
 public class SimpleSearch implements Search {
 
     public List<Record> findAll(Dictionary dictionary) {
@@ -29,7 +26,7 @@ public class SimpleSearch implements Search {
     }
 
     public List<Record> findByThemeName(Dictionary dictionary, String themeName) {
-        List<Record> result = new ArrayList<Record>();
+        List<Record> result = new ArrayList<>();
         for(Record record : dictionary.getAllRecordsAsList()) {
             if(isThemeFoundInWords(record.getWords(), themeName)) {
                 result.add(record);

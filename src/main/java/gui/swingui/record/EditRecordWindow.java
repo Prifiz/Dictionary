@@ -8,6 +8,8 @@ import datamodel.Theme;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +31,6 @@ public class EditRecordWindow extends RecordWindow {
         initOperations();
         initLayout();
         this.pack();
-        this.setVisible(true);
     }
 
     @Override
@@ -44,8 +45,16 @@ public class EditRecordWindow extends RecordWindow {
 
     @Override
     protected void setSelectedTopic() {
-        if(!recordToEdit.getWords().isEmpty()) {
-            existingTopicsCombo.setSelectedItem(recordToEdit.getWords().get(0).getTheme().getName());
+        if(recordToEdit.getWords().isEmpty()) {
+            existingTopicsCombo.setSelectedItem(Constants.NO_TOPIC);
+        } else {
+            String firstWordTopic = recordToEdit.getWords().get(0).getTheme().getName();
+            if(StringUtils.isBlank(firstWordTopic)) {
+                existingTopicsCombo.setSelectedItem(Constants.NO_TOPIC);
+            } else {
+                existingTopicsCombo.setSelectedItem(firstWordTopic);
+            }
+
         }
     }
 
@@ -101,10 +110,13 @@ public class EditRecordWindow extends RecordWindow {
                     }
                 }
 
-                Command editCommand = new EditCommand(recordToEdit, words, copiedPictureFile.getName());
-                editCommand.execute(appController.getDictionary());
-                mainWindow.updateFormData();
-                dispose();
+                try {
+                    appController.editRecord(recordToEdit, words, copiedPictureFile.getName());
+                    mainWindow.updateFormData();
+                    dispose();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
             }
         });
     }

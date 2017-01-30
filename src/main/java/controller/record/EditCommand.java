@@ -8,9 +8,6 @@ import datamodel.Word;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by vaba1010 on 12.01.2017.
- */
 public class EditCommand implements Command {
 
     private Record recordToEdit;

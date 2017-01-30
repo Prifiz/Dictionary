@@ -2,8 +2,10 @@ package gui.swingui.record;
 
 import controller.Controller;
 import controller.SwingApplicationController;
+import controller.search.SimpleSearch;
 import datamodel.Word;
 import gui.swingui.MainWindow;
+import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 public abstract class RecordWindow extends JFrame {
 
@@ -83,14 +87,17 @@ public abstract class RecordWindow extends JFrame {
         topicLabel = new JLabel("Topic");
         addTopicButton = new JButton("Add");
 
-        final ComboBoxModel existingTopicsModel = new DefaultComboBoxModel(mainWindow.getTopics().toArray());
+        final Set<String> existingTopics = new TreeSet<>();
+        existingTopics.add(Constants.NO_TOPIC);
+        existingTopics.addAll(new SimpleSearch().findAllTopics(appController.getDictionary()));
+        final ComboBoxModel existingTopicsModel = new DefaultComboBoxModel(existingTopics.toArray());
         existingTopicsCombo = new JComboBox(existingTopicsModel);
         setSelectedTopic();
         addTopicButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newTopicValue = newTopicField.getText();
-                if (newTopicValue != null && !"".equals(newTopicValue.trim()) && !mainWindow.getTopics().contains(newTopicValue)) {
-                    mainWindow.getTopics().add(newTopicValue);
+                if (newTopicValue != null && !"".equals(newTopicValue.trim()) && !existingTopics.contains(newTopicValue)) {
+                    existingTopics.add(newTopicValue);
                     existingTopicsCombo.addItem(newTopicValue);
                     existingTopicsCombo.setSelectedItem(newTopicValue);
                 }

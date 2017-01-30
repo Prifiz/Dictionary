@@ -3,15 +3,15 @@ package controller.record;
 import controller.Command;
 import datamodel.Dictionary;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
 public class RemoveCommand implements Command {
-    //FIXME id???
-    public RemoveCommand() {
+
+    private int recordId;
+
+    public RemoveCommand(int recordId) {
+        this.recordId = recordId;
     }
 
     public void execute(Dictionary dictionary) {
-
+        dictionary.removeRecord(recordId);
     }
 }

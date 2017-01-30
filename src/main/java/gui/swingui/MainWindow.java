@@ -6,6 +6,7 @@ import controller.search.SimpleSearch;
 import datamodel.Record;
 import gui.swingui.record.AddRecordWindow;
 import gui.swingui.record.EditRecordWindow;
+import gui.swingui.record.RecordWindow;
 import utils.Constants;
 import utils.ImageUtils;
 
@@ -20,7 +21,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 import java.util.TreeSet;
 
 public class MainWindow extends JFrame {
@@ -75,29 +75,34 @@ public class MainWindow extends JFrame {
         removeTopicButton = new JButton("Remove Topic");
     }
 
-    // FIXME update topics & table at every change
     public void updateFormData() {
         updateMainTable();
-        java.util.Set<String> topics = new TreeSet<>();
+        topics.clear();
         topics.add(Constants.NO_TOPIC);
-        topics.addAll(new SimpleSearch().findAllTopics(dictionary));
+        topics.addAll(new SimpleSearch().findAllTopics(appController.getDictionary()));
         byTopicCombo.setModel(new DefaultComboBoxModel(topics.toArray()));
-        byTopicCombo.setSelectedItem(byTopicComboCurrentlySelected);
+        if(topics.contains(byTopicComboCurrentlySelected)) {
+            byTopicCombo.setSelectedItem(byTopicComboCurrentlySelected);
+        } else {
+            byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
+        }
         byTopicCombo.updateUI();
     }
 
 
-    public Set<String> getTopics() {
-        return topics;
-    }
+//    public Set<String> getTopics() {
+//        return topics;
+//    }
 
     private void createNewRecord() {
-        new AddRecordWindow(this);
+        RecordWindow addRecordWindow = new AddRecordWindow(this);
+        addRecordWindow.setVisible(true);
     }
 
     private void editRecord(int recordIdx) {
-        Record record = dictionary.getAllRecordsAsList().get(recordIdx);
+        Record record = appController.getDictionary().getAllRecordsAsList().get(recordIdx);
         final EditRecordWindow editRecordWindow = new EditRecordWindow(this, record);
+        editRecordWindow.setVisible(true);
     }
 
 
@@ -114,8 +119,12 @@ public class MainWindow extends JFrame {
                     int viewIndex = mainTable.getSelectedRow();
                     if (viewIndex != -1) {
                         int modelIndex = mainTable.convertRowIndexToModel(viewIndex);
-                        MainTableModel model = (MainTableModel) mainTable.getModel();
-                        model.removeRow(modelIndex);
+                        try {
+                            appController.removeRecord(modelIndex);
+                            updateFormData();
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, ex.getMessage());
+                        }
                     }
                     for (ActionListener a : byTopicCombo.getActionListeners()) {
                         a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null) {
@@ -138,13 +147,10 @@ public class MainWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (!topics.isEmpty()) {
                     String topic = byTopicCombo.getSelectedItem().toString();
-                    if (!topic.equals(Constants.NO_TOPIC)) {
-                        topics.remove(topic);
-                        byTopicCombo.removeItem(topic);
-                        byTopicCombo.updateUI();
+                    if (!Constants.NO_TOPIC.equals(topic)) {
                         try {
                             appController.removeTopic(topic);
-                            updateMainTable();
+                            updateFormData();
                         } catch (IOException ex) {
                             JOptionPane.showMessageDialog(null, ex.getMessage());
                         }
@@ -181,7 +187,7 @@ public class MainWindow extends JFrame {
     private void loadDictionaryData() {
         try {
             appController.loadDictionary();
-            updateMainTable();
+            updateFormData();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
@@ -223,7 +229,7 @@ public class MainWindow extends JFrame {
                             }
                             return label;
                         } catch (IOException e) {
-                            // FIXME change to logger
+                            // FIXME change to logger in all such places!
                             e.printStackTrace();
                         }
                         return new JLabel("Error: " + value);
