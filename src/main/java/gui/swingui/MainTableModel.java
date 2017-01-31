@@ -17,6 +17,11 @@ public class MainTableModel implements TableModel {
     private Dictionary dictionary;
 
     private Set<TableModelListener> listeners = new HashSet<>();
+
+    public Map<Integer, String> getHeaders() {
+        return headerMap;
+    }
+
     private final Map<Integer, String> headerMap = new LinkedHashMap<Integer, String>() {{
         put(0, "English");
         put(1, "German");
@@ -80,10 +85,6 @@ public class MainTableModel implements TableModel {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {}
-
-//    public void removeRow(int row) {
-//        dictionary.removeRecord(row);
-//    }
 
     public void addTableModelListener(TableModelListener listener) {
         listeners.add(listener);

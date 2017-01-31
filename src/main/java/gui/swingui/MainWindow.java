@@ -23,6 +23,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class MainWindow extends JFrame {
@@ -93,6 +95,28 @@ public class MainWindow extends JFrame {
             byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
         }
         byTopicCombo.updateUI();
+    }
+
+    public void updateTableView(java.util.List<ViewCustomizationRecord> customizationData) {
+        for(ViewCustomizationRecord record : customizationData) {
+            if(record.getVisible()) {
+                for(Map.Entry<Integer, String>  entry : ((MainTableModel)mainTable.getModel()).getHeaders().entrySet()) {
+                    if(entry.getValue().equals(record.getColumnName())) {
+                        unhideColumn(entry.getKey());
+                    }
+                }
+            } else {
+                for(Map.Entry<Integer, String>  entry : ((MainTableModel)mainTable.getModel()).getHeaders().entrySet()) {
+                    if(entry.getValue().equals(record.getColumnName())) {
+                        hideColumn(entry.getKey());
+                    }
+                }
+            }
+        }
+    }
+
+    public JTable getMainTable() {
+        return mainTable;
     }
 
     private void createNewRecord() {
@@ -212,10 +236,25 @@ public class MainWindow extends JFrame {
         }
     }
 
+    private void hideColumn(int columnIdx) {
+        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(0);
+        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(0);
+        mainTable.updateUI();
+    }
+
+
+    // TODO how to calculate previous size???
+    private void unhideColumn(int columnIdx) {
+        // FIXME divide by count of visible columns
+        int columnWidth = (int) mainTable.getSize().getWidth() / 4;
+        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(columnWidth);
+        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(columnWidth);
+        mainTable.updateUI();
+    }
+
     private void initMainTable() {
         mainTable.setRowHeight(160);
-        mainTable.getColumnModel().getColumn(4).setMinWidth(0);
-        mainTable.getColumnModel().getColumn(4).setMaxWidth(0);
+        hideColumn(4);
         mainTable.setAutoCreateRowSorter(true);
         mainTable.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 20));
         mainTable.setDefaultRenderer(String.class, new TextTableRenderer());
@@ -304,13 +343,23 @@ public class MainWindow extends JFrame {
         LOGGER.info("MainWindow layout initialization complete");
     }
 
+    private void customizeView() {
+        CustomizeViewWindow customizeViewWindow = new CustomizeViewWindow(this);
+        customizeViewWindow.setVisible(true);
+    }
+
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Dictionary Actions");
-        menuBar.add(menu);
+        JMenu dictionaryActionsMenu = new JMenu("Dictionary Actions");
+        menuBar.add(dictionaryActionsMenu);
+        JMenu viewMenu = new JMenu("View");
+        menuBar.add(viewMenu);
 
         JMenuItem saveItem = new JMenuItem("Save");
-        menu.add(saveItem);
+        dictionaryActionsMenu.add(saveItem);
+
+        JMenuItem customizeViewItem = new JMenuItem("Customize View");
+        viewMenu.add(customizeViewItem);
 
         saveItem.addActionListener(new ActionListener() {
             @Override
@@ -318,6 +367,14 @@ public class MainWindow extends JFrame {
                 saveDictionaryData();
             }
         });
+
+        customizeViewItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                customizeView();
+            }
+        });
+
         this.setJMenuBar(menuBar);
         LOGGER.info("Main menu initialization complete");
     }
