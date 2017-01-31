@@ -64,6 +64,7 @@ public class MainWindow extends JFrame {
         setSize(1024, 768);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        LOGGER.info("Common settings initialization complete");
     }
 
     private void initControls() {
@@ -77,6 +78,7 @@ public class MainWindow extends JFrame {
         resetButton = new JButton("Show All");
         byTopicCombo = new JComboBox(comboBoxModel);
         removeTopicButton = new JButton("Remove Topic");
+        LOGGER.info("Controls initialization complete");
     }
 
     public void updateFormData() {
@@ -178,6 +180,7 @@ public class MainWindow extends JFrame {
                 byTopicComboCurrentlySelected = byTopicCombo.getSelectedItem().toString();
             }
         });
+        LOGGER.info("Controls actions initialization complete");
     }
 
     private void updateMainTable() {
@@ -186,9 +189,11 @@ public class MainWindow extends JFrame {
     }
 
     private void loadDictionaryData() {
+        LOGGER.info("Loading dictionary data...");
         try {
             appController.loadDictionary();
             updateFormData();
+            LOGGER.info("Done!");
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -196,9 +201,11 @@ public class MainWindow extends JFrame {
     }
 
     private void saveDictionaryData() {
+        LOGGER.info("Saving dictionary data...");
         try {
             appController.saveDictionary();
             JOptionPane.showMessageDialog(null, "Successfully saved!");
+            LOGGER.info("Done!");
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -254,6 +261,7 @@ public class MainWindow extends JFrame {
                 }
             }
         });
+        LOGGER.info("Main Table initialization complete");
     }
 
     private void initLayout() {
@@ -293,6 +301,7 @@ public class MainWindow extends JFrame {
                         .addComponent(resetButton)));
 
         groupLayout.setVerticalGroup(vGroup);
+        LOGGER.info("MainWindow layout initialization complete");
     }
 
     private void initMenu() {
@@ -310,6 +319,7 @@ public class MainWindow extends JFrame {
             }
         });
         this.setJMenuBar(menuBar);
+        LOGGER.info("Main menu initialization complete");
     }
 
 }

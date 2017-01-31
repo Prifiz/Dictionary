@@ -10,6 +10,8 @@ import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
 import gui.swingui.MainWindow;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class SwingApplicationController implements Controller {
 
     private Dictionary dictionary;
+    private static final Logger LOGGER = LogManager.getLogger(SwingApplicationController.class);
 
     private static final SwingApplicationController INSTANCE = new SwingApplicationController();
 
@@ -29,6 +32,7 @@ public class SwingApplicationController implements Controller {
     }
 
     public void startApplication() {
+        LOGGER.info("Starting application...");
         MainWindow mainWindow = new MainWindow();
         mainWindow.setVisible(true);
     }
