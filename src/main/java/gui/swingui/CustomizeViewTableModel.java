@@ -58,7 +58,7 @@ public class CustomizeViewTableModel implements TableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 0;
+        return columnIndex == 0 || columnIndex == 2;
     }
 
     @Override
@@ -78,6 +78,9 @@ public class CustomizeViewTableModel implements TableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if(columnIndex == 0) {
             customizationRecords.get(rowIndex).setVisible((Boolean) aValue);
+        }
+        if(columnIndex == 2) {
+            customizationRecords.get(rowIndex).setColumnDescription((String) aValue);
         }
     }
 

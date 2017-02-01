@@ -8,8 +8,6 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Set;
 
 public class CustomizeViewWindow extends JFrame {
 
@@ -23,10 +21,11 @@ public class CustomizeViewWindow extends JFrame {
     private JButton previewButton;
 
     public CustomizeViewWindow(MainWindow parentForm) throws HeadlessException {
+
+        // TODO read customization from file
         this.mainWindow = parentForm;
         initForm();
         initControls();
-        initCustomizationTable();
         initButtonsActions();
         initLayout();
     }
@@ -45,7 +44,9 @@ public class CustomizeViewWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 mainWindow.updateTableView(
                         ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
+
                 dispose();
+                // TODO save customization to file
             }
         });
     }
@@ -56,11 +57,6 @@ public class CustomizeViewWindow extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         LOGGER.info("View customization initialization complete");
-
-        Set<ViewCustomizationRecord> customizationData = new HashSet<>();
-        customizationData.clear();
-        customizationData.add(new ViewCustomizationRecord(new Boolean(true), "English", ""));
-
     }
 
     private void initControls() {
@@ -68,15 +64,10 @@ public class CustomizeViewWindow extends JFrame {
         customizationTable = new JTable(model);
         scrollPane = new JScrollPane(customizationTable);
         customizationTable.updateUI();
+        previewButton = new JButton("Preview");
         submitButton = new JButton("Submit View");
-        previewButton = new JButton("PreView");
     }
 
-    private void initCustomizationTable() {
-
-    }
-
-    // FIXME
     private void initLayout() {
         Container pane = getContentPane();
         GroupLayout groupLayout = new GroupLayout(pane);
@@ -88,16 +79,18 @@ public class CustomizeViewWindow extends JFrame {
         GroupLayout.SequentialGroup horizontalGroup = groupLayout.createSequentialGroup();
         horizontalGroup.addGroup(groupLayout.createParallelGroup()
                 .addComponent(scrollPane)
-                .addGroup(groupLayout.createSequentialGroup())
-                    .addComponent(submitButton)
-                    .addComponent(previewButton));
+                .addGroup(groupLayout.createSequentialGroup()
+                        .addComponent(previewButton)
+                        .addComponent(submitButton)));
 
         groupLayout.setHorizontalGroup(horizontalGroup);
 
         GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
         vGroup.addGroup(groupLayout.createSequentialGroup()
-                .addComponent(scrollPane).addGroup(groupLayout.createParallelGroup()
-                .addComponent(submitButton).addComponent(previewButton)));
+                .addComponent(scrollPane)
+                .addGroup(groupLayout.createParallelGroup()
+                        .addComponent(previewButton)
+                        .addComponent(submitButton)));
 
         groupLayout.setVerticalGroup(vGroup);
     }

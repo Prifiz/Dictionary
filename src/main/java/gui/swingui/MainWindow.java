@@ -23,9 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class MainWindow extends JFrame {
 
@@ -59,6 +57,12 @@ public class MainWindow extends JFrame {
         initMenu();
         initLayout();
         loadDictionaryData();
+        loadViewCustomization();
+    }
+
+    private void loadViewCustomization() {
+//        java.util.List<ViewCustomizationRecord> customizationRecords;
+//        updateTableView(customizationRecords);
     }
 
     private void initMainForm() {
@@ -99,16 +103,13 @@ public class MainWindow extends JFrame {
 
     public void updateTableView(java.util.List<ViewCustomizationRecord> customizationData) {
         for(ViewCustomizationRecord record : customizationData) {
-            if(record.getVisible()) {
-                for(Map.Entry<Integer, String>  entry : ((MainTableModel)mainTable.getModel()).getHeaders().entrySet()) {
-                    if(entry.getValue().equals(record.getColumnName())) {
-                        unhideColumn(entry.getKey());
-                    }
-                }
-            } else {
-                for(Map.Entry<Integer, String>  entry : ((MainTableModel)mainTable.getModel()).getHeaders().entrySet()) {
-                    if(entry.getValue().equals(record.getColumnName())) {
-                        hideColumn(entry.getKey());
+            for (Map.Entry<Integer, String> entry : ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()) {
+                if (entry.getValue().equals(record.getColumnName())) {
+                    Integer columnIdx = entry.getKey();
+                    if (record.getVisible()) {
+                        unhideColumn(columnIdx);
+                    } else {
+                        hideColumn(columnIdx);
                     }
                 }
             }
@@ -236,19 +237,43 @@ public class MainWindow extends JFrame {
         }
     }
 
+    private java.util.List<Integer> getVisibleColumns() {
+        java.util.List<Integer> result = new ArrayList<>();
+        for(Integer idx = 0; idx < mainTable.getColumnModel().getColumnCount(); idx++) {
+            if(mainTable.getColumnModel().getColumn(idx).getMaxWidth() > 0) {
+                result.add(idx);
+            }
+        }
+        return result;
+    }
+
+    private void updateColumnsWidth() {
+        java.util.List<Integer> visibleColumnsIndices = getVisibleColumns();
+        int columnNewWidth;
+        if(visibleColumnsIndices.isEmpty()) {
+            columnNewWidth = (int) mainTable.getSize().getWidth();
+        } else {
+            columnNewWidth = (int) mainTable.getSize().getWidth() / visibleColumnsIndices.size();
+        }
+        for(Integer visibleColumnIdx : visibleColumnsIndices) {
+            mainTable.getColumnModel().getColumn(visibleColumnIdx).setMinWidth(columnNewWidth);
+            mainTable.getColumnModel().getColumn(visibleColumnIdx).setMaxWidth(columnNewWidth);
+        }
+    }
+
     private void hideColumn(int columnIdx) {
-        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(0);
-        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(0);
+        final int ZERO_WIDTH = 0;
+        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(ZERO_WIDTH);
+        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(ZERO_WIDTH);
+        updateColumnsWidth();
         mainTable.updateUI();
     }
 
-
-    // TODO how to calculate previous size???
     private void unhideColumn(int columnIdx) {
-        // FIXME divide by count of visible columns
-        int columnWidth = (int) mainTable.getSize().getWidth() / 4;
-        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(columnWidth);
-        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(columnWidth);
+        final int MINIMUM_NON_ZERO_WIDTH = 1;
+        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(MINIMUM_NON_ZERO_WIDTH);
+        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(MINIMUM_NON_ZERO_WIDTH);
+        updateColumnsWidth();
         mainTable.updateUI();
     }
 

@@ -36,6 +36,10 @@ public class ViewCustomizationRecord {
         this.columnDescription = columnDescription;
     }
 
+    public void setColumnDescription(String columnDescription) {
+        this.columnDescription = columnDescription;
+    }
+
     private String columnDescription;
 
     public Boolean getVisible() {
@@ -50,8 +54,4 @@ public class ViewCustomizationRecord {
         return columnDescription;
     }
 
-//    @Override
-//    public int compareTo(Object o) {
-//        return 0;
-//    }
 }
