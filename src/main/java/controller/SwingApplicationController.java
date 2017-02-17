@@ -1,7 +1,7 @@
 package controller;
 
 import controller.filesystem.LoadFromXmlCommand;
-import controller.filesystem.SaveToXmlCommand;
+import controller.filesystem.SaveDictionaryXmlCommand;
 import controller.record.AddCommand;
 import controller.record.EditCommand;
 import controller.record.RemoveCommand;
@@ -49,7 +49,7 @@ public class SwingApplicationController implements Controller {
 
     @Override
     public void saveDictionary() throws IOException {
-        Command saveCommand = new SaveToXmlCommand("Dictionary.xml");
+        Command saveCommand = new SaveDictionaryXmlCommand("Dictionary.xml");
         saveCommand.execute(dictionary);
     }
 
@@ -76,5 +76,6 @@ public class SwingApplicationController implements Controller {
         Command removeCommand = new RemoveCommand(recordId);
         removeCommand.execute(dictionary);
     }
+
 
 }

@@ -11,7 +11,7 @@ public class LoadFromXmlCommand extends AbstractLoadCommand {
         super(filePath);
     }
 
-    public void execute(Dictionary dictionary) throws IllegalArgumentException {
+    public void execute() throws IllegalArgumentException {
         dictionary.resetWithNewData(DictionaryFileReader.readFile(fileContent));
     }
 }

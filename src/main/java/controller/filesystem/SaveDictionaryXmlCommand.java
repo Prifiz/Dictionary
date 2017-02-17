@@ -5,14 +5,17 @@ import datamodel.Dictionary;
 
 import java.io.IOException;
 
-public class SaveToXmlCommand extends AbstractSaveCommand {
+public class SaveDictionaryXmlCommand extends AbstractSaveCommand {
 
-    public SaveToXmlCommand(String filePath) throws IOException {
+    private Dictionary dictionary;
+
+    public SaveDictionaryXmlCommand(String filePath, Dictionary dictionary) throws IOException {
         super(filePath);
+        this.dictionary = dictionary;
     }
 
     @Override
-    public void execute(Dictionary dictionary) throws IOException {
+    public void execute() throws IOException {
         String fileContent = DictionaryXmlBuilder.buildDictionaryXml(dictionary);
         save(fileContent);
     }

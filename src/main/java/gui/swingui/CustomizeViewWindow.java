@@ -1,5 +1,8 @@
 package gui.swingui;
 
+import controller.CustomizationXmlBuilder;
+import controller.filesystem.FileOperation;
+import controller.filesystem.SaveFileOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,6 +11,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class CustomizeViewWindow extends JFrame {
 
@@ -34,7 +38,7 @@ public class CustomizeViewWindow extends JFrame {
         previewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainWindow.updateTableView(
+                mainWindow.customize(
                         ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
             }
         });
@@ -42,11 +46,19 @@ public class CustomizeViewWindow extends JFrame {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainWindow.updateTableView(
+                mainWindow.customize(
                         ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
 
-                dispose();
                 // TODO save customization to file
+                try {
+                    String content = CustomizationXmlBuilder.buildCustomizationXml(
+                            ((CustomizeViewTableModel) customizationTable.getModel()).getCustomizationRecords());
+                    FileOperation saveOperation = new SaveFileOperation("CustomizationData.xml", content);
+                    saveOperation.doFileOperation();
+                } catch (IOException ex) {
+                    // TODO
+                }
+                dispose();
             }
         });
     }

@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements Customizable {
 
     private static final Logger LOGGER = LogManager.getLogger(MainWindow.class);
 
@@ -57,13 +57,38 @@ public class MainWindow extends JFrame {
         initMenu();
         initLayout();
         loadDictionaryData();
-        loadViewCustomization();
+        customize(initViewCustomization());
     }
 
-    private void loadViewCustomization() {
-//        java.util.List<ViewCustomizationRecord> customizationRecords;
-//        updateTableView(customizationRecords);
+    private java.util.List<ViewCustomizationRecord> initViewCustomization() {
+        // TODO load from file
+        return new ArrayList<>();
     }
+
+    private void configureViewCustomization() {
+        CustomizeViewWindow customizeViewWindow = new CustomizeViewWindow(this);
+        customizeViewWindow.setVisible(true);
+    }
+
+    @Override
+    public void customize(java.util.List<ViewCustomizationRecord> customizationData) {
+        for (ViewCustomizationRecord record : customizationData) {
+            for (Map.Entry<Integer, String> entry : ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()) {
+                if (entry.getValue().equals(record.getColumnName())) {
+                    Integer columnIdx = entry.getKey();
+                    if (record.getVisible()) {
+                        unhideColumn(columnIdx);
+                    } else {
+                        hideColumn(columnIdx);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
 
     private void initMainForm() {
         setTitle("Dictionary - Main Page");
@@ -99,21 +124,6 @@ public class MainWindow extends JFrame {
             byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
         }
         byTopicCombo.updateUI();
-    }
-
-    public void updateTableView(java.util.List<ViewCustomizationRecord> customizationData) {
-        for(ViewCustomizationRecord record : customizationData) {
-            for (Map.Entry<Integer, String> entry : ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()) {
-                if (entry.getValue().equals(record.getColumnName())) {
-                    Integer columnIdx = entry.getKey();
-                    if (record.getVisible()) {
-                        unhideColumn(columnIdx);
-                    } else {
-                        hideColumn(columnIdx);
-                    }
-                }
-            }
-        }
     }
 
     public JTable getMainTable() {
@@ -368,11 +378,6 @@ public class MainWindow extends JFrame {
         LOGGER.info("MainWindow layout initialization complete");
     }
 
-    private void customizeView() {
-        CustomizeViewWindow customizeViewWindow = new CustomizeViewWindow(this);
-        customizeViewWindow.setVisible(true);
-    }
-
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         JMenu dictionaryActionsMenu = new JMenu("Dictionary Actions");
@@ -396,7 +401,7 @@ public class MainWindow extends JFrame {
         customizeViewItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                customizeView();
+                configureViewCustomization();
             }
         });
 
