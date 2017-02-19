@@ -12,7 +12,12 @@ import java.util.Set;
 public class WordsTableModel implements TableModel {
 
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
+
     private List<Word> words;
+
+    public List<Word> getWords() {
+        return words;
+    }
 
     public WordsTableModel(List<Word> words) {
         this.words = words;

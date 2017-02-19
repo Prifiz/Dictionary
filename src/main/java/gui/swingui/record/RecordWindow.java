@@ -3,6 +3,7 @@ package gui.swingui.record;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
+import datamodel.Language;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.lang3.StringUtils;
@@ -10,11 +11,12 @@ import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -52,6 +54,8 @@ public abstract class RecordWindow extends JFrame {
     protected java.util.List<Word> words;
     protected int descriptionCaretPos;
 
+    java.util.List<JButton> umlauts = new ArrayList<>();
+
 
     protected abstract java.util.List<Word> initWords();
     protected abstract String getWindowTitle();
@@ -74,13 +78,53 @@ public abstract class RecordWindow extends JFrame {
 
             }
         });
+
+//        wordsTable.addKeyListener(new KeyListener() {
+//            @Override
+//            public void keyTyped(KeyEvent e) {
+//
+//            }
+//
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+//                    try {
+//                        Toolkit toolkit = Toolkit.getDefaultToolkit();
+//                        Clipboard clipboard = toolkit.getSystemClipboard();
+//                        String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//                        if(isLineContainsUmlaut(result) && !(Language.GERMAN.equals(
+//                                ((WordsTableModel)wordsTable.getModel()).getWords().get(selectedRow).getLanguage()))) {
+//
+//                        }
+//                    } catch (IOException ex) {
+//                        // TODO
+//                    } catch (UnsupportedFlavorException ex) {
+//                        // TODO
+//                    }
+//                    System.out.println("woot!");
+//                }
+//            }
+//
+//            @Override
+//            public void keyReleased(KeyEvent e) {
+//
+//            }
+//        });
     }
 
     protected abstract void setSelectedTopic();
 
-    protected void initUmlauts() {
-        java.util.List<JButton> umlauts = new ArrayList<>();
+    protected boolean isLineContainsUmlaut(String line) {
+        boolean result = false;
+        for(JButton umlaut : umlauts) {
+            if(line.contains(umlaut.getText())) {
+                return true;
+            }
+        }
+        return result;
+    }
 
+    protected void initUmlauts() {
         umlaut_a = new JButton("\u00e4"); // ä
         umlauts.add(umlaut_a);
         umlaut_A = new JButton("\u00c4"); // Ä
@@ -142,20 +186,24 @@ public abstract class RecordWindow extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+
             if(wordsTable.getCellEditor() != null) {
                 wordsTable.getCellEditor().stopCellEditing();
             }
             int selectedRow = wordsTable.getSelectedRow();
             int selectedColumn = wordsTable.getSelectedColumn();
-
-//            if (selectedRow < 0 || selectedColumn < 0) {
-//                return;
-//            }
-            if (wordsTable.isCellEditable(selectedRow, selectedColumn)) {
-                String value = wordsTable.getValueAt(selectedRow, selectedColumn).toString();
-                value += ((JButton)e.getSource()).getText();
-                wordsTable.setValueAt(value, selectedRow, selectedColumn);
-                wordsTable.updateUI();
+            if(selectedRow >= 0 && selectedColumn >= 0) {
+                if(Language.GERMAN.equals(
+                        ((WordsTableModel)wordsTable.getModel()).getWords().get(selectedRow).getLanguage())) {
+                    if (wordsTable.isCellEditable(selectedRow, selectedColumn)) {
+                        String value = wordsTable.getValueAt(selectedRow, selectedColumn).toString();
+                        value += ((JButton) e.getSource()).getText();
+                        wordsTable.setValueAt(value, selectedRow, selectedColumn);
+                        wordsTable.updateUI();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Umlauts supported only for GERMAN language");
+                }
             }
 
             if(description.isEditable() && description.hasFocus()) {
