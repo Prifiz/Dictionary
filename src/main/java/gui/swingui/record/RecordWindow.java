@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
@@ -30,6 +32,9 @@ public abstract class RecordWindow extends JFrame {
     protected JScrollPane scrollPane;
     protected JButton choosePicture;
     protected JLabel pictureLabel;
+    protected JLabel descriptionLabel;
+    protected JTextArea description;
+    protected JScrollPane descriptionPane;
 
     protected File pictureFile;
     protected File copiedPictureFile;
@@ -45,14 +50,30 @@ public abstract class RecordWindow extends JFrame {
     protected JButton umlaut_B;
 
     protected java.util.List<Word> words;
+    protected int descriptionCaretPos;
 
 
     protected abstract java.util.List<Word> initWords();
     protected abstract String getWindowTitle();
+    protected abstract String getDescription();
 
     public RecordWindow(MainWindow parentForm) throws HeadlessException {
         this.mainWindow = parentForm;
         initForm();
+    }
+
+    protected void initActions() {
+        description.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                wordsTable.clearSelection();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
     }
 
     protected abstract void setSelectedTopic();
@@ -127,15 +148,21 @@ public abstract class RecordWindow extends JFrame {
             int selectedRow = wordsTable.getSelectedRow();
             int selectedColumn = wordsTable.getSelectedColumn();
 
-            if (selectedRow < 0 || selectedColumn < 0) {
-                return;
-            }
+//            if (selectedRow < 0 || selectedColumn < 0) {
+//                return;
+//            }
             if (wordsTable.isCellEditable(selectedRow, selectedColumn)) {
                 String value = wordsTable.getValueAt(selectedRow, selectedColumn).toString();
                 value += ((JButton)e.getSource()).getText();
                 wordsTable.setValueAt(value, selectedRow, selectedColumn);
                 wordsTable.updateUI();
             }
+
+            if(description.isEditable() && description.hasFocus()) {
+                description.insert(((JButton) e.getSource()).getText(), description.getCaretPosition());
+                description.grabFocus();
+            }
+
         }
     }
 
@@ -151,8 +178,11 @@ public abstract class RecordWindow extends JFrame {
         pictureLabel = new JLabel();
         pictureLabel.setSize(300, 300);
         choosePicture = new JButton("Choose Picture");
+        description = new JTextArea(getDescription());
+        descriptionPane = new JScrollPane(description);
+        descriptionLabel = new JLabel("Description:");
+        descriptionCaretPos = description.getText().length();
         initPictureChooser();
-
 
         initSaveOperation(words);
     }
@@ -187,6 +217,8 @@ public abstract class RecordWindow extends JFrame {
                         .addComponent(addTopicButton))
                 .addComponent(choosePicture)
                 .addComponent(pictureLabel)
+                .addComponent(descriptionLabel)
+                .addComponent(descriptionPane)
                 .addComponent(saveButton)
         );
 
@@ -216,6 +248,8 @@ public abstract class RecordWindow extends JFrame {
                                 .addComponent(addTopicButton))
                         .addComponent(choosePicture)
                         .addComponent(pictureLabel)
+                        .addComponent(descriptionLabel)
+                        .addComponent(descriptionPane)
                         .addComponent(saveButton)));
 
         gl.setVerticalGroup(verticalGroup);

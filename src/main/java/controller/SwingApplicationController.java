@@ -93,8 +93,21 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
+    public void addRecord(List<Word> words, String pictureName, String description) throws IOException {
+        Command addCommand = new AddCommand(words, pictureName, description);
+        addCommand.execute(dictionary);
+    }
+
+    @Override
     public void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName) throws IOException {
         Command editCommand = new EditCommand(recordToEdit, editedWords, editedPictureName);
+        editCommand.execute(dictionary);
+    }
+
+    @Override
+    public void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName, String editedDescription)
+            throws IOException {
+        Command editCommand = new EditCommand(recordToEdit, editedWords, editedPictureName, editedDescription);
         editCommand.execute(dictionary);
     }
 

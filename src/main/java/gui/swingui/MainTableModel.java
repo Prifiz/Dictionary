@@ -29,6 +29,7 @@ public class MainTableModel implements TableModel {
         put(2, "Russian");
         put(3, "Picture");
         put(4, "Topic");
+        put(5, "Description");
     }};
 
 
@@ -81,6 +82,8 @@ public class MainTableModel implements TableModel {
             return new File("pictures", recordList.get(rowIndex).getPictureName());
         } else if(columnIndex == recordList.get(rowIndex).getWords().size() + 1) {
             return recordList.get(rowIndex).getTopicName();
+        } else if(columnIndex == recordList.get(rowIndex).getWords().size() + 2) {
+            return recordList.get(rowIndex).getDescription();
         }
         return StringUtils.EMPTY;
     }

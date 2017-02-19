@@ -12,7 +12,12 @@ public class Record {
 
     private List<Word> words;
     private String pictureName;
+    private String description;
     private Similarity similarity = Similarity.DIFFERENT;
+
+    public String getDescription() {
+        return description;
+    }
 
     public Similarity getSimilarity() {
         return similarity;
@@ -48,6 +53,12 @@ public class Record {
         this.pictureName = pictureName;
     }
 
+    public Record(List<Word> words, String pictureName, String description) throws RecordHasNotSingleThemeException {
+        this.words = words;
+        this.pictureName = pictureName;
+        this.description = description;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -58,14 +69,15 @@ public class Record {
 
         if (words != null ? !words.equals(record.words) : record.words != null) return false;
         if (pictureName != null ? !pictureName.equals(record.pictureName) : record.pictureName != null) return false;
+        if (description != null ? !description.equals(record.description) : record.description != null) return false;
         return similarity == record.similarity;
-
     }
 
     @Override
     public int hashCode() {
         int result = words != null ? words.hashCode() : 0;
         result = 31 * result + (pictureName != null ? pictureName.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (similarity != null ? similarity.hashCode() : 0);
         return result;
     }

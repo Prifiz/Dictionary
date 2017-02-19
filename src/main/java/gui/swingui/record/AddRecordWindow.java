@@ -73,7 +73,7 @@ public class AddRecordWindow extends RecordWindow {
                     JOptionPane.showMessageDialog(null, "Please, select the picture");
                 } else {
                     try {
-                        appController.addRecord(words, copiedPictureFile.getName());
+                        appController.addRecord(words, copiedPictureFile.getName(), description.getText());
                         mainWindow.updateFormData();
                         dispose();
                     } catch (IOException ex) {
@@ -89,6 +89,7 @@ public class AddRecordWindow extends RecordWindow {
         super(main);
         initUmlauts();
         initOperations();
+        initActions();
         initLayout();
         this.pack();
     }
@@ -110,5 +111,10 @@ public class AddRecordWindow extends RecordWindow {
     @Override
     protected String getWindowTitle() {
         return "Dictionary - Add New Record";
+    }
+
+    @Override
+    protected String getDescription() {
+        return StringUtils.EMPTY;
     }
 }

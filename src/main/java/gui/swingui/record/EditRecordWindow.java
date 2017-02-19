@@ -31,6 +31,7 @@ public class EditRecordWindow extends RecordWindow {
         this.recordToEdit = record;
         initUmlauts();
         initOperations();
+        initActions();
         initLayout();
         this.pack();
     }
@@ -43,6 +44,11 @@ public class EditRecordWindow extends RecordWindow {
     @Override
     protected String getWindowTitle() {
         return "Dictionary - Edit Record";
+    }
+
+    @Override
+    protected String getDescription() {
+        return recordToEdit.getDescription();
     }
 
     @Override
@@ -114,7 +120,7 @@ public class EditRecordWindow extends RecordWindow {
                 }
 
                 try {
-                    appController.editRecord(recordToEdit, words, copiedPictureFile.getName());
+                    appController.editRecord(recordToEdit, words, copiedPictureFile.getName(), description.getText());
                     mainWindow.updateFormData();
                     dispose();
                 } catch (IOException ex) {

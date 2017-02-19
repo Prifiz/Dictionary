@@ -18,6 +18,11 @@ public class EditCommand implements Command {
         this.edited = new Record(editedWords, editedPictureName);
     }
 
+    public EditCommand(Record recordToEdit, List<Word> editedWords, String editedPictureName, String description) {
+        this.recordToEdit = recordToEdit;
+        this.edited = new Record(editedWords, editedPictureName, description);
+    }
+
     @Override
     public void execute(Dictionary dictionary) throws IOException {
         dictionary.replaceRecord(recordToEdit, edited);

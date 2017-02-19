@@ -23,7 +23,8 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
                 words.add(readWord)
             }
             String picturePath = record.picture.text()
-            records.add(new Record(words, picturePath))
+            String description = record.description.text()
+            records.add(new Record(words, picturePath, description))
         }
         return new Dictionary(records)
     }
@@ -47,6 +48,7 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
                         topic(StringUtils.EMPTY)
                     }
                     picture(currentRecord.getPictureName())
+                    description(currentRecord.getDescription())
                 }
             }
         }
