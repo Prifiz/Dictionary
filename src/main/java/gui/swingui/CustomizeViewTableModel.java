@@ -1,5 +1,6 @@
 package gui.swingui;
 
+import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.util.ArrayList;
@@ -17,10 +18,11 @@ public class CustomizeViewTableModel implements TableModel {
 
     private List<ViewCustomizationRecord> customizationRecords = new ArrayList<>();
 
-    public CustomizeViewTableModel(TableModel mainModel) {
-        for(int columnIdx = 0; columnIdx < mainModel.getColumnCount(); columnIdx++) {
+    public CustomizeViewTableModel(JTable mainTable) {
+        for(int columnIdx = 0; columnIdx < mainTable.getModel().getColumnCount(); columnIdx++) {
             customizationRecords.add(new ViewCustomizationRecord(
-                    new Boolean(true), mainModel.getColumnName(columnIdx), ""));
+                    mainTable.getColumnModel().getColumn(columnIdx).getMaxWidth() > 0,
+                    mainTable.getModel().getColumnName(columnIdx), ""));
         }
     }
 

@@ -1,8 +1,7 @@
 package gui.swingui;
 
-import controller.CustomizationXmlBuilder;
-import controller.filesystem.FileOperation;
-import controller.filesystem.SaveFileOperation;
+import controller.Controller;
+import controller.SwingApplicationController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,6 +23,8 @@ public class CustomizeViewWindow extends JFrame {
     private JButton submitButton;
     private JButton previewButton;
 
+    private Controller appController = SwingApplicationController.getInstance();
+
     public CustomizeViewWindow(MainWindow parentForm) throws HeadlessException {
 
         // TODO read customization from file
@@ -40,6 +41,7 @@ public class CustomizeViewWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 mainWindow.customize(
                         ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
+                //mainWindow.toFront();
             }
         });
 
@@ -49,14 +51,11 @@ public class CustomizeViewWindow extends JFrame {
                 mainWindow.customize(
                         ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
 
-                // TODO save customization to file
                 try {
-                    String content = CustomizationXmlBuilder.buildCustomizationXml(
-                            ((CustomizeViewTableModel) customizationTable.getModel()).getCustomizationRecords());
-                    FileOperation saveOperation = new SaveFileOperation("CustomizationData.xml", content);
-                    saveOperation.doFileOperation();
+                    appController.saveCustomization(
+                            ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
                 } catch (IOException ex) {
-                    // TODO
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
                 }
                 dispose();
             }
@@ -72,7 +71,7 @@ public class CustomizeViewWindow extends JFrame {
     }
 
     private void initControls() {
-        model = new CustomizeViewTableModel(mainWindow.getMainTable().getModel());
+        model = new CustomizeViewTableModel(mainWindow.getMainTable());
         customizationTable = new JTable(model);
         scrollPane = new JScrollPane(customizationTable);
         customizationTable.updateUI();

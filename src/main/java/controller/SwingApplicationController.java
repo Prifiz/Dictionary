@@ -1,7 +1,6 @@
 package controller;
 
-import controller.filesystem.LoadFromXmlCommand;
-import controller.filesystem.SaveDictionaryXmlCommand;
+import controller.filesystem.*;
 import controller.record.AddCommand;
 import controller.record.EditCommand;
 import controller.record.RemoveCommand;
@@ -10,8 +9,11 @@ import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
 import gui.swingui.MainWindow;
+import gui.swingui.ViewCustomizationRecord;
+import gui.swingui.record.CustomizationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.Constants;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +37,7 @@ public class SwingApplicationController implements Controller {
         LOGGER.info("Starting application...");
         MainWindow mainWindow = new MainWindow();
         mainWindow.setVisible(true);
+        mainWindow.customize(CustomizationUtils.loadViewCustomization());
     }
 
     @Override
@@ -43,14 +46,38 @@ public class SwingApplicationController implements Controller {
     }
 
     public void loadDictionary() throws IOException {
-        Command loadCommand = new LoadFromXmlCommand("Dictionary.xml");
-        loadCommand.execute(dictionary);
+        FileOperation loadOperation = new LoadFileOperation("Dictionary.xml");
+        loadOperation.doFileOperation();
+        String dictionaryFileContent = ((AbstractFileOperation)loadOperation).getFileContent();
+        FileContentParser parser = new DictionaryFileContentParser();
+        parser.parseXml(dictionaryFileContent);
+        dictionary.resetWithNewData(((DictionaryFileContentParser)parser).getDictionary());
     }
 
     @Override
     public void saveDictionary() throws IOException {
-        Command saveCommand = new SaveDictionaryXmlCommand("Dictionary.xml");
-        saveCommand.execute(dictionary);
+        FileContentGenerator generator = new DictionaryFileContentGenerator(dictionary);
+        String dictionaryXmlContent = generator.generateXml();
+        FileOperation saveOperation = new SaveFileOperation("Dictionary.xml", dictionaryXmlContent);
+        saveOperation.doFileOperation();
+    }
+
+    @Override
+    public List<ViewCustomizationRecord> loadCustomization() throws IOException {
+        FileOperation loadCustomizationOperation = new LoadFileOperation(Constants.VIEW_CUSTOMIZATION_FILEPATH);
+        loadCustomizationOperation.doFileOperation();
+        String customizationFileContent = ((AbstractFileOperation)loadCustomizationOperation).getFileContent();
+        FileContentParser parser = new CustomizationFileContentParser();
+        parser.parseXml(customizationFileContent);
+        return ((CustomizationFileContentParser)parser).getCustomizationData();
+    }
+
+    @Override
+    public void saveCustomization(List<ViewCustomizationRecord> customization) throws IOException {
+        FileContentGenerator customizationGenerator = new CustomizationFileContentGenerator(customization);
+        String customizationContent = customizationGenerator.generateXml();
+        FileOperation saveOperation = new SaveFileOperation(Constants.VIEW_CUSTOMIZATION_FILEPATH, customizationContent);
+        saveOperation.doFileOperation();
     }
 
     @Override

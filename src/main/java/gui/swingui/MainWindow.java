@@ -57,13 +57,8 @@ public class MainWindow extends JFrame implements Customizable {
         initMenu();
         initLayout();
         loadDictionaryData();
-        customize(initViewCustomization());
     }
 
-    private java.util.List<ViewCustomizationRecord> initViewCustomization() {
-        // TODO load from file
-        return new ArrayList<>();
-    }
 
     private void configureViewCustomization() {
         CustomizeViewWindow customizeViewWindow = new CustomizeViewWindow(this);
@@ -85,10 +80,6 @@ public class MainWindow extends JFrame implements Customizable {
             }
         }
     }
-
-
-
-
 
     private void initMainForm() {
         setTitle("Dictionary - Main Page");

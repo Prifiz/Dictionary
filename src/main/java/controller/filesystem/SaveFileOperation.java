@@ -1,37 +1,33 @@
 package controller.filesystem;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-/**
- * Created by vaba1010 on 17.02.2017.
- */
 public class SaveFileOperation extends AbstractFileOperation implements FileOperation {
 
-    // FIXME where it comes from???
-    private String fileContent;
-    private File saveFile;
+    private static final Logger LOGGER = LogManager.getLogger(SaveFileOperation.class);
 
     public SaveFileOperation(String filePath, String fileContent) {
         super(filePath);
-        saveFile = new File(filePath);
         this.fileContent = fileContent;
     }
 
     @Override
     public void doFileOperation() throws IOException {
-        Writer out = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(saveFile), "UTF-8"));
-        try {
+        if(!file.getParentFile().mkdirs()) {
+            throw new IOException("Couldn't create directory structure for file");
+        }
+        try (Writer out = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
             out.write(fileContent);
         } catch (IOException ex) {
-            // TODO
-        } finally {
-            out.close();
+            LOGGER.error(ex.getMessage());
         }
     }
 }

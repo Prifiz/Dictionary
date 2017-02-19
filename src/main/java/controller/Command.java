@@ -7,5 +7,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface Command {
-    void execute() throws IOException;
+    void execute(Dictionary dictionary) throws IOException;
 }
