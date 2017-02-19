@@ -5,6 +5,7 @@ import datamodel.Language
 import datamodel.Record
 import datamodel.Theme
 import datamodel.Word
+import org.apache.commons.lang3.StringUtils
 
 class DictionaryXmlContentHandler implements DictionaryContentHandler {
     @Override
@@ -43,7 +44,7 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
                     if(!currentRecord.getWords().isEmpty()) {
                         topic(currentRecord.getWords().get(0).getTheme().getName())
                     } else {
-                        topic("")
+                        topic(StringUtils.EMPTY)
                     }
                     picture(currentRecord.getPictureName())
                 }

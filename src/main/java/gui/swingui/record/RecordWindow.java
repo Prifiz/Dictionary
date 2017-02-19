@@ -5,6 +5,7 @@ import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
 import datamodel.Word;
 import gui.swingui.MainWindow;
+import org.apache.commons.lang3.StringUtils;
 import utils.Constants;
 
 import javax.swing.*;
@@ -96,7 +97,9 @@ public abstract class RecordWindow extends JFrame {
         addTopicButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newTopicValue = newTopicField.getText();
-                if (newTopicValue != null && !"".equals(newTopicValue.trim()) && !existingTopics.contains(newTopicValue)) {
+                if (newTopicValue != null
+                        && !StringUtils.EMPTY.equals(newTopicValue.trim())
+                        && !existingTopics.contains(newTopicValue)) {
                     existingTopics.add(newTopicValue);
                     existingTopicsCombo.addItem(newTopicValue);
                     existingTopicsCombo.setSelectedItem(newTopicValue);

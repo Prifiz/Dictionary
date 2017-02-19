@@ -1,5 +1,7 @@
 package datamodel;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,7 @@ public class Dictionary {
     private List<Record> records;
 
     public Dictionary() {
-        this.records = new ArrayList<Record>();
+        this.records = new ArrayList<>();
     }
 
     public Dictionary(List<Record> records) {
@@ -62,7 +64,7 @@ public class Dictionary {
     }
 
     public void removeAllTopicOccurences(String topicName) {
-        if(topicName != null && !"".equals(topicName)) {
+        if(topicName != null && !StringUtils.EMPTY.equals(topicName)) {
             for(Record record : records) {
                 for(Word word : record.getWords()) {
                     if(topicName.equalsIgnoreCase(word.getTheme().getName())) {

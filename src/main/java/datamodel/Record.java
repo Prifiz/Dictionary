@@ -1,6 +1,7 @@
 package datamodel;
 
 import exceptions.RecordHasNotSingleThemeException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class Record {
                 return word.getTheme().getName();
             }
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     public Record(List<Word> words, String pictureName) throws RecordHasNotSingleThemeException {

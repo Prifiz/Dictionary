@@ -1,9 +1,11 @@
 package datamodel;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Word {
 
     public void removeTheme() {
-        this.theme.setName("");
+        this.theme.setName(StringUtils.EMPTY);
     }
 
     public void setWord(String word) {

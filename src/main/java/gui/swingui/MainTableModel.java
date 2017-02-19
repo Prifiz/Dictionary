@@ -2,6 +2,7 @@ package gui.swingui;
 
 import datamodel.Dictionary;
 import datamodel.Record;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -55,7 +56,7 @@ public class MainTableModel implements TableModel {
         if(columnIndex < headerMap.size()) {
             return headerMap.get(columnIndex);
         } else {
-            return "";
+            return StringUtils.EMPTY;
         }
     }
 
@@ -81,7 +82,7 @@ public class MainTableModel implements TableModel {
         } else if(columnIndex == recordList.get(rowIndex).getWords().size() + 1) {
             return recordList.get(rowIndex).getTopicName();
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {}

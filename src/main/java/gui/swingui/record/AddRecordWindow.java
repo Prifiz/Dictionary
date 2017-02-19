@@ -6,6 +6,7 @@ import datamodel.Theme;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -101,7 +102,7 @@ public class AddRecordWindow extends RecordWindow {
     protected List<Word> initWords() {
         final java.util.List<Word> words = new ArrayList<>();
         for(Language language : Language.values()) {
-            words.add(new Word("", language, new EmptyTheme()));
+            words.add(new Word(StringUtils.EMPTY, language, new EmptyTheme()));
         }
         return words;
     }

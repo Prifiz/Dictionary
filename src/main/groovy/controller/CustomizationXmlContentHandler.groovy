@@ -1,6 +1,7 @@
 package controller
 
 import gui.swingui.ViewCustomizationRecord
+import org.apache.commons.lang3.StringUtils
 
 class CustomizationXmlContentHandler implements CustomizationContentHandler {
     @Override
@@ -10,7 +11,7 @@ class CustomizationXmlContentHandler implements CustomizationContentHandler {
         xml.record.each { record ->
             String columnName = record.columnName.text()
             Boolean visible = Boolean.valueOf(record.visible.text())
-            result.add(new ViewCustomizationRecord(visible, columnName, ""))
+            result.add(new ViewCustomizationRecord(visible, columnName, StringUtils.EMPTY))
         }
         return result
     }

@@ -1,6 +1,7 @@
 package gui.swingui.record;
 
 import datamodel.Word;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -32,7 +33,7 @@ public class WordsTableModel implements TableModel {
             case 1:
                 return "Language";
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     public Class<?> getColumnClass(int columnIndex) {
@@ -54,7 +55,7 @@ public class WordsTableModel implements TableModel {
             case 1:
                 return words.get(rowIndex).getLanguage().toString();
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {

@@ -1,5 +1,7 @@
 package gui.swingui;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -22,7 +24,7 @@ public class CustomizeViewTableModel implements TableModel {
         for(int columnIdx = 0; columnIdx < mainTable.getModel().getColumnCount(); columnIdx++) {
             customizationRecords.add(new ViewCustomizationRecord(
                     mainTable.getColumnModel().getColumn(columnIdx).getMaxWidth() > 0,
-                    mainTable.getModel().getColumnName(columnIdx), ""));
+                    mainTable.getModel().getColumnName(columnIdx), StringUtils.EMPTY));
         }
     }
 
@@ -45,7 +47,7 @@ public class CustomizeViewTableModel implements TableModel {
         } else if(columnIndex == 2) {
             return "Description";
         } else {
-            return "";
+            return StringUtils.EMPTY;
         }
     }
 
