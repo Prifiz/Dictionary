@@ -1,6 +1,5 @@
 package gui.swingui.record;
 
-import com.sun.beans.editors.IntegerEditor;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
@@ -11,21 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 import utils.Constants;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
+
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +61,9 @@ public abstract class RecordWindow extends JFrame {
 
 
     protected abstract java.util.List<Word> initWords();
+
     protected abstract String getWindowTitle();
+
     protected abstract String getDescription();
 
     public RecordWindow(MainWindow parentForm) throws HeadlessException {
@@ -90,21 +84,21 @@ public abstract class RecordWindow extends JFrame {
             }
         });
 
-        wordsTable.setSurrendersFocusOnKeystroke(true);
+        //wordsTable.setSurrendersFocusOnKeystroke(true);
 
-        wordsTable.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
 
-            @Override
-            public void keyPressed(KeyEvent e) {
-            }
+        // TEST START
+
+        final KeyListener keyListener = new KeyAdapter() {
 
             @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.isControlDown()) {
-                    if (e.getKeyCode() == KeyEvent.VK_V) {
+            public void keyPressed(KeyEvent evt) {
+                System.out.println("Pressed");
+//                if (evt.getKeyCode() == KeyEvent.VK_F8)
+//                    System.out.println(" F8 Key Action");
+
+                if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_V) {
+
                         if (wordsTable.getCellEditor() != null) {
                             wordsTable.getCellEditor().cancelCellEditing();
                         }
@@ -129,22 +123,88 @@ public abstract class RecordWindow extends JFrame {
 //                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
 //                            }
                         } catch (IOException ex) {
+                            System.out.println(ex.getMessage());
                             // TODO
                         } catch (UnsupportedFlavorException ex) {
                             // TODO
+                            System.out.println(ex.getMessage());
                         }
+
                     }
-                }
             }
-        });
+        };
+
+        //wordsTable.addKeyListener(keyListener);
+
+        final TableCellEditor tce = new DefaultCellEditor(new JTextField()) {
+
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
+                c.addKeyListener(keyListener);
+                return c;
+            }
+        };
+
+        wordsTable.getColumn("Word").setCellEditor(tce);
+
+
+        // TEST END
+
+
+//        wordsTable.addKeyListener(new KeyListener() {
+//            @Override
+//            public void keyTyped(KeyEvent e) {
+//            }
+//
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//            }
+//
+//            @Override
+//            public void keyReleased(KeyEvent e) {
+//                if (e.isControlDown()) {
+//                    if (e.getKeyCode() == KeyEvent.VK_V) {
+//                        if (wordsTable.getCellEditor() != null) {
+//                            wordsTable.getCellEditor().cancelCellEditing();
+//                        }
+//
+//                        try {
+//                            Toolkit toolkit = Toolkit.getDefaultToolkit();
+//                            Clipboard clipboard = toolkit.getSystemClipboard();
+//                            String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+//                            int selectedRow = wordsTable.getSelectedRow();
+//                            int selectedColumn = wordsTable.getSelectedColumn();
+//                            System.out.println(result);
+//
+//                            if (wordsTable.isCellEditable(selectedRow, selectedColumn)
+//                                    && isLineContainsUmlaut(result)) {
+//                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
+//                            }
+//
+////
+////                            if (wordsTable.isCellEditable(selectedRow, selectedColumn)
+////                                    && !isGermanSelected(selectedRow, selectedColumn)
+////                                    && isLineContainsUmlaut(result)) {
+////                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
+////                            }
+//                        } catch (IOException ex) {
+//                            // TODO
+//                        } catch (UnsupportedFlavorException ex) {
+//                            // TODO
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 
     protected abstract void setSelectedTopic();
 
     protected boolean isLineContainsUmlaut(String line) {
         boolean result = false;
-        for(JButton umlaut : umlauts) {
-            if(line.contains(umlaut.getText())) {
+        for (JButton umlaut : umlauts) {
+            if (line.contains(umlaut.getText())) {
                 return true;
             }
         }
@@ -167,7 +227,7 @@ public abstract class RecordWindow extends JFrame {
         umlaut_B = new JButton("\u00df"); // ß
         umlauts.add(umlaut_B);
 
-        for(JButton umlaut : umlauts) {
+        for (JButton umlaut : umlauts) {
             umlaut.setFocusable(false);
             umlaut.addActionListener(new UmlautButtonActionListener());
         }
@@ -234,7 +294,7 @@ public abstract class RecordWindow extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            if(wordsTable.getCellEditor() != null) {
+            if (wordsTable.getCellEditor() != null) {
                 wordsTable.getCellEditor().stopCellEditing();
             }
             int selectedRow = wordsTable.getSelectedRow();
@@ -253,7 +313,7 @@ public abstract class RecordWindow extends JFrame {
                 }
             }
 
-            if(description.isEditable() && description.hasFocus()) {
+            if (description.isEditable() && description.hasFocus()) {
                 description.insert(((JButton) e.getSource()).getText(), description.getCaretPosition());
                 description.grabFocus();
             }
