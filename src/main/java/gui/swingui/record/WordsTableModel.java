@@ -4,12 +4,13 @@ import datamodel.Word;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class WordsTableModel implements TableModel {
+public class WordsTableModel extends AbstractTableModel implements TableModel {
 
     private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
 
@@ -67,6 +68,7 @@ public class WordsTableModel implements TableModel {
         if(columnIndex == 0) {
             words.get(rowIndex).setWord(aValue.toString());
         }
+        fireTableRowsUpdated(rowIndex, columnIndex);
     }
 
     public void addTableModelListener(TableModelListener listener) {

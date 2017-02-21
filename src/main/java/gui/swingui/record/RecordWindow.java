@@ -7,6 +7,8 @@ import datamodel.Language;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utils.Constants;
 
 import javax.swing.*;
@@ -59,6 +61,7 @@ public abstract class RecordWindow extends JFrame {
 
     java.util.List<JButton> umlauts = new ArrayList<>();
 
+    private static final Logger LOGGER = LogManager.getLogger(RecordWindow.class);
 
     protected abstract java.util.List<Word> initWords();
 
@@ -69,6 +72,46 @@ public abstract class RecordWindow extends JFrame {
     public RecordWindow(MainWindow parentForm) throws HeadlessException {
         this.mainWindow = parentForm;
         initForm();
+    }
+
+    protected void initUmlautsPasteAction() {
+        JTextField cell = new JTextField();
+        final TableCellEditor cellEditor = new DefaultCellEditor(cell);
+        wordsTable.getColumnModel().getColumn(0).setCellEditor(cellEditor);
+        InputMap iMap = cell.getInputMap(JComponent.WHEN_FOCUSED);
+        iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK), KeyEvent.getKeyText(KeyEvent.VK_V));
+        ActionMap aMap = cell.getActionMap();
+        aMap.put(KeyEvent.getKeyText(KeyEvent.VK_V), new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Toolkit toolkit = Toolkit.getDefaultToolkit();
+                    Clipboard clipboard = toolkit.getSystemClipboard();
+                    String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+                    int selectedRow = wordsTable.getSelectedRow();
+                    int selectedColumn = wordsTable.getSelectedColumn();
+                    System.out.println(result);
+
+                    if (wordsTable.isCellEditable(selectedRow, selectedColumn)
+                            && isLineContainsUmlaut(result)
+                            && !isGermanSelected(selectedRow)) {
+                        System.out.println("Attempt to paste umlaut");
+                        cellEditor.cancelCellEditing();
+                    } else {
+                        if (wordsTable.getCellEditor() != null) {
+                            wordsTable.getCellEditor().stopCellEditing();
+                        }
+                        String currentValue = wordsTable.getValueAt(selectedRow, selectedColumn).toString();
+                        String updatedValue = currentValue + result;
+                        wordsTable.setValueAt(updatedValue, selectedRow, selectedColumn);
+                        wordsTable.updateUI();
+
+                    }
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    LOGGER.error("Failed to perform paste action");
+                }
+            }
+        });
     }
 
     protected void initActions() {
@@ -84,119 +127,7 @@ public abstract class RecordWindow extends JFrame {
             }
         });
 
-        //wordsTable.setSurrendersFocusOnKeystroke(true);
-
-
-        // TEST START
-
-        final KeyListener keyListener = new KeyAdapter() {
-
-            @Override
-            public void keyPressed(KeyEvent evt) {
-                System.out.println("Pressed");
-//                if (evt.getKeyCode() == KeyEvent.VK_F8)
-//                    System.out.println(" F8 Key Action");
-
-                if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_V) {
-
-                        if (wordsTable.getCellEditor() != null) {
-                            wordsTable.getCellEditor().cancelCellEditing();
-                        }
-
-                        try {
-                            Toolkit toolkit = Toolkit.getDefaultToolkit();
-                            Clipboard clipboard = toolkit.getSystemClipboard();
-                            String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-                            int selectedRow = wordsTable.getSelectedRow();
-                            int selectedColumn = wordsTable.getSelectedColumn();
-                            System.out.println(result);
-
-                            if (wordsTable.isCellEditable(selectedRow, selectedColumn)
-                                    && isLineContainsUmlaut(result)) {
-                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
-                            }
-
-//
-//                            if (wordsTable.isCellEditable(selectedRow, selectedColumn)
-//                                    && !isGermanSelected(selectedRow, selectedColumn)
-//                                    && isLineContainsUmlaut(result)) {
-//                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
-//                            }
-                        } catch (IOException ex) {
-                            System.out.println(ex.getMessage());
-                            // TODO
-                        } catch (UnsupportedFlavorException ex) {
-                            // TODO
-                            System.out.println(ex.getMessage());
-                        }
-
-                    }
-            }
-        };
-
-        //wordsTable.addKeyListener(keyListener);
-
-        final TableCellEditor tce = new DefaultCellEditor(new JTextField()) {
-
-            @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
-                c.addKeyListener(keyListener);
-                return c;
-            }
-        };
-
-        wordsTable.getColumn("Word").setCellEditor(tce);
-
-
-        // TEST END
-
-
-//        wordsTable.addKeyListener(new KeyListener() {
-//            @Override
-//            public void keyTyped(KeyEvent e) {
-//            }
-//
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//            }
-//
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                if (e.isControlDown()) {
-//                    if (e.getKeyCode() == KeyEvent.VK_V) {
-//                        if (wordsTable.getCellEditor() != null) {
-//                            wordsTable.getCellEditor().cancelCellEditing();
-//                        }
-//
-//                        try {
-//                            Toolkit toolkit = Toolkit.getDefaultToolkit();
-//                            Clipboard clipboard = toolkit.getSystemClipboard();
-//                            String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-//                            int selectedRow = wordsTable.getSelectedRow();
-//                            int selectedColumn = wordsTable.getSelectedColumn();
-//                            System.out.println(result);
-//
-//                            if (wordsTable.isCellEditable(selectedRow, selectedColumn)
-//                                    && isLineContainsUmlaut(result)) {
-//                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
-//                            }
-//
-////
-////                            if (wordsTable.isCellEditable(selectedRow, selectedColumn)
-////                                    && !isGermanSelected(selectedRow, selectedColumn)
-////                                    && isLineContainsUmlaut(result)) {
-////                                JOptionPane.showMessageDialog(null, "Cannot paste umlaut!");
-////                            }
-//                        } catch (IOException ex) {
-//                            // TODO
-//                        } catch (UnsupportedFlavorException ex) {
-//                            // TODO
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        initUmlautsPasteAction();
     }
 
     protected abstract void setSelectedTopic();
