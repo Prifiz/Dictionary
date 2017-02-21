@@ -69,18 +69,23 @@ public class AddRecordWindow extends RecordWindow {
                         word.setTheme(new Theme(existingTopicsCombo.getSelectedItem().toString(), "empty description"));
                     }
                 }
+
+                String pictureName;
                 if(copiedPictureFile == null || !copiedPictureFile.exists()) {
-                    JOptionPane.showMessageDialog(null, "Please, select the picture");
+                    pictureName = "";
                 } else {
-                    try {
-                        appController.addRecord(words, copiedPictureFile.getName(), description.getText());
-                        mainWindow.updateFormData();
-                        dispose();
-                    } catch (IOException ex) {
-                        LOGGER.error(ex.getMessage());
-                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                    }
+                    pictureName = copiedPictureFile.getName();
                 }
+
+                try {
+                    appController.addRecord(words, pictureName, description.getText());
+                    mainWindow.updateFormData();
+                    dispose();
+                } catch (IOException ex) {
+                    LOGGER.error(ex.getMessage());
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
+
             }
         });
     }
