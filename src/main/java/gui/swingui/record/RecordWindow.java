@@ -87,22 +87,21 @@ public abstract class RecordWindow extends JFrame {
                 try {
                     Toolkit toolkit = Toolkit.getDefaultToolkit();
                     Clipboard clipboard = toolkit.getSystemClipboard();
-                    String result = (String) clipboard.getData(DataFlavor.stringFlavor);
+                    String clipboardContent = (String) clipboard.getData(DataFlavor.stringFlavor);
                     int selectedRow = wordsTable.getSelectedRow();
                     int selectedColumn = wordsTable.getSelectedColumn();
-                    System.out.println(result);
 
                     if (wordsTable.isCellEditable(selectedRow, selectedColumn)
-                            && isLineContainsUmlaut(result)
+                            && isLineContainsUmlaut(clipboardContent)
                             && !isGermanSelected(selectedRow)) {
-                        System.out.println("Attempt to paste umlaut");
+                        LOGGER.info("Attempt to paste umlaut: " + clipboardContent);
                         cellEditor.cancelCellEditing();
                     } else {
                         if (wordsTable.getCellEditor() != null) {
                             wordsTable.getCellEditor().stopCellEditing();
                         }
                         String currentValue = wordsTable.getValueAt(selectedRow, selectedColumn).toString();
-                        String updatedValue = currentValue + result;
+                        String updatedValue = currentValue + clipboardContent;
                         wordsTable.setValueAt(updatedValue, selectedRow, selectedColumn);
                         wordsTable.updateUI();
 
