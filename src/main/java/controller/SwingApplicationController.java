@@ -117,5 +117,10 @@ public class SwingApplicationController implements Controller {
         removeCommand.execute(dictionary);
     }
 
+    @Override
+    public void exportToExcel(String filePath) {
+
+    }
+
 
 }
