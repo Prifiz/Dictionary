@@ -68,7 +68,7 @@ public class CustomizeViewTableModel implements TableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if(columnIndex == 0) {
-            return customizationRecords.get(rowIndex).getVisible();
+            return customizationRecords.get(rowIndex).isVisible();
         } else if(columnIndex == 1) {
             return customizationRecords.get(rowIndex).getColumnName();
         } else if(columnIndex == 2) {

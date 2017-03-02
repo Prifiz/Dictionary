@@ -7,6 +7,7 @@ import datamodel.Record;
 import gui.swingui.record.AddRecordWindow;
 import gui.swingui.record.EditRecordWindow;
 import gui.swingui.record.RecordWindow;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.Constants;
@@ -24,8 +25,10 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.prefs.Preferences;
 
 public class MainWindow extends JFrame implements Customizable {
 
@@ -73,7 +76,7 @@ public class MainWindow extends JFrame implements Customizable {
             for (Map.Entry<Integer, String> entry : ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()) {
                 if (entry.getValue().equals(record.getColumnName())) {
                     Integer columnIdx = entry.getKey();
-                    if (record.getVisible()) {
+                    if (record.isVisible()) {
                         unhideColumn(columnIdx);
                     } else {
                         hideColumn(columnIdx);
@@ -371,7 +374,28 @@ public class MainWindow extends JFrame implements Customizable {
         final String LAST_USED_FOLDER = ".";
         LOGGER.info("Starting export to Excel sheet...");
 
-        JFileChooser outPathChooser = new JFileChooser();
+        Preferences prefs = Preferences.userRoot().node(getClass().getName());
+        JFileChooser outPathChooser = new JFileChooser(prefs.get(LAST_USED_FOLDER,
+                new File(".").getAbsolutePath()));
+
+        final java.util.List<String> EXCEL_EXTENSIONS = Arrays.asList(Constants.XLS, Constants.XLSX);
+
+        outPathChooser.setMultiSelectionEnabled(false);
+        int returnVal = outPathChooser.showSaveDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = outPathChooser.getSelectedFile();
+            if(!selectedFile.isDirectory()) {
+                String extension = FilenameUtils.getExtension(selectedFile.getName());
+                if (EXCEL_EXTENSIONS.contains(extension.toLowerCase())) {
+                    selectedFile = new File(selectedFile.toString() + "." + EXCEL_EXTENSION);
+                    selectedFile = new File(
+                            selectedFile.getParentFile(),
+                            FilenameUtils.getBaseName(selectedFile.getName()) + "." + EXCEL_EXTENSION);
+                }
+                appController.exportToExcel(selectedFile.getAbsolutePath());
+                prefs.put(LAST_USED_FOLDER, outPathChooser.getSelectedFile().getParent());
+            }
+        }
     }
 
     private void configureImportToExcel() {

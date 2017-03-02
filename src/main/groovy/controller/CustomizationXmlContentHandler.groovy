@@ -10,7 +10,7 @@ class CustomizationXmlContentHandler implements CustomizationContentHandler {
         List<ViewCustomizationRecord> result = new ArrayList<>()
         xml.record.each { record ->
             String columnName = record.columnName.text()
-            Boolean visible = Boolean.valueOf(record.visible.text())
+            Boolean visible = Boolean.valueOf(record.isVisible.text())
             result.add(new ViewCustomizationRecord(visible, columnName, StringUtils.EMPTY))
         }
         return result
@@ -25,7 +25,7 @@ class CustomizationXmlContentHandler implements CustomizationContentHandler {
             customizationData.each { customizationRecord ->
                 record {
                     columnName(customizationRecord.getColumnName())
-                    visible(customizationRecord.getVisible())
+                    visible(customizationRecord.isVisible())
                 }
             }
         }

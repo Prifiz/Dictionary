@@ -42,7 +42,7 @@ public class ViewCustomizationRecord {
 
     private String columnDescription;
 
-    public Boolean getVisible() {
+    public Boolean isVisible() {
         return visible;
     }
 

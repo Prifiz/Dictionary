@@ -1,6 +1,8 @@
 package controller;
 
 import controller.filesystem.*;
+import controller.integration.excel.ExcelHandler;
+import controller.integration.excel.ExcelHandlerImpl;
 import controller.record.AddCommand;
 import controller.record.EditCommand;
 import controller.record.RemoveCommand;
@@ -119,7 +121,12 @@ public class SwingApplicationController implements Controller {
 
     @Override
     public void exportToExcel(String filePath) {
-
+        ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
+        try {
+            excelHandler.exportDictionary(dictionary);
+        } catch (IOException ex) {
+            // TODO
+        }
     }
 
 
