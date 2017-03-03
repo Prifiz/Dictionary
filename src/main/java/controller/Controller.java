@@ -5,6 +5,7 @@ import datamodel.Record;
 import datamodel.Word;
 import gui.swingui.ViewCustomizationRecord;
 
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,5 +24,5 @@ public interface Controller {
     void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName) throws IOException;
     void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName, String description) throws IOException;
     void removeRecord(int recordId) throws IOException;
-    void exportToExcel(String filePath);
+    void exportToExcel(String filePath, TableModel currentDictionaryView);
 }

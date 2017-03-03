@@ -8,6 +8,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
+import javax.swing.table.TableModel;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,49 +34,28 @@ public class ExcelHandlerImpl implements ExcelHandler {
         return dictionaryWorkbook;
     }
 
-    protected List<ViewCustomizationRecord> getVisibleColumns(List<ViewCustomizationRecord> customization) {
-        List<ViewCustomizationRecord> result = new ArrayList<>();
-        for(ViewCustomizationRecord record : customization) {
-            if(record.isVisible()) {
-                result.add(record);
-            }
-        }
-        return result;
-    }
-
-//    protected boolean isVisible(String name, List<ViewCustomizationRecord> customization) {
-//        boolean result = true;
-//        for(ViewCustomizationRecord record : customization) {
-//            if(record.getColumnName().equals(name) && !record.isVisible()) {
-//                return false;
-//            }
-//        }
-//    }
-
     @Override
-    public void exportDictionary(Dictionary dictionary, List<ViewCustomizationRecord> customization) throws IOException {
+    public void exportCurrentDictionaryView(TableModel mainTableModel) throws IOException {
         Workbook dictionaryWorkbook = createWorkbook();
         Sheet sheet = dictionaryWorkbook.createSheet("Dictionary");
 
-        List<ViewCustomizationRecord> visibleColumns = getVisibleColumns(customization);
 
-        int rowIndex = 0;
-        Row header = sheet.createRow(rowIndex);
-        int columnIdx = 0;
-        for(ViewCustomizationRecord record : customization) {
-            Cell cell = header.createCell(columnIdx);
-            cell.setCellValue(record.getColumnName());
-            columnIdx++;
+
+
+        Row headerRow = sheet.createRow(0); //Create row at line 0
+        for(int headings = 0; headings < mainTableModel.getColumnCount(); headings++){ //For each column
+            headerRow.createCell(headings).setCellValue(mainTableModel.getColumnName(headings));//Write column name
         }
-        for(Record record : dictionary.getAllRecordsAsList()) {
-            Row recordRow = sheet.createRow(rowIndex);
-            int colIdx = 0;
-            for(ViewCustomizationRecord customRecord : visibleColumns) {
-                Cell cell = recordRow.createCell(colIdx);
-                cell.setCellValue(record.);
+
+        Row row = sheet.createRow(1);
+        for(int rows = 0; rows < mainTableModel.getRowCount(); rows++){ //For each table row
+            for(int cols = 0; cols < mainTableModel.getColumnCount(); cols++){ //For each table column
+                row.createCell(cols).setCellValue(mainTableModel.getValueAt(rows, cols).toString()); //Write value
             }
-            record.g
-            rowIndex++;
+
+            //Set the row to the next one in the sequence
+            row = sheet.createRow((rows + 1));
         }
+        dictionaryWorkbook.write(new FileOutputStream(filename));
     }
 }

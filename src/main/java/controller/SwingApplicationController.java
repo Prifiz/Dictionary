@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.Constants;
 
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
 
@@ -120,10 +121,10 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
-    public void exportToExcel(String filePath) {
+    public void exportToExcel(String filePath, TableModel currentDictionaryView) {
         ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
         try {
-            excelHandler.exportDictionary(dictionary);
+            excelHandler.exportCurrentDictionaryView(currentDictionaryView);
         } catch (IOException ex) {
             // TODO
         }

@@ -3,9 +3,10 @@ package controller.integration.excel;
 import datamodel.Dictionary;
 import gui.swingui.ViewCustomizationRecord;
 
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
 
 public interface ExcelHandler {
-    void exportDictionary(Dictionary dictionary, List<ViewCustomizationRecord> customization) throws IOException;
+    void exportCurrentDictionaryView(TableModel mainTableModel) throws IOException;
 }
