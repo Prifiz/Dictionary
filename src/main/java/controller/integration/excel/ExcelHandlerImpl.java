@@ -8,6 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
+import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,26 +36,34 @@ public class ExcelHandlerImpl implements ExcelHandler {
     }
 
     @Override
-    public void exportCurrentDictionaryView(TableModel mainTableModel) throws IOException {
+    public void exportCurrentDictionaryView(JTable mainTable) throws IOException {
         Workbook dictionaryWorkbook = createWorkbook();
         Sheet sheet = dictionaryWorkbook.createSheet("Dictionary");
 
-
+        TableModel mainTableModel = mainTable.getModel();
 
 
         Row headerRow = sheet.createRow(0); //Create row at line 0
+        int headingIdx = 0;
         for(int headings = 0; headings < mainTableModel.getColumnCount(); headings++){ //For each column
-            headerRow.createCell(headings).setCellValue(mainTableModel.getColumnName(headings));//Write column name
+            if(mainTable.getColumnModel().getColumn(headings).getWidth() != 0) {
+                headerRow.createCell(headingIdx).setCellValue(mainTableModel.getColumnName(headings));//Write column name
+                headingIdx++;
+            }
         }
 
         Row row = sheet.createRow(1);
         for(int rows = 0; rows < mainTableModel.getRowCount(); rows++){ //For each table row
+            int colIdx = 0;
             for(int cols = 0; cols < mainTableModel.getColumnCount(); cols++){ //For each table column
-                row.createCell(cols).setCellValue(mainTableModel.getValueAt(rows, cols).toString()); //Write value
+                if(mainTable.getColumnModel().getColumn(cols).getWidth() != 0) {
+                    row.createCell(colIdx).setCellValue(mainTableModel.getValueAt(rows, cols).toString()); //Write value
+                    colIdx++;
+                }
             }
 
             //Set the row to the next one in the sequence
-            row = sheet.createRow((rows + 1));
+            row = sheet.createRow((rows + 2));
         }
         dictionaryWorkbook.write(new FileOutputStream(filename));
     }

@@ -434,10 +434,9 @@ public class MainWindow extends JFrame implements Customizable {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File selectedFile = outPathChooser.getSelectedFile();
-            if(!selectedFile.isDirectory()) {
-                appController.exportToExcel(selectedFile.getAbsolutePath(), mainTable.getModel());
-                prefs.put(LAST_USED_FOLDER, outPathChooser.getSelectedFile().getParent());
-            }
+            appController.exportToExcel(selectedFile.getAbsolutePath(), mainTable);
+            prefs.put(LAST_USED_FOLDER, outPathChooser.getSelectedFile().getParent());
+            JOptionPane.showMessageDialog(null, "Successfully saved");
         }
     }
 
