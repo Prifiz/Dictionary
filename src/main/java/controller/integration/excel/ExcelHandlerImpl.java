@@ -36,6 +36,27 @@ public class ExcelHandlerImpl implements ExcelHandler {
         return dictionaryWorkbook;
     }
 
+    public static short pixel2WidthUnits(int pxs) {
+        final short EXCEL_COLUMN_WIDTH_FACTOR = 256;
+        final int UNIT_OFFSET_LENGTH = 7;
+        final int[] UNIT_OFFSET_MAP = new int[]
+                { 0, 36, 73, 109, 146, 182, 219 };
+        short widthUnits = (short) (EXCEL_COLUMN_WIDTH_FACTOR *
+                (pxs / UNIT_OFFSET_LENGTH));
+        widthUnits += UNIT_OFFSET_MAP[(pxs % UNIT_OFFSET_LENGTH)];
+        return widthUnits;
+    }
+
+    public static int pointsToPixels(double points) {
+        final int PIXELS_PER_INCH = 96;
+        return (int) Math.round(points / 72D * PIXELS_PER_INCH);
+    }
+
+    double pixelsToPoints(int pixels) {
+        final int PIXELS_PER_INCH = 96;
+        return 72D * pixels / PIXELS_PER_INCH;
+    }
+
     @Override
     public void exportCurrentDictionaryView(JTable mainTable) throws IOException {
         Workbook dictionaryWorkbook = createWorkbook();
@@ -87,10 +108,10 @@ public class ExcelHandlerImpl implements ExcelHandler {
                         inputStream.close();
                         CreationHelper helper = dictionaryWorkbook.getCreationHelper();
                         Drawing drawing = sheet.createDrawingPatriarch();
-                        //Cell cell = sheet.createRow(2).createCell(1);
-
-//                        sheet.setColumnWidth(1, 20*150);
-//                        cell.getRow().setHeight((short) (20*150));
+                        row.setHeightInPoints((float) pixelsToPoints(150));
+                        sheet.setColumnWidth(columnIdx, pixel2WidthUnits(150));
+//                        sheet.setColumnWidth(columnIdx, 150);
+//                        dataCell.getRow().setHeight((short) (150));
 
                         ClientAnchor anchor = helper.createClientAnchor();
 
@@ -110,13 +131,12 @@ public class ExcelHandlerImpl implements ExcelHandler {
             row = sheet.createRow((rows + 2));
         }
 
-        for(int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
-            Row currentRow = sheet.getRow(rowNumber);
-
-            for (int columnNumber = 0; columnNumber < currentRow.getLastCellNum(); columnNumber++) {
-                sheet.autoSizeColumn(columnNumber);
-            }
-        }
+//        for(int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+//            Row currentRow = sheet.getRow(rowNumber);
+//            for (int columnNumber = 0; columnNumber < currentRow.getLastCellNum(); columnNumber++) {
+//                sheet.autoSizeColumn(columnNumber);
+//            }
+//        }
 
 
         // TEST START
