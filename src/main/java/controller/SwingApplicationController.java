@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import utils.Constants;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
 

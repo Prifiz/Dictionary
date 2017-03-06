@@ -1,19 +1,20 @@
 package controller.integration.excel;
 
-import datamodel.Dictionary;
-import datamodel.Record;
-import gui.swingui.CustomizeViewWindow;
-import gui.swingui.ViewCustomizationRecord;
+import gui.swingui.MainTableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
 
 public class ExcelHandlerImpl implements ExcelHandler {
 
@@ -43,28 +44,89 @@ public class ExcelHandlerImpl implements ExcelHandler {
         TableModel mainTableModel = mainTable.getModel();
 
 
-        Row headerRow = sheet.createRow(0); //Create row at line 0
+        CellStyle headerStyle = dictionaryWorkbook.createCellStyle();
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setBorderBottom(BorderStyle.THICK);
+        headerStyle.setBorderLeft(BorderStyle.THICK);
+        headerStyle.setBorderRight(BorderStyle.THICK);
+        headerStyle.setBorderTop(BorderStyle.THICK);
+        Font headerFont = dictionaryWorkbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+        Row headerRow = sheet.createRow(0);
         int headingIdx = 0;
-        for(int headings = 0; headings < mainTableModel.getColumnCount(); headings++){ //For each column
-            if(mainTable.getColumnModel().getColumn(headings).getWidth() != 0) {
-                headerRow.createCell(headingIdx).setCellValue(mainTableModel.getColumnName(headings));//Write column name
+        for (int headings = 0; headings < mainTableModel.getColumnCount(); headings++) {
+            if (mainTable.getColumnModel().getColumn(headings).getWidth() != 0) {
+                Cell headerCell = headerRow.createCell(headingIdx);
+                headerCell.setCellStyle(headerStyle);
+                headerCell.setCellValue(mainTableModel.getColumnName(headings));
                 headingIdx++;
             }
         }
 
+
+        CellStyle dataCellStyle = dictionaryWorkbook.createCellStyle();
+        dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+        dataCellStyle.setBorderBottom(BorderStyle.THIN);
+        dataCellStyle.setBorderLeft(BorderStyle.THIN);
+        dataCellStyle.setBorderRight(BorderStyle.THIN);
+        dataCellStyle.setBorderTop(BorderStyle.THIN);
         Row row = sheet.createRow(1);
-        for(int rows = 0; rows < mainTableModel.getRowCount(); rows++){ //For each table row
-            int colIdx = 0;
-            for(int cols = 0; cols < mainTableModel.getColumnCount(); cols++){ //For each table column
-                if(mainTable.getColumnModel().getColumn(cols).getWidth() != 0) {
-                    row.createCell(colIdx).setCellValue(mainTableModel.getValueAt(rows, cols).toString()); //Write value
-                    colIdx++;
+        for (int rows = 0; rows < mainTableModel.getRowCount(); rows++) {
+            int columnIdx = 0;
+            for (int cols = 0; cols < mainTableModel.getColumnCount(); cols++) {
+                TableColumn column = mainTable.getColumnModel().getColumn(cols);
+                if (column.getWidth() != 0) {
+                    Cell dataCell = row.createCell(columnIdx);
+                    dataCell.setCellStyle(dataCellStyle);
+                    if(File.class.equals(mainTableModel.getColumnClass(cols))) {
+                        String picturePath = mainTableModel.getValueAt(rows, cols).toString();
+                        InputStream inputStream = new FileInputStream(picturePath);
+                        byte[] bytes = IOUtils.toByteArray(inputStream);
+                        int pictureIdx = dictionaryWorkbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+                        inputStream.close();
+                        CreationHelper helper = dictionaryWorkbook.getCreationHelper();
+                        Drawing drawing = sheet.createDrawingPatriarch();
+                        //Cell cell = sheet.createRow(2).createCell(1);
+
+//                        sheet.setColumnWidth(1, 20*150);
+//                        cell.getRow().setHeight((short) (20*150));
+
+                        ClientAnchor anchor = helper.createClientAnchor();
+
+                        anchor.setCol1(columnIdx); //Column B
+                        anchor.setRow1(rows + 1); //Row 3
+                        anchor.setCol2(columnIdx + 1); //Column C
+                        anchor.setRow2(rows + 2); //Row 4
+
+                        //Creates a picture
+                        Picture pict = drawing.createPicture(anchor, pictureIdx);
+                    } else {
+                        dataCell.setCellValue(mainTableModel.getValueAt(rows, cols).toString());
+                    }
+                    columnIdx++;
                 }
             }
-
-            //Set the row to the next one in the sequence
             row = sheet.createRow((rows + 2));
         }
+
+        for(int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+            Row currentRow = sheet.getRow(rowNumber);
+
+            for (int columnNumber = 0; columnNumber < currentRow.getLastCellNum(); columnNumber++) {
+                sheet.autoSizeColumn(columnNumber);
+            }
+        }
+
+
+        // TEST START
+
+
+
+
+        // TEST END
+
+
         dictionaryWorkbook.write(new FileOutputStream(filename));
     }
 }

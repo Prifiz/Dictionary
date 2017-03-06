@@ -368,8 +368,6 @@ public class MainWindow extends JFrame implements Customizable {
         LOGGER.info("MainWindow layout initialization complete");
     }
 
-
-    // TODO
     private void configureExportToExcel() {
         final String LAST_USED_FOLDER = ".";
         LOGGER.info("Starting export to Excel sheet...");
@@ -427,7 +425,6 @@ public class MainWindow extends JFrame implements Customizable {
             }
         };
 
-
         outPathChooser.setMultiSelectionEnabled(false);
 
         int returnVal = outPathChooser.showSaveDialog(null);
@@ -440,7 +437,7 @@ public class MainWindow extends JFrame implements Customizable {
         }
     }
 
-    private void configureImportToExcel() {
+    private void configureImportFromExcel() {
 
     }
 
@@ -467,7 +464,7 @@ public class MainWindow extends JFrame implements Customizable {
 
         excelExport.addActionListener((e) -> configureExportToExcel());
 
-        excelImport.addActionListener((e) -> configureImportToExcel());
+        excelImport.addActionListener((e) -> configureImportFromExcel());
 
         this.setJMenuBar(menuBar);
         LOGGER.info("Main menu initialization complete");
