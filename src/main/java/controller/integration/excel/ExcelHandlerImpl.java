@@ -1,8 +1,6 @@
 package controller.integration.excel;
 
-import gui.swingui.MainTableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -110,43 +108,58 @@ public class ExcelHandlerImpl implements ExcelHandler {
                         Drawing drawing = sheet.createDrawingPatriarch();
                         row.setHeightInPoints((float) pixelsToPoints(150));
                         sheet.setColumnWidth(columnIdx, pixel2WidthUnits(150));
-//                        sheet.setColumnWidth(columnIdx, 150);
-//                        dataCell.getRow().setHeight((short) (150));
-
                         ClientAnchor anchor = helper.createClientAnchor();
-
-                        anchor.setCol1(columnIdx); //Column B
-                        anchor.setRow1(rows + 1); //Row 3
-                        anchor.setCol2(columnIdx + 1); //Column C
-                        anchor.setRow2(rows + 2); //Row 4
-
-                        //Creates a picture
+                        anchor.setCol1(columnIdx);
+                        anchor.setRow1(rows + 1);
+                        anchor.setCol2(columnIdx + 1);
+                        anchor.setRow2(rows + 2);
                         Picture pict = drawing.createPicture(anchor, pictureIdx);
                     } else {
                         dataCell.setCellValue(mainTableModel.getValueAt(rows, cols).toString());
+                        sheet.autoSizeColumn(columnIdx);
                     }
                     columnIdx++;
                 }
             }
             row = sheet.createRow((rows + 2));
         }
+        dictionaryWorkbook.write(new FileOutputStream(filename));
+    }
 
-//        for(int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
-//            Row currentRow = sheet.getRow(rowNumber);
-//            for (int columnNumber = 0; columnNumber < currentRow.getLastCellNum(); columnNumber++) {
-//                sheet.autoSizeColumn(columnNumber);
+    @Override
+    public void importToCurrentDictionaryView(JTable mainTable) {
+//        List lst = workbook.getAllPictures();
+//        for (Iterator it = lst.iterator(); it.hasNext(); ) {
+//            PictureData pict = (PictureData)it.next();
+//            String ext = pict.suggestFileExtension();
+//            byte[] data = pict.getData();
+//            if (ext.equals("jpeg")){
+//                FileOutputStream out = new FileOutputStream("pict.jpg");
+//                out.write(data);
+//                out.close();
 //            }
 //        }
 
 
-        // TEST START
-
-
-
-
-        // TEST END
-
-
-        dictionaryWorkbook.write(new FileOutputStream(filename));
+//        for (HSSFShape shape : sheet.getDrawingPatriarch().getChildren()) {
+//            if (shape instanceof HSSFPicture) {
+//                HSSFPicture picture = (HSSFPicture) shape;
+//                HSSFClientAnchor anchor = (HSSFClientAnchor) picture.getAnchor();
+//
+//                // Ensure to use only relevant pictures
+//                if (anchor.getCol1() == pictureColumn) {
+//
+//                    // Use the row from the anchor
+//                    HSSFRow pictureRow = sheet.getRow(anchor.getRow1());
+//                    if (pictureRow != null) {
+//                        HSSFCell idCell = pictureRow.getCell(idColumn);
+//                        if (idCell != null) {
+//                            long employeeId = (long) idCell.getNumericCellValue();
+//                            myUserService.updatePortrait(employeeId, picture.getData());
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
