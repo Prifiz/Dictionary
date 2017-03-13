@@ -1,6 +1,9 @@
 package controller.integration.excel;
 
+import datamodel.Dictionary;
+import datamodel.Record;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +16,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ExcelHandlerImpl implements ExcelHandler {
 
@@ -127,7 +132,39 @@ public class ExcelHandlerImpl implements ExcelHandler {
     }
 
     @Override
-    public void importToCurrentDictionaryView(JTable mainTable) {
+    public void importToCurrentDictionaryView(Dictionary dictionary) throws IOException {
+
+        FileInputStream inputStream = new FileInputStream("Dictionary");
+        try {
+            Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
+            Sheet sheet = dictionaryWorkbook.getSheetAt(0);
+            Row header = sheet.getRow(0);
+            Map<Integer, String> columnNamesMapping = new LinkedHashMap<>();
+            int cellNo = 0;
+            for(Cell headerCell : header) {
+                String fieldName = headerCell.getStringCellValue();
+                if(isDictionaryContainsField(fieldName, dictionary)) {
+                    columnNamesMapping.put(cellNo, fieldName);
+                }
+                cellNo++;
+            }
+
+            for(int rowNumber = 1; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+                Row row = sheet.getRow(rowNumber);
+                Map<String, String> recordParams = new LinkedHashMap<>();
+                for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
+                    if(columnNamesMapping.containsKey(colNum)) {
+                        Cell cell = row.getCell(colNum);
+                        // TODO calculate value and add to record parameter
+                    }
+                    dictionary.addRecordIfNotExists(new Record(recordParams));
+                }
+            }
+
+        } catch (InvalidFormatException ex) {
+            // TODO
+        }
+
 //        List lst = workbook.getAllPictures();
 //        for (Iterator it = lst.iterator(); it.hasNext(); ) {
 //            PictureData pict = (PictureData)it.next();

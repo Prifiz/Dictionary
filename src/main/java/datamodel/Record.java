@@ -4,6 +4,7 @@ import exceptions.RecordHasNotSingleThemeException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public class Record {
     public List<Word> getWords() {
@@ -57,6 +58,10 @@ public class Record {
         this.words = words;
         this.pictureName = pictureName;
         this.description = description;
+    }
+
+    public Record(Map<String, String> recordParams) {
+        // TODO
     }
 
 

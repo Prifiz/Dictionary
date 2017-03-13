@@ -36,6 +36,13 @@ public class Dictionary {
         records.add(record);
     }
 
+    public void mergeRecord(Record record) {
+        // TODO merge to existing records
+        // if not exists -> add
+        // if exists but imports brings new values -> rewrite (optional?)
+        // complete non-filled values
+    }
+
     private int getRecordIndex(Record record) {
         if(records.isEmpty() || record == null) {
             return -1;
