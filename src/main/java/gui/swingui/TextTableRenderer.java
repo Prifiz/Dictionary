@@ -50,12 +50,6 @@ import java.awt.*;
             Color background = unselectedBackground != null
                     ? unselectedBackground
                     : table.getBackground();
-            if (background == null || background instanceof javax.swing.plaf.UIResource) {
-                Color alternateColor = Color.BLUE;
-                if (alternateColor != null && row % 2 != 0) {
-                    background = alternateColor;
-                }
-            }
             super.setForeground(unselectedForeground != null
                     ? unselectedForeground
                     : table.getForeground());
