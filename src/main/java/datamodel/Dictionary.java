@@ -24,6 +24,21 @@ public class Dictionary {
         }
     }
 
+    public List<Record> getEquivalentRecords(Record record) {
+        List<Record> result = new ArrayList<>();
+        List<Word> recordWords = record.getWords();
+        for(Record rec : records) {
+            List<Word> recWords = rec.getWords();
+            for(Word word : recWords) {
+                if(recordWords.contains(word)) {
+                    result.add(rec);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
     public int getSize() {
         return records.size();
     }
@@ -37,9 +52,21 @@ public class Dictionary {
     }
 
     public void mergeRecord(Record record) {
+        int equivalentsFound = 0;
+        for(Record rec : records) {
+            if(isEquivalent(rec, record)) {
+
+                equivalentsFound++;
+            }
+        }
+        if(equivalentsFound == 0) {
+            records.add(record);
+        }
+
+
         // TODO merge to existing records
         // if not exists -> add
-        // if exists but imports brings new values -> rewrite (optional?)
+        // if exists but import brings new values -> rewrite (optional?)
         // complete non-filled values
     }
 

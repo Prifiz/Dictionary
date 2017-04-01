@@ -1,7 +1,7 @@
 package controller.integration.excel;
 
-import datamodel.Dictionary;
-import datamodel.Record;
+import datamodel.*;
+import gui.swingui.MainTableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
@@ -16,7 +16,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ExcelHandlerImpl implements ExcelHandler {
@@ -131,34 +133,64 @@ public class ExcelHandlerImpl implements ExcelHandler {
         dictionaryWorkbook.write(new FileOutputStream(filename));
     }
 
+    private Map<Integer, String> getSuitableCellNames(Row header, MainTableModel mainTableModel) {
+        Map<Integer, String> result = new LinkedHashMap<>();
+        int cellNo = 0;
+        for(Cell headerCell : header) {
+            String fieldName = headerCell.getStringCellValue();
+            if(mainTableModel.getHeaders().containsValue(fieldName)) {
+                result.put(cellNo, fieldName);
+            }
+            cellNo++;
+        }
+        return result;
+    }
+
     @Override
-    public void importToCurrentDictionaryView(Dictionary dictionary) throws IOException {
+    public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel) throws IOException {
 
         FileInputStream inputStream = new FileInputStream("Dictionary");
         try {
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
             Row header = sheet.getRow(0);
-            Map<Integer, String> columnNamesMapping = new LinkedHashMap<>();
-            int cellNo = 0;
-            for(Cell headerCell : header) {
-                String fieldName = headerCell.getStringCellValue();
-                if(isDictionaryContainsField(fieldName, dictionary)) {
-                    columnNamesMapping.put(cellNo, fieldName);
-                }
-                cellNo++;
-            }
+
+            Map<Integer, String> columnNamesMapping = getSuitableCellNames(header, mainTableModel);
 
             for(int rowNumber = 1; rowNumber < sheet.getLastRowNum(); rowNumber++) {
                 Row row = sheet.getRow(rowNumber);
                 Map<String, String> recordParams = new LinkedHashMap<>();
+                List<Word> words = new ArrayList<>();
+                String topic = "";// FIXME unbind topic from word!
+                String description = "";
+                String pictureName = "";
                 for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
                     if(columnNamesMapping.containsKey(colNum)) {
                         Cell cell = row.getCell(colNum);
-                        // TODO calculate value and add to record parameter
+                        String columnName = columnNamesMapping.get(colNum);
+                        switch (columnName) {
+                            case "Picture": {
+
+                            }
+                            case "English": {
+                                words.add(new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme()));
+                            }
+                            case "German": {
+                                words.add(new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme()));
+                            }
+                            case "Russian": {
+                                words.add(new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme()));
+                            }
+                            case "Topic": {
+                                topic = cell.getStringCellValue();
+                            }
+                            case "Description": {
+                                description = cell.getStringCellValue();
+                            }
+                        }
                     }
-                    dictionary.addRecordIfNotExists(new Record(recordParams));
                 }
+                dictionary.mergeRecord(new Record(words, pictureName, description));
             }
 
         } catch (InvalidFormatException ex) {
@@ -199,4 +231,5 @@ public class ExcelHandlerImpl implements ExcelHandler {
 //            }
 //        }
     }
+
 }

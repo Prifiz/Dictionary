@@ -3,6 +3,7 @@ package datamodel;
 import exceptions.RecordHasNotSingleThemeException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,12 @@ public class Record {
     }
 
     public Record(Map<String, String> recordParams) {
+//        List<Word> words = new ArrayList<>();
+//        for(Language language : Language.values()) {
+//            if(recordParams.containsKey(language.name())) {
+//                Word word = new Word()
+//            }
+//        }
         // TODO
     }
 
