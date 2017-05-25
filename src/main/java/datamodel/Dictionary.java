@@ -3,6 +3,7 @@ package datamodel;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Dictionary {
@@ -24,20 +25,6 @@ public class Dictionary {
         }
     }
 
-    public List<Record> getEquivalentRecords(Record record) {
-        List<Record> result = new ArrayList<>();
-        List<Word> recordWords = record.getWords();
-        for(Record rec : records) {
-            List<Word> recWords = rec.getWords();
-            for(Word word : recWords) {
-                if(recordWords.contains(word)) {
-                    result.add(rec);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
 
     public int getSize() {
         return records.size();
@@ -49,25 +36,6 @@ public class Dictionary {
 
     public void addRecord(Record record) {
         records.add(record);
-    }
-
-    public void mergeRecord(Record record) {
-        int equivalentsFound = 0;
-        for(Record rec : records) {
-            if(isEquivalent(rec, record)) {
-
-                equivalentsFound++;
-            }
-        }
-        if(equivalentsFound == 0) {
-            records.add(record);
-        }
-
-
-        // TODO merge to existing records
-        // if not exists -> add
-        // if exists but import brings new values -> rewrite (optional?)
-        // complete non-filled values
     }
 
     private int getRecordIndex(Record record) {
@@ -83,11 +51,18 @@ public class Dictionary {
         return -1;
     }
 
-    public void replaceRecord(Record recordToEdit, Record editedRecord) {
+    public void replaceRecord(Record recordToEdit, Record newRecord) {
         int idx = getRecordIndex(recordToEdit);
         if(idx >= 0) {
-            records.get(idx).setWords(editedRecord.getWords());
-            records.get(idx).setPictureName(editedRecord.getPictureName());
+            records.get(idx).setWords(newRecord.getWords());
+            records.get(idx).setPictureName(newRecord.getPictureName());
+        }
+    }
+
+    public void replaceUnique(Record recordToEdit, Record newRecord) {
+        int idx = getRecordIndex(recordToEdit);
+        if(idx >= 0) {
+
         }
     }
 
@@ -95,6 +70,10 @@ public class Dictionary {
         if(number >= 0 && number < records.size()) {
             records.remove(number);
         }
+    }
+
+    public void removeAll(Collection<Record> records) {
+        records.removeAll(records);
     }
 
     public void removeAllTopicOccurences(String topicName) {

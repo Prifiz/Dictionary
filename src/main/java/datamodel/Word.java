@@ -4,6 +4,28 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Word {
 
+    private String word;
+    private Language language;
+    private Theme theme;
+    private boolean keyField;
+
+    public boolean isKeyField() {
+        return keyField;
+    }
+
+    public Word(String word, Language language, Theme theme) {
+        this.word = word;
+        this.language = language;
+        this.theme = theme;
+    }
+
+    public Word(String word, Language language, Theme theme, boolean keyField) {
+        this.word = word;
+        this.language = language;
+        this.theme = theme;
+        this.keyField = keyField;
+    }
+
     public void removeTheme() {
         this.theme.setName(StringUtils.EMPTY);
     }
@@ -21,7 +43,6 @@ public class Word {
     }
 
     public String getWord() {
-
         return word;
     }
 
@@ -29,19 +50,8 @@ public class Word {
         return language;
     }
 
-    private String word;
-    private Language language;
-    private Theme theme;
-
     public Theme getTheme() {
         return theme;
-    }
-
-
-    public Word(String word, Language language, Theme theme) {
-        this.word = word;
-        this.language = language;
-        this.theme = theme;
     }
 
     @Override

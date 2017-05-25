@@ -1,5 +1,7 @@
 package controller.integration.excel;
 
+import controller.integration.excel.mergestrategies.ImportFilePriorityMergeStrategy;
+import controller.integration.excel.mergestrategies.RecordMergeStrategy;
 import datamodel.*;
 import gui.swingui.MainTableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -173,13 +175,13 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
                             }
                             case "English": {
-                                words.add(new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme()));
+                                words.add(new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme(), false));
                             }
                             case "German": {
-                                words.add(new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme()));
+                                words.add(new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme(), false));
                             }
                             case "Russian": {
-                                words.add(new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme()));
+                                words.add(new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme(), false));
                             }
                             case "Topic": {
                                 topic = cell.getStringCellValue();
@@ -190,7 +192,9 @@ public class ExcelHandlerImpl implements ExcelHandler {
                         }
                     }
                 }
-                dictionary.mergeRecord(new Record(words, pictureName, description));
+                RecordMergeStrategy mergeStrategy = new ImportFilePriorityMergeStrategy();
+                mergeStrategy.merge(dictionary, new Record(words, pictureName, description));
+                mainTableModel.setDictionary(dictionary);
             }
 
         } catch (InvalidFormatException ex) {

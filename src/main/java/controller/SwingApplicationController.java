@@ -10,6 +10,7 @@ import controller.record.RemoveTopicCommand;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
+import gui.swingui.MainTableModel;
 import gui.swingui.MainWindow;
 import gui.swingui.ViewCustomizationRecord;
 import gui.swingui.record.CustomizationUtils;
@@ -126,6 +127,16 @@ public class SwingApplicationController implements Controller {
         try {
             excelHandler.exportCurrentDictionaryView(currentDictionaryView);
         } catch (IOException ex) {
+            // TODO
+        }
+    }
+
+    @Override
+    public void importFromExcel(String filePath, MainTableModel mainTableModel) {
+        ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
+        try {
+            excelHandler.importToCurrentDictionaryView(dictionary, mainTableModel);
+        } catch (IOException e) {
             // TODO
         }
     }

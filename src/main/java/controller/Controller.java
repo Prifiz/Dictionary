@@ -3,6 +3,7 @@ package controller;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
+import gui.swingui.MainTableModel;
 import gui.swingui.ViewCustomizationRecord;
 
 import javax.swing.*;
@@ -26,4 +27,5 @@ public interface Controller {
     void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName, String description) throws IOException;
     void removeRecord(int recordId) throws IOException;
     void exportToExcel(String filePath, JTable currentDictionaryView);
+    void importFromExcel(String filePath, MainTableModel mainTableModel);
 }

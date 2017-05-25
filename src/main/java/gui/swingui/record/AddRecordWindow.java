@@ -108,7 +108,7 @@ public class AddRecordWindow extends RecordWindow {
     protected List<Word> initWords() {
         final java.util.List<Word> words = new ArrayList<>();
         for(Language language : Language.values()) {
-            words.add(new Word(StringUtils.EMPTY, language, new EmptyTheme()));
+            words.add(new Word(StringUtils.EMPTY, language, new EmptyTheme(), false));
         }
         return words;
     }

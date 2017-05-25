@@ -16,10 +16,19 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
             List<Word> words = new ArrayList<>()
             String topic = record.topic.text()
             record.words.word.each { word ->
-                Word readWord = new Word(
-                        (java.lang.String)word.text(),
-                        Language.getByName((java.lang.String)word.@language),
-                        new Theme(topic, "emptyDescription"))
+                Word readWord
+
+                if(word.@keyField == null) {
+                    readWord = new Word(
+                            (java.lang.String) word.text(),
+                            Language.getByName((java.lang.String) word.@language),
+                            new Theme(topic, "emptyDescription"))
+                } else {
+                    readWord = new Word(
+                            (java.lang.String) word.text(),
+                            Language.getByName((java.lang.String) word.@language),
+                            new Theme(topic, "emptyDescription"), Boolean.parseBoolean(word.@keyField))
+                }
                 words.add(readWord)
             }
             String picturePath = record.picture.text()
