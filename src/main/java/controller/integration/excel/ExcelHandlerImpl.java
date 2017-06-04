@@ -159,7 +159,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
             Map<Integer, String> columnNamesMapping = getSuitableCellNames(header, mainTableModel);
 
-            for(int rowNumber = 1; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+            for(int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); rowNumber++) {
                 Row row = sheet.getRow(rowNumber);
                 Map<String, String> recordParams = new LinkedHashMap<>();
                 List<Word> words = new ArrayList<>();
@@ -188,6 +188,9 @@ public class ExcelHandlerImpl implements ExcelHandler {
                             }
                             case "Topic": {
                                 topic = cell.getStringCellValue();
+                                for(Word word : words) {
+                                    word.setTheme(new Theme(topic, "empty"));
+                                }
                                 break;
                             }
                             case "Description": {
@@ -203,7 +206,9 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
         } catch (InvalidFormatException ex) {
             // TODO
+            System.out.println("Exception!");
         }
+        System.out.println("DONE");
 
 //        List lst = workbook.getAllPictures();
 //        for (Iterator it = lst.iterator(); it.hasNext(); ) {

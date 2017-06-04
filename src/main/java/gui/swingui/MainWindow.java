@@ -114,7 +114,7 @@ public class MainWindow extends JFrame implements Customizable {
         topics.add(Constants.NO_TOPIC);
         topics.addAll(new SimpleSearch().findAllTopics(appController.getDictionary()));
         byTopicCombo.setModel(new DefaultComboBoxModel<>(topics.toArray()));
-        if(topics.contains(byTopicComboCurrentlySelected)) {
+        if (topics.contains(byTopicComboCurrentlySelected)) {
             byTopicCombo.setSelectedItem(byTopicComboCurrentlySelected);
         } else {
             byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
@@ -213,7 +213,7 @@ public class MainWindow extends JFrame implements Customizable {
     }
 
     private void updateMainTable() {
-        ((MainTableModel)mainTable.getModel()).setDictionary(appController.getDictionary());
+        ((MainTableModel) mainTable.getModel()).setDictionary(appController.getDictionary());
         mainTable.updateUI();
     }
 
@@ -249,8 +249,8 @@ public class MainWindow extends JFrame implements Customizable {
 
     private java.util.List<Integer> getVisibleColumns() {
         java.util.List<Integer> result = new ArrayList<>();
-        for(Integer idx = 0; idx < mainTable.getColumnModel().getColumnCount(); idx++) {
-            if(mainTable.getColumnModel().getColumn(idx).getMaxWidth() > 0) {
+        for (Integer idx = 0; idx < mainTable.getColumnModel().getColumnCount(); idx++) {
+            if (mainTable.getColumnModel().getColumn(idx).getMaxWidth() > 0) {
                 result.add(idx);
             }
         }
@@ -260,12 +260,12 @@ public class MainWindow extends JFrame implements Customizable {
     private void updateColumnsWidth() {
         java.util.List<Integer> visibleColumnsIndices = getVisibleColumns();
         int columnNewWidth;
-        if(visibleColumnsIndices.isEmpty()) {
+        if (visibleColumnsIndices.isEmpty()) {
             columnNewWidth = (int) mainTable.getSize().getWidth();
         } else {
             columnNewWidth = (int) mainTable.getSize().getWidth() / visibleColumnsIndices.size();
         }
-        for(Integer visibleColumnIdx : visibleColumnsIndices) {
+        for (Integer visibleColumnIdx : visibleColumnsIndices) {
             mainTable.getColumnModel().getColumn(visibleColumnIdx).setMinWidth(columnNewWidth);
             mainTable.getColumnModel().getColumn(visibleColumnIdx).setMaxWidth(columnNewWidth);
         }
@@ -299,6 +299,7 @@ public class MainWindow extends JFrame implements Customizable {
             final int IMAGE_HEIGHT = IMAGE_WIDTH;
             try {
                 JLabel label = new JLabel();
+
                 Image fullSize = new ImageIcon(((File) value).getCanonicalPath()).getImage();
                 Image resized = ImageUtils.resize(
                         ImageUtils.toBufferedImage(fullSize), IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -308,6 +309,7 @@ public class MainWindow extends JFrame implements Customizable {
                     label.setIcon(imageIcon);
                 }
                 return label;
+
             } catch (IOException ex) {
                 LOGGER.error(ex.getMessage());
             }
@@ -386,10 +388,10 @@ public class MainWindow extends JFrame implements Customizable {
             public static final String DEFAULT_EXCEL_EXT = "xlsx";
 
             @Override
-            public void approveSelection(){
+            public void approveSelection() {
                 File selectedFile = getSelectedFile();
 
-                if(selectedFile.exists() && getDialogType() == SAVE_DIALOG) {
+                if (selectedFile.exists() && getDialogType() == SAVE_DIALOG) {
 
                     String extension = FilenameUtils.getExtension(selectedFile.getName());
                     if (EXCEL_EXTENSIONS.contains(extension.toLowerCase())) {
@@ -442,7 +444,6 @@ public class MainWindow extends JFrame implements Customizable {
             JOptionPane.showMessageDialog(null, "Successfully saved");
         }
     }
-
 
 
     private void initMenu() {
