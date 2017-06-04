@@ -229,6 +229,12 @@ public class MainWindow extends JFrame implements Customizable {
         }
     }
 
+    private void configureImportFromExcel() {
+        appController.importFromExcel("Test.xlsx", (MainTableModel) mainTable.getModel());
+        updateFormData();
+        //this.updateMainTable();
+    }
+
     private void saveDictionaryData() {
         LOGGER.info("Saving dictionary data...");
         try {
@@ -437,9 +443,7 @@ public class MainWindow extends JFrame implements Customizable {
         }
     }
 
-    private void configureImportFromExcel() {
 
-    }
 
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();

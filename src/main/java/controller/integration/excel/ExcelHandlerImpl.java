@@ -151,7 +151,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
     @Override
     public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel) throws IOException {
 
-        FileInputStream inputStream = new FileInputStream("Dictionary");
+        FileInputStream inputStream = new FileInputStream("Test.xlsx");
         try {
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
@@ -172,29 +172,33 @@ public class ExcelHandlerImpl implements ExcelHandler {
                         String columnName = columnNamesMapping.get(colNum);
                         switch (columnName) {
                             case "Picture": {
-
+                                break;
                             }
                             case "English": {
                                 words.add(new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme(), false));
+                                break;
                             }
                             case "German": {
                                 words.add(new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme(), false));
+                                break;
                             }
                             case "Russian": {
                                 words.add(new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme(), false));
+                                break;
                             }
                             case "Topic": {
                                 topic = cell.getStringCellValue();
+                                break;
                             }
                             case "Description": {
                                 description = cell.getStringCellValue();
+                                break;
                             }
                         }
                     }
                 }
                 RecordMergeStrategy mergeStrategy = new ImportFilePriorityMergeStrategy();
                 mergeStrategy.merge(dictionary, new Record(words, pictureName, description));
-                mainTableModel.setDictionary(dictionary);
             }
 
         } catch (InvalidFormatException ex) {
