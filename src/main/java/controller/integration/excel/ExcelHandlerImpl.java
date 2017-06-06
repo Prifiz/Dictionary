@@ -167,11 +167,13 @@ public class ExcelHandlerImpl implements ExcelHandler {
                 String description = "";
                 String pictureName = "";
                 for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
-                    if(columnNamesMapping.containsKey(colNum)) {
+                    String headerValue = header.getCell(colNum).getStringCellValue();
+                    if(columnNamesMapping.containsValue(headerValue)) {
                         Cell cell = row.getCell(colNum);
-                        String columnName = columnNamesMapping.get(colNum);
-                        switch (columnName) {
+
+                        switch (headerValue) {
                             case "Picture": {
+                                pictureName = cell.getStringCellValue();
                                 break;
                             }
                             case "English": {

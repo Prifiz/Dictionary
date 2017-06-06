@@ -1,6 +1,7 @@
 package gui.swingui;
 
 import datamodel.Dictionary;
+import datamodel.Language;
 import datamodel.Record;
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,13 +77,15 @@ public class MainTableModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         List<Record> recordList = dictionary.getAllRecordsAsList();
 
+        int langsCount = Language.values().length;
+
         if (columnIndex < recordList.get(rowIndex).getWords().size()) {
             return recordList.get(rowIndex).getWords().get(columnIndex).getWord();
-        } else if (columnIndex == recordList.get(rowIndex).getWords().size()) {
+        } else if (columnIndex == langsCount) {
             return new File("pictures", recordList.get(rowIndex).getPictureName());
-        } else if(columnIndex == recordList.get(rowIndex).getWords().size() + 1) {
+        } else if(columnIndex == langsCount + 1) {
             return recordList.get(rowIndex).getTopicName();
-        } else if(columnIndex == recordList.get(rowIndex).getWords().size() + 2) {
+        } else if(columnIndex == langsCount + 2) {
             return recordList.get(rowIndex).getDescription();
         }
         return StringUtils.EMPTY;
