@@ -157,7 +157,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
             Row header = sheet.getRow(0);
 
-            Map<Integer, String> columnNamesMapping = getSuitableCellNames(header, mainTableModel);
+            Map<Integer, String> columnNamesMapping = mainTableModel.getHeaders();//getSuitableCellNames(header, mainTableModel);
 
             for(int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); rowNumber++) {
                 Row row = sheet.getRow(rowNumber);
