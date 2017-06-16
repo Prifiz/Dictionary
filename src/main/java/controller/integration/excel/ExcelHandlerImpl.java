@@ -2,8 +2,18 @@ package controller.integration.excel;
 
 import controller.integration.excel.mergestrategies.ImportFilePriorityMergeStrategy;
 import controller.integration.excel.mergestrategies.RecordMergeStrategy;
-import datamodel.*;
+import datamodel.Dictionary;
+import datamodel.EmptyTheme;
+import datamodel.Language;
+import datamodel.Record;
+import datamodel.Theme;
+import datamodel.Word;
 import gui.swingui.MainTableModel;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFPicture;
+import org.apache.poi.hssf.usermodel.HSSFPictureData;
+import org.apache.poi.hssf.usermodel.HSSFShape;
+import org.apache.poi.hssf.usermodel.HSSFSimpleShape;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
@@ -165,6 +175,8 @@ public class ExcelHandlerImpl implements ExcelHandler {
                 List<Word> words = new ArrayList<>();
                 String topic = "";// FIXME unbind topic from word!
                 String description = "";
+
+
                 String pictureName = "";
                 for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
                     String headerValue = header.getCell(colNum).getStringCellValue();
@@ -173,6 +185,43 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
                         switch (headerValue) {
                             case "Picture": {
+
+                                HSSFPatriarch patriarch = (HSSFPatriarch) sheet.getDrawingPatriarch();
+                                if (patriarch != null) {
+                                    // Loop through the objects
+                                    for (HSSFShape shape : patriarch.getChildren()) {
+                                        if (shape instanceof HSSFPicture) {
+                                            HSSFPicture picture = (HSSFPicture) shape;
+                                            if (picture.getShapeType() == HSSFSimpleShape.OBJECT_TYPE_PICTURE) {
+                                                if (picture.getImageDimension() != null) {
+                                                    Row pictureRow = sheet.getRow(picture.getPreferredSize().getRow1());
+                                                    if (pictureRow != null) {
+                                                        Cell pictureCell = pictureRow.getCell(picture.getPreferredSize().getCol1());
+
+                                                        if (pictureCell.equals(cell)) {
+                                                            HSSFPictureData pictureData = picture.getPictureData();
+                                                            byte[] data = pictureData.getData();
+
+                                                            File file = new File(pictureRow.getCell(1).getStringCellValue() + "." + pictureData.suggestFileExtension());
+                                                            try (FileOutputStream fop = new FileOutputStream(file)) {
+
+                                                                if (!file.exists()) {
+                                                                    file.createNewFile();
+                                                                }
+                                                                fop.write(data);
+                                                                fop.flush();
+                                                                fop.close();
+                                                            } catch (IOException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 pictureName = cell.getStringCellValue();
                                 break;
                             }
@@ -212,39 +261,6 @@ public class ExcelHandlerImpl implements ExcelHandler {
         }
         System.out.println("DONE");
 
-//        List lst = workbook.getAllPictures();
-//        for (Iterator it = lst.iterator(); it.hasNext(); ) {
-//            PictureData pict = (PictureData)it.next();
-//            String ext = pict.suggestFileExtension();
-//            byte[] data = pict.getData();
-//            if (ext.equals("jpeg")){
-//                FileOutputStream out = new FileOutputStream("pict.jpg");
-//                out.write(data);
-//                out.close();
-//            }
-//        }
-
-
-//        for (HSSFShape shape : sheet.getDrawingPatriarch().getChildren()) {
-//            if (shape instanceof HSSFPicture) {
-//                HSSFPicture picture = (HSSFPicture) shape;
-//                HSSFClientAnchor anchor = (HSSFClientAnchor) picture.getAnchor();
-//
-//                // Ensure to use only relevant pictures
-//                if (anchor.getCol1() == pictureColumn) {
-//
-//                    // Use the row from the anchor
-//                    HSSFRow pictureRow = sheet.getRow(anchor.getRow1());
-//                    if (pictureRow != null) {
-//                        HSSFCell idCell = pictureRow.getCell(idColumn);
-//                        if (idCell != null) {
-//                            long employeeId = (long) idCell.getNumericCellValue();
-//                            myUserService.updatePortrait(employeeId, picture.getData());
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
 }
