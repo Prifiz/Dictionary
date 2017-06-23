@@ -79,6 +79,7 @@ public class MainTableModel implements TableModel {
 
         int langsCount = Language.values().length;
 
+        // FIXME words can come into into incorrect languages during import!!!
         if (columnIndex < recordList.get(rowIndex).getWords().size()) {
             return recordList.get(rowIndex).getWords().get(columnIndex).getWord();
         } else if (columnIndex == langsCount) {

@@ -158,16 +158,79 @@ public class ExcelHandlerImpl implements ExcelHandler {
         return result;
     }
 
+    private String getRussianFieldValue(Row pictureRow, Row headerRow) throws IOException {
+        for(int i = 0; i < headerRow.getLastCellNum(); i++) {
+            String headerValue = headerRow.getCell(i).getStringCellValue();
+            if("Russian".equals(headerValue)) {
+                return pictureRow.getCell(i).getStringCellValue();
+            }
+        }
+        throw new IOException("No Russian Field Detected!");
+    }
+
+//    private boolean isRussianFieldExists(Row headerRow) {
+//        for(int i = 0; i < headerRow.getLastCellNum(); i++) {
+//            String headerValue = headerRow.getCell(i).getStringCellValue();
+//            if("Russian".equals(headerValue)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+    private String buildPictureName(Row pictureRow, Row headerRow) throws IOException {
+        return Translit.getTranslitedRusToEngWord(getRussianFieldValue(pictureRow, headerRow));
+    }
+
+    private String saveCellPicture(Sheet sheet, Cell currentCell) throws IOException {
+        HSSFPatriarch patriarch = (HSSFPatriarch) sheet.getDrawingPatriarch();
+        String result = "";
+        if (patriarch != null) {
+            for (HSSFShape shape : patriarch.getChildren()) {
+                if (shape instanceof HSSFPicture) {
+                    HSSFPicture picture = (HSSFPicture) shape;
+                    if (picture.getShapeType() == HSSFSimpleShape.OBJECT_TYPE_PICTURE) {
+                        if (picture.getImageDimension() != null) {
+                            Row pictureRow = sheet.getRow(picture.getPreferredSize().getRow1());
+                            if (pictureRow != null) {
+                                Cell pictureCell = pictureRow.getCell(picture.getPreferredSize().getCol1());
+
+                                if (pictureCell.equals(currentCell)) {
+                                    HSSFPictureData pictureData = picture.getPictureData();
+                                    byte[] data = pictureData.getData();
+                                    String fullPictureName = buildPictureName(pictureRow, sheet.getRow(0)) + "." + pictureData.suggestFileExtension();
+                                    File file = new File("pictures", fullPictureName);
+                                    try (FileOutputStream fop = new FileOutputStream(file)) {
+                                        if (!file.exists()) {
+                                            file.createNewFile();
+                                        }
+                                        fop.write(data);
+                                        fop.flush();
+                                        fop.close();
+                                        return fullPictureName;
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     @Override
     public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel) throws IOException {
 
-        FileInputStream inputStream = new FileInputStream("Test.xlsx");
+        FileInputStream inputStream = new FileInputStream("Test.xls");
         try {
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
             Row header = sheet.getRow(0);
 
-            Map<Integer, String> columnNamesMapping = mainTableModel.getHeaders();//getSuitableCellNames(header, mainTableModel);
+            Map<Integer, String> columnNamesMapping = mainTableModel.getHeaders();
 
             for(int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); rowNumber++) {
                 Row row = sheet.getRow(rowNumber);
@@ -176,7 +239,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
                 String topic = "";// FIXME unbind topic from word!
                 String description = "";
 
-
+// should be at least 1 russian word
                 String pictureName = "";
                 for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
                     String headerValue = header.getCell(colNum).getStringCellValue();
@@ -185,44 +248,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
                         switch (headerValue) {
                             case "Picture": {
-
-                                HSSFPatriarch patriarch = (HSSFPatriarch) sheet.getDrawingPatriarch();
-                                if (patriarch != null) {
-                                    // Loop through the objects
-                                    for (HSSFShape shape : patriarch.getChildren()) {
-                                        if (shape instanceof HSSFPicture) {
-                                            HSSFPicture picture = (HSSFPicture) shape;
-                                            if (picture.getShapeType() == HSSFSimpleShape.OBJECT_TYPE_PICTURE) {
-                                                if (picture.getImageDimension() != null) {
-                                                    Row pictureRow = sheet.getRow(picture.getPreferredSize().getRow1());
-                                                    if (pictureRow != null) {
-                                                        Cell pictureCell = pictureRow.getCell(picture.getPreferredSize().getCol1());
-
-                                                        if (pictureCell.equals(cell)) {
-                                                            HSSFPictureData pictureData = picture.getPictureData();
-                                                            byte[] data = pictureData.getData();
-
-                                                            File file = new File(pictureRow.getCell(1).getStringCellValue() + "." + pictureData.suggestFileExtension());
-                                                            try (FileOutputStream fop = new FileOutputStream(file)) {
-
-                                                                if (!file.exists()) {
-                                                                    file.createNewFile();
-                                                                }
-                                                                fop.write(data);
-                                                                fop.flush();
-                                                                fop.close();
-                                                            } catch (IOException e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                pictureName = cell.getStringCellValue();
+                                pictureName = saveCellPicture(sheet, cell);
                                 break;
                             }
                             case "English": {
