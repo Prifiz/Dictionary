@@ -122,6 +122,14 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
+    public void removeRecords(List<Integer> recordsIds) throws IOException {
+        for(Integer record : recordsIds) {
+            Command removeCommand = new RemoveCommand(record);
+            removeCommand.execute(dictionary);
+        }
+    }
+
+    @Override
     public void exportToExcel(String filePath, JTable currentDictionaryView) {
         ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
         try {

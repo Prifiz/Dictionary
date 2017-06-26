@@ -5,6 +5,7 @@ import datamodel.Language;
 import datamodel.Record;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.File;
@@ -90,6 +91,28 @@ public class MainTableModel implements TableModel {
             return recordList.get(rowIndex).getDescription();
         }
         return StringUtils.EMPTY;
+    }
+
+    public void fireTableChanged(TableModelEvent e) {
+        // Guaranteed to return a non-null array
+
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        for (int i = listeners.size()-2; i>=0; i-=2) {
+            if (listeners.toArray()[i]==TableModelListener.class) {
+                ((TableModelListener)listeners.toArray()[i+1]).tableChanged(e);
+            }
+        }
+    }
+
+    public void fireTableRowsDeleted(int firstRow, int lastRow) {
+        fireTableChanged(new TableModelEvent(this, firstRow, lastRow,
+                TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE));
+    }
+
+    public void removeRow(int row) {
+        dictionary.removeRecord(row);
+        fireTableRowsDeleted(row, row);
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {}

@@ -139,55 +139,39 @@ public class MainWindow extends JFrame implements Customizable {
 
 
     private void initButtonsActions() {
-        newButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createNewRecord();
-            }
-        });
+        newButton.addActionListener(e -> createNewRecord());
 
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (mainTable.getSelectedRow() != -1) {
-                    int viewIndex = mainTable.getSelectedRow();
-                    if (viewIndex != -1) {
-                        int modelIndex = mainTable.convertRowIndexToModel(viewIndex);
-                        try {
-                            appController.removeRecord(modelIndex);
-                            updateFormData();
-                        } catch (IOException ex) {
-                            LOGGER.error(ex.getMessage());
-                            JOptionPane.showMessageDialog(null, ex.getMessage());
-                        }
-                    }
-                    for (ActionListener a : byTopicCombo.getActionListeners()) {
-                        a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null) {
-                        });
-                    }
+                MainTableModel model = (MainTableModel) mainTable.getModel();
+                int[] rows = mainTable.getSelectedRows();
+                for(int i=0;i<rows.length;i++){
+                    model.removeRow(rows[i]-i);
+                }
+                updateFormData();
+                for (ActionListener a : byTopicCombo.getActionListeners()) {
+                    a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null) {
+                    });
                 }
             }
         });
 
-        resetButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                sorter.setRowFilter(null);
-                byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
-                mainTable.setRowSorter(sorter);
-            }
+        resetButton.addActionListener(e -> {
+            sorter.setRowFilter(null);
+            byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
+            mainTable.setRowSorter(sorter);
         });
 
-        removeTopicButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!topics.isEmpty()) {
-                    String topic = byTopicCombo.getSelectedItem().toString();
-                    if (!Constants.NO_TOPIC.equals(topic)) {
-                        try {
-                            appController.removeTopic(topic);
-                            updateFormData();
-                        } catch (IOException ex) {
-                            LOGGER.error(ex.getMessage());
-                            JOptionPane.showMessageDialog(null, ex.getMessage());
-                        }
+        removeTopicButton.addActionListener(e -> {
+            if (!topics.isEmpty()) {
+                String topic = byTopicCombo.getSelectedItem().toString();
+                if (!Constants.NO_TOPIC.equals(topic)) {
+                    try {
+                        appController.removeTopic(topic);
+                        updateFormData();
+                    } catch (IOException ex) {
+                        LOGGER.error(ex.getMessage());
+                        JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
                 }
             }
