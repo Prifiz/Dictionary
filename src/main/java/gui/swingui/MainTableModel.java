@@ -93,14 +93,15 @@ public class MainTableModel implements TableModel {
         return StringUtils.EMPTY;
     }
 
+    // Got from AbstractTableModel
     public void fireTableChanged(TableModelEvent e) {
         // Guaranteed to return a non-null array
 
         // Process the listeners last to first, notifying
         // those that are interested in this event
-        for (int i = listeners.size()-2; i>=0; i-=2) {
-            if (listeners.toArray()[i]==TableModelListener.class) {
-                ((TableModelListener)listeners.toArray()[i+1]).tableChanged(e);
+        for (int i = listeners.size()-2; i >= 0; i -= 2) {
+            if (listeners.toArray()[i] == TableModelListener.class) {
+                ((TableModelListener)listeners.toArray()[i + 1]).tableChanged(e);
             }
         }
     }

@@ -213,10 +213,117 @@ public class MainWindow extends JFrame implements Customizable {
         }
     }
 
+    private void configureExportToExcel() {
+        final String LAST_USED_FOLDER = ".";
+        LOGGER.info("Starting export to Excel sheet...");
+
+        Preferences prefs = Preferences.userRoot().node(getClass().getName());
+        final java.util.List<String> EXCEL_EXTENSIONS = Arrays.asList(Constants.XLS, Constants.XLSX);
+
+        JFileChooser outPathChooser = new JFileChooser(prefs.get(LAST_USED_FOLDER,
+                new File(".").getAbsolutePath())) {
+            public static final String DEFAULT_EXCEL_EXT = Constants.XLSX;
+
+            @Override
+            public void approveSelection() {
+                File selectedFile = getSelectedFile();
+
+                if (selectedFile.exists() && getDialogType() == SAVE_DIALOG) {
+
+                    String extension = FilenameUtils.getExtension(selectedFile.getName());
+                    if (EXCEL_EXTENSIONS.contains(extension.toLowerCase())) {
+                        int result = JOptionPane.showConfirmDialog(
+                                this, "The file exists, overwrite?", "Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
+                        switch (result) {
+                            case JOptionPane.YES_OPTION:
+                                super.approveSelection();
+                                return;
+                            case JOptionPane.NO_OPTION:
+                                return;
+                            case JOptionPane.CLOSED_OPTION:
+                                return;
+                            case JOptionPane.CANCEL_OPTION:
+                                cancelSelection();
+                                return;
+                        }
+                    } else {
+                        int result = JOptionPane.showConfirmDialog(
+                                this, "Non-excel file chosen. Would you like to export to excel file with the chosen file name?",
+                                "Existing non-excel file", JOptionPane.YES_NO_CANCEL_OPTION);
+                        switch (result) {
+                            case JOptionPane.YES_OPTION:
+                                String chosenFileNameWithoutExt = FilenameUtils.removeExtension(selectedFile.getAbsolutePath());
+                                setSelectedFile(new File(chosenFileNameWithoutExt + "." + DEFAULT_EXCEL_EXT));
+                                super.approveSelection();
+                                return;
+                            case JOptionPane.NO_OPTION:
+                                return;
+                            case JOptionPane.CLOSED_OPTION:
+                                return;
+                            case JOptionPane.CANCEL_OPTION:
+                                cancelSelection();
+                                return;
+                        }
+                    }
+                }
+                super.approveSelection();
+            }
+        };
+
+        outPathChooser.setMultiSelectionEnabled(false);
+
+        int returnVal = outPathChooser.showSaveDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = outPathChooser.getSelectedFile();
+            appController.exportToExcel(selectedFile.getAbsolutePath(), mainTable);
+            prefs.put(LAST_USED_FOLDER, outPathChooser.getSelectedFile().getParent());
+            JOptionPane.showMessageDialog(null, "Successfully saved");
+        }
+    }
+
     private void configureImportFromExcel() {
-        appController.importFromExcel("Test.xlsx", (MainTableModel) mainTable.getModel());
-        updateFormData();
-        //this.updateMainTable();
+        final String LAST_USED_FOLDER = ".";
+        LOGGER.info("Starting import from Excel document...");
+
+        Preferences prefs = Preferences.userRoot().node(getClass().getName());
+        final java.util.List<String> EXCEL_EXTENSIONS = Arrays.asList(Constants.XLS);
+
+
+        JFileChooser inputPathChooser = new JFileChooser(prefs.get(LAST_USED_FOLDER,
+                new File(".").getAbsolutePath())) {
+
+            @Override
+            public void approveSelection() {
+                File selectedFile = getSelectedFile();
+
+                if (selectedFile.exists() && getDialogType() == OPEN_DIALOG) {
+
+                    String extension = FilenameUtils.getExtension(selectedFile.getName());
+                    if (EXCEL_EXTENSIONS.contains(extension.toLowerCase())) {
+                        super.approveSelection();
+                        return;
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Chosen file is not an excel file! Please, choose another one");
+                        super.cancelSelection();
+                        return;
+                    }
+                }
+                super.approveSelection();
+            }
+        };
+
+        inputPathChooser.setMultiSelectionEnabled(false);
+
+        int returnVal = inputPathChooser.showSaveDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = inputPathChooser.getSelectedFile();
+            appController.importFromExcel(selectedFile.getAbsolutePath(), (MainTableModel) mainTable.getModel());
+            prefs.put(LAST_USED_FOLDER, inputPathChooser.getSelectedFile().getParent());
+            updateFormData();
+            JOptionPane.showMessageDialog(null, "Successfully loaded");
+        }
     }
 
     private void saveDictionaryData() {
@@ -359,76 +466,6 @@ public class MainWindow extends JFrame implements Customizable {
         groupLayout.setVerticalGroup(vGroup);
         LOGGER.info("MainWindow layout initialization complete");
     }
-
-    private void configureExportToExcel() {
-        final String LAST_USED_FOLDER = ".";
-        LOGGER.info("Starting export to Excel sheet...");
-
-        Preferences prefs = Preferences.userRoot().node(getClass().getName());
-        final java.util.List<String> EXCEL_EXTENSIONS = Arrays.asList(Constants.XLS, Constants.XLSX);
-
-        JFileChooser outPathChooser = new JFileChooser(prefs.get(LAST_USED_FOLDER,
-                new File(".").getAbsolutePath())) {
-            public static final String DEFAULT_EXCEL_EXT = "xlsx";
-
-            @Override
-            public void approveSelection() {
-                File selectedFile = getSelectedFile();
-
-                if (selectedFile.exists() && getDialogType() == SAVE_DIALOG) {
-
-                    String extension = FilenameUtils.getExtension(selectedFile.getName());
-                    if (EXCEL_EXTENSIONS.contains(extension.toLowerCase())) {
-                        int result = JOptionPane.showConfirmDialog(
-                                this, "The file exists, overwrite?", "Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
-                        switch (result) {
-                            case JOptionPane.YES_OPTION:
-                                super.approveSelection();
-                                return;
-                            case JOptionPane.NO_OPTION:
-                                return;
-                            case JOptionPane.CLOSED_OPTION:
-                                return;
-                            case JOptionPane.CANCEL_OPTION:
-                                cancelSelection();
-                                return;
-                        }
-                    } else {
-                        int result = JOptionPane.showConfirmDialog(
-                                this, "Non-excel file chosen. Would you like to export to excel file with the chosen file name?",
-                                "Existing non-excel file", JOptionPane.YES_NO_CANCEL_OPTION);
-                        switch (result) {
-                            case JOptionPane.YES_OPTION:
-                                String chosenFileNameWithoutExt = FilenameUtils.removeExtension(selectedFile.getAbsolutePath());
-                                setSelectedFile(new File(chosenFileNameWithoutExt + "." + DEFAULT_EXCEL_EXT));
-                                super.approveSelection();
-                                return;
-                            case JOptionPane.NO_OPTION:
-                                return;
-                            case JOptionPane.CLOSED_OPTION:
-                                return;
-                            case JOptionPane.CANCEL_OPTION:
-                                cancelSelection();
-                                return;
-                        }
-                    }
-                }
-                super.approveSelection();
-            }
-        };
-
-        outPathChooser.setMultiSelectionEnabled(false);
-
-        int returnVal = outPathChooser.showSaveDialog(null);
-
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = outPathChooser.getSelectedFile();
-            appController.exportToExcel(selectedFile.getAbsolutePath(), mainTable);
-            prefs.put(LAST_USED_FOLDER, outPathChooser.getSelectedFile().getParent());
-            JOptionPane.showMessageDialog(null, "Successfully saved");
-        }
-    }
-
 
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();

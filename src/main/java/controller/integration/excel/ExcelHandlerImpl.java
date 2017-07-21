@@ -28,10 +28,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ExcelHandlerImpl implements ExcelHandler {
 
@@ -224,7 +225,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
     @Override
     public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel) throws IOException {
 
-        FileInputStream inputStream = new FileInputStream("Test.xls");
+        FileInputStream inputStream = new FileInputStream(filename);
         try {
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
@@ -234,12 +235,12 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
             for(int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); rowNumber++) {
                 Row row = sheet.getRow(rowNumber);
-                Map<String, String> recordParams = new LinkedHashMap<>();
-                List<Word> words = new ArrayList<>();
-                String topic = "";// FIXME unbind topic from word!
+                Map<Integer, Word> wordsMapping = new HashMap<>();
+
+                //String topic = "";// FIXME unbind topic from word!
                 String description = "";
 
-// should be at least 1 russian word
+                // should be at least 1 russian word
                 String pictureName = "";
                 for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
                     String headerValue = header.getCell(colNum).getStringCellValue();
@@ -252,22 +253,20 @@ public class ExcelHandlerImpl implements ExcelHandler {
                                 break;
                             }
                             case "English": {
-                                words.add(new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme(), false));
+                                wordsMapping.put(0, new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme(), false));
                                 break;
                             }
                             case "German": {
-                                words.add(new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme(), false));
+                                wordsMapping.put(1, new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme(), false));
                                 break;
                             }
                             case "Russian": {
-                                words.add(new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme(), false));
+                                wordsMapping.put(2, new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme(), false));
                                 break;
                             }
                             case "Topic": {
-                                topic = cell.getStringCellValue();
-                                for(Word word : words) {
-                                    word.setTheme(new Theme(topic, "empty"));
-                                }
+                                final String topic = cell.getStringCellValue();
+                                wordsMapping.forEach((integer, wrd) -> wrd.setTheme(new Theme(topic, "empty")));
                                 break;
                             }
                             case "Description": {
@@ -277,6 +276,13 @@ public class ExcelHandlerImpl implements ExcelHandler {
                         }
                     }
                 }
+
+                List<Word> words = wordsMapping.entrySet()
+                        .stream()
+                        .sorted(Map.Entry.comparingByKey())
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList());
+
                 RecordMergeStrategy mergeStrategy = new ImportFilePriorityMergeStrategy();
                 mergeStrategy.merge(dictionary, new Record(words, pictureName, description));
             }
@@ -286,7 +292,5 @@ public class ExcelHandlerImpl implements ExcelHandler {
             System.out.println("Exception!");
         }
         System.out.println("DONE");
-
     }
-
 }
