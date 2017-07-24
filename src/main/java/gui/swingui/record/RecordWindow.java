@@ -3,7 +3,7 @@ package gui.swingui.record;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
-import datamodel.Language;
+import datamodel.language.Language;
 import datamodel.Word;
 import gui.swingui.MainWindow;
 import org.apache.commons.lang3.StringUtils;

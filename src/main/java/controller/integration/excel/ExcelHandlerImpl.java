@@ -4,7 +4,7 @@ import controller.integration.excel.mergestrategies.ImportFilePriorityMergeStrat
 import controller.integration.excel.mergestrategies.RecordMergeStrategy;
 import datamodel.Dictionary;
 import datamodel.EmptyTheme;
-import datamodel.Language;
+import datamodel.language.Language;
 import datamodel.Record;
 import datamodel.Theme;
 import datamodel.Word;

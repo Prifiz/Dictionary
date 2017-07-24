@@ -1,7 +1,7 @@
 package controller
 
 import datamodel.Dictionary
-import datamodel.Language
+import datamodel.language.Language
 import datamodel.Record
 import datamodel.Theme
 import datamodel.Word

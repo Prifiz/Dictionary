@@ -1,5 +1,6 @@
 package datamodel;
 
+import datamodel.language.Language;
 import exceptions.RecordHasNotSingleThemeException;
 import org.apache.commons.lang3.StringUtils;
 

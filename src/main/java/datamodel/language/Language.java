@@ -1,4 +1,4 @@
-package datamodel;
+package datamodel.language;
 
 public enum Language {
     ENGLISH, GERMAN, RUSSIAN;

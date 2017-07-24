@@ -1,7 +1,7 @@
 package gui.swingui.record;
 
 import datamodel.EmptyTheme;
-import datamodel.Language;
+import datamodel.language.Language;
 import datamodel.Theme;
 import datamodel.Word;
 import gui.swingui.MainWindow;

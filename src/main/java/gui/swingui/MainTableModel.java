@@ -1,7 +1,7 @@
 package gui.swingui;
 
 import datamodel.Dictionary;
-import datamodel.Language;
+import datamodel.language.Language;
 import datamodel.Record;
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,5 +1,6 @@
 package datamodel;
 
+import datamodel.language.Language;
 import org.apache.commons.lang3.StringUtils;
 
 public class Word {
