@@ -10,6 +10,10 @@ import controller.record.RemoveTopicCommand;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
+import datamodel.language.GenderValue;
+import datamodel.language.Language;
+import datamodel.language.LanguageInfo;
+import datamodel.language.PartOfSpeechValue;
 import gui.swingui.MainTableModel;
 import gui.swingui.MainWindow;
 import gui.swingui.ViewCustomizationRecord;
@@ -20,17 +24,38 @@ import utils.Constants;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SwingApplicationController implements Controller {
 
     private Dictionary dictionary;
+    private Set<LanguageInfo> supportedLanguages;
     private static final Logger LOGGER = LogManager.getLogger(SwingApplicationController.class);
 
     private static final SwingApplicationController INSTANCE = new SwingApplicationController();
 
+    @Override
+    public Set<LanguageInfo> getSupportedLanguages() {
+        return supportedLanguages;
+    }
+
+    private Set<LanguageInfo> initSupportedLanguages() {
+        Set<LanguageInfo> result = new HashSet<>();
+        LanguageInfo russian = new LanguageInfo(Language.RUSSIAN)
+                .addPartOfSpeech(PartOfSpeechValue.NOUN)
+                .addPartOfSpeech(PartOfSpeechValue.ADJECTIVE)
+                .addGender(GenderValue.FEMALE)
+                .addGender(GenderValue.MALE)
+                .addGender(GenderValue.NEUTER);
+        result.add(russian);
+        return result;
+    }
+
     private SwingApplicationController() {
         this.dictionary = new Dictionary();
+        this.supportedLanguages = initSupportedLanguages();
     }
 
     public static SwingApplicationController getInstance() {

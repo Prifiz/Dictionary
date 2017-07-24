@@ -1,5 +1,6 @@
 package datamodel.language;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -12,10 +13,20 @@ public class LanguageInfo {
     private Set<PartOfSpeech> partsOfSpeech;
     private Set<Gender> genders;
 
-    public LanguageInfo(Language language, Set<PartOfSpeech> partsOfSpeech, Set<Gender> genders) {
+    public LanguageInfo(Language language) {
         this.language = language;
-        this.partsOfSpeech = partsOfSpeech;
-        this.genders = genders;
+        this.partsOfSpeech = new HashSet<>();
+        this.genders = new HashSet<>();
+    }
+
+    public LanguageInfo addPartOfSpeech(PartOfSpeechValue value) {
+        this.partsOfSpeech.add(new PartOfSpeech(value));
+        return this;
+    }
+
+    public LanguageInfo addGender(GenderValue value) {
+        this.genders.add(new Gender(value));
+        return this;
     }
 
     public Language getLanguage() {

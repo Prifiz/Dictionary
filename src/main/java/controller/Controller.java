@@ -3,6 +3,7 @@ package controller;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
+import datamodel.language.LanguageInfo;
 import gui.swingui.MainTableModel;
 import gui.swingui.ViewCustomizationRecord;
 
@@ -10,10 +11,12 @@ import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public interface Controller {
     void startApplication();
     Dictionary getDictionary();
+    Set<LanguageInfo> getSupportedLanguages();
     void loadDictionary() throws IOException;
     void saveDictionary() throws IOException;
     List<ViewCustomizationRecord> loadCustomization() throws IOException;
