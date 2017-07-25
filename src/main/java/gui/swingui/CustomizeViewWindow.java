@@ -8,8 +8,6 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public class CustomizeViewWindow extends JFrame {
@@ -36,29 +34,23 @@ public class CustomizeViewWindow extends JFrame {
     }
 
     private void initButtonsActions() {
-        previewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainWindow.customize(
-                        ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
-                //mainWindow.toFront();
-            }
+        previewButton.addActionListener(e -> {
+            mainWindow.customize(
+                    ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
+            //mainWindow.toFront();
         });
 
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainWindow.customize(
-                        ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
+        submitButton.addActionListener(e -> {
+            mainWindow.customize(
+                    ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
 
-                try {
-                    appController.saveCustomization(
-                            ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-                dispose();
+            try {
+                appController.saveCustomization(
+                        ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
+            dispose();
         });
     }
 

@@ -165,13 +165,10 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
-    public void importFromExcel(String filePath, MainTableModel mainTableModel) {
+    public void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException {
         ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
-        try {
-            excelHandler.importToCurrentDictionaryView(dictionary, mainTableModel);
-        } catch (IOException e) {
-            // TODO
-        }
+        excelHandler.importToCurrentDictionaryView(dictionary, mainTableModel);
+
     }
 
 

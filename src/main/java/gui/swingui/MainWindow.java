@@ -319,10 +319,14 @@ public class MainWindow extends JFrame implements Customizable {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File selectedFile = inputPathChooser.getSelectedFile();
-            appController.importFromExcel(selectedFile.getAbsolutePath(), (MainTableModel) mainTable.getModel());
-            prefs.put(LAST_USED_FOLDER, inputPathChooser.getSelectedFile().getParent());
-            updateFormData();
-            JOptionPane.showMessageDialog(null, "Successfully loaded");
+            try {
+                appController.importFromExcel(selectedFile.getAbsolutePath(), (MainTableModel) mainTable.getModel());
+                prefs.put(LAST_USED_FOLDER, inputPathChooser.getSelectedFile().getParent());
+                updateFormData();
+                JOptionPane.showMessageDialog(null, "Successfully loaded");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
         }
     }
 
@@ -383,7 +387,8 @@ public class MainWindow extends JFrame implements Customizable {
         hideColumn(4);
         mainTable.setAutoCreateRowSorter(true);
         mainTable.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 20));
-        mainTable.setDefaultRenderer(String.class, new TextTableRenderer());
+        TextTableRenderer textRenderer = new TextTableRenderer();
+        mainTable.setDefaultRenderer(String.class, textRenderer);
 
         TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
             final int IMAGE_WIDTH = 150;

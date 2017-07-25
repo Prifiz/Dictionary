@@ -23,11 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,6 +79,9 @@ public class ExcelHandlerImpl implements ExcelHandler {
         TableModel mainTableModel = mainTable.getModel();
 
 
+//        CreationHelper creationHelper = dictionaryWorkbook.getCreationHelper();
+//        Drawing commentDrawing = sheet.createDrawingPatriarch();
+
         CellStyle headerStyle = dictionaryWorkbook.createCellStyle();
         headerStyle.setAlignment(HorizontalAlignment.CENTER);
         headerStyle.setBorderBottom(BorderStyle.THICK);
@@ -111,12 +110,32 @@ public class ExcelHandlerImpl implements ExcelHandler {
         dataCellStyle.setBorderRight(BorderStyle.THIN);
         dataCellStyle.setBorderTop(BorderStyle.THIN);
         Row row = sheet.createRow(1);
+
+
         for (int rows = 0; rows < mainTableModel.getRowCount(); rows++) {
             int columnIdx = 0;
             for (int cols = 0; cols < mainTableModel.getColumnCount(); cols++) {
                 TableColumn column = mainTable.getColumnModel().getColumn(cols);
                 if (column.getWidth() != 0) {
                     Cell dataCell = row.createCell(columnIdx);
+
+//
+//                    // When the comment box is visible, have it show in a 1x3 space
+//                    ClientAnchor clientAnchor = creationHelper.createClientAnchor();
+//                    clientAnchor.setCol1(dataCell.getColumnIndex());
+//                    clientAnchor.setCol2(dataCell.getColumnIndex() + 1);
+//                    clientAnchor.setRow1(row.getRowNum());
+//                    clientAnchor.setRow2(row.getRowNum() + 3);
+//
+//                    // Create the comment and set the text+author
+//                    Comment comment = commentDrawing.createCellComment(clientAnchor);
+//                    RichTextString str = creationHelper.createRichTextString("Hello, World!");
+//                    comment.setString(str);
+//                    comment.setAuthor("Dictionary");
+//
+//                    // Assign the comment to the cell
+//                    dataCell.setCellComment(comment);
+
                     dataCell.setCellStyle(dataCellStyle);
                     if(File.class.equals(mainTableModel.getColumnClass(cols))) {
                         String picturePath = mainTableModel.getValueAt(rows, cols).toString();
@@ -143,7 +162,9 @@ public class ExcelHandlerImpl implements ExcelHandler {
             }
             row = sheet.createRow((rows + 2));
         }
-        dictionaryWorkbook.write(new FileOutputStream(filename));
+        OutputStream outputStream = new FileOutputStream(filename);
+        dictionaryWorkbook.write(outputStream);
+        outputStream.close();
     }
 
     private Map<Integer, String> getSuitableCellNames(Row header, MainTableModel mainTableModel) {
@@ -162,7 +183,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
     private String getRussianFieldValue(Row pictureRow, Row headerRow) throws IOException {
         for(int i = 0; i < headerRow.getLastCellNum(); i++) {
             String headerValue = headerRow.getCell(i).getStringCellValue();
-            if("Russian".equals(headerValue)) {
+            if("Russian".toLowerCase().equals(headerValue.toLowerCase())) {
                 return pictureRow.getCell(i).getStringCellValue();
             }
         }
@@ -201,7 +222,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
                                     byte[] data = pictureData.getData();
                                     String fullPictureName = buildPictureName(pictureRow, sheet.getRow(0)) + "." + pictureData.suggestFileExtension();
                                     File file = new File("pictures", fullPictureName);
-                                    try (FileOutputStream fop = new FileOutputStream(file)) {
+                                    FileOutputStream fop = new FileOutputStream(file);
                                         if (!file.exists()) {
                                             file.createNewFile();
                                         }
@@ -209,9 +230,6 @@ public class ExcelHandlerImpl implements ExcelHandler {
                                         fop.flush();
                                         fop.close();
                                         return fullPictureName;
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
                                 }
                             }
                         }
@@ -228,7 +246,10 @@ public class ExcelHandlerImpl implements ExcelHandler {
         FileInputStream inputStream = new FileInputStream(filename);
         try {
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
+
+
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
+
             Row header = sheet.getRow(0);
 
             Map<Integer, String> columnNamesMapping = mainTableModel.getHeaders();
@@ -285,6 +306,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
                 RecordMergeStrategy mergeStrategy = new ImportFilePriorityMergeStrategy();
                 mergeStrategy.merge(dictionary, new Record(words, pictureName, description));
+                //inputStream.close();
             }
 
         } catch (InvalidFormatException ex) {
