@@ -1,14 +1,28 @@
 package datamodel.language;
 
 public enum PartOfSpeechValue {
-    NOUN, ADJECTIVE, PREPOSITION, NOT_SET;
+    NOUN("noun"),
+    ADJECTIVE("adjective"),
+    PREPOSITION("preposition"),
+    NOT_SET("");
 
-    public static PartOfSpeechValue getByName(String name) throws IllegalArgumentException {
-        for(PartOfSpeechValue partOfSpeechValue : values()) {
-            if(name.toUpperCase().equals(partOfSpeechValue.toString())) {
-                return partOfSpeechValue;
+    private final String displayValue;
+
+    PartOfSpeechValue(String displayValue) {
+        this.displayValue = displayValue;
+    }
+
+    public String getDisplayValue() {
+        return displayValue;
+    }
+
+    public static PartOfSpeechValue getByValue(String displayValue) {
+        for (PartOfSpeechValue value : values()) {
+            if(displayValue.toLowerCase().equals(value.getDisplayValue().toLowerCase())) {
+                return value;
             }
         }
-        throw new IllegalArgumentException("No such part of speech!");
+        return NOT_SET;
     }
+
 }

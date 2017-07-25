@@ -3,8 +3,10 @@ package gui.swingui.record;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
+import datamodel.language.GenderValue;
 import datamodel.language.Language;
 import datamodel.Word;
+import datamodel.language.PartOfSpeechValue;
 import gui.swingui.MainWindow;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,7 @@ import utils.Constants;
 import javax.swing.*;
 
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -176,16 +179,14 @@ public abstract class RecordWindow extends JFrame {
         final ComboBoxModel existingTopicsModel = new DefaultComboBoxModel(existingTopics.toArray());
         existingTopicsCombo = new JComboBox(existingTopicsModel);
         setSelectedTopic();
-        addTopicButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String newTopicValue = newTopicField.getText();
-                if (newTopicValue != null
-                        && !StringUtils.EMPTY.equals(newTopicValue.trim())
-                        && !existingTopics.contains(newTopicValue)) {
-                    existingTopics.add(newTopicValue);
-                    existingTopicsCombo.addItem(newTopicValue);
-                    existingTopicsCombo.setSelectedItem(newTopicValue);
-                }
+        addTopicButton.addActionListener(e -> {
+            String newTopicValue = newTopicField.getText();
+            if (newTopicValue != null
+                    && !StringUtils.EMPTY.equals(newTopicValue.trim())
+                    && !existingTopics.contains(newTopicValue)) {
+                existingTopics.add(newTopicValue);
+                existingTopicsCombo.addItem(newTopicValue);
+                existingTopicsCombo.setSelectedItem(newTopicValue);
             }
         });
     }
@@ -256,6 +257,18 @@ public abstract class RecordWindow extends JFrame {
 
         saveButton = new JButton("Save");
         wordsTable = new JTable(new WordsTableModel(words));
+        TableColumn partOfSpeechColumn = wordsTable.getColumnModel().getColumn(2);
+        TableColumn genderColumn = wordsTable.getColumnModel().getColumn(3);
+        JComboBox partOfSpeechCombo = new JComboBox();
+        JComboBox genderCombo = new JComboBox();
+        for(PartOfSpeechValue value : PartOfSpeechValue.values()) {
+            partOfSpeechCombo.addItem(value.getDisplayValue());
+        }
+        for(GenderValue value : GenderValue.values()) {
+            genderCombo.addItem(value.getDisplayValue());
+        }
+        partOfSpeechColumn.setCellEditor(new DefaultCellEditor(partOfSpeechCombo));
+        genderColumn.setCellEditor(new DefaultCellEditor(genderCombo));
         scrollPane = new JScrollPane(wordsTable);
 
         initTopics();

@@ -1,6 +1,10 @@
 package datamodel;
 
+import datamodel.language.Gender;
+import datamodel.language.GenderValue;
 import datamodel.language.Language;
+import datamodel.language.PartOfSpeech;
+import datamodel.language.PartOfSpeechValue;
 import org.apache.commons.lang3.StringUtils;
 
 public class Word {
@@ -9,6 +13,8 @@ public class Word {
     private Language language;
     private Theme theme;
     private boolean keyField;
+    private PartOfSpeech partOfSpeech;
+    private Gender gender;
 
     public boolean isKeyField() {
         return keyField;
@@ -18,12 +24,26 @@ public class Word {
         this.word = word;
         this.language = language;
         this.theme = theme;
+        this.keyField = false;
+        this.partOfSpeech = new PartOfSpeech(PartOfSpeechValue.NOT_SET);
+        this.gender = new Gender(GenderValue.NOT_SET);
+    }
+
+    public Word(String word, Language language, Theme theme, PartOfSpeech partOfSpeech, Gender gender, boolean keyField) {
+        this.word = word;
+        this.language = language;
+        this.theme = theme;
+        this.partOfSpeech = partOfSpeech;
+        this.gender = gender;
+        this.keyField = keyField;
     }
 
     public Word(String word, Language language, Theme theme, boolean keyField) {
         this.word = word;
         this.language = language;
         this.theme = theme;
+        this.partOfSpeech = new PartOfSpeech(PartOfSpeechValue.NOT_SET);
+        this.gender = new Gender(GenderValue.NOT_SET);
         this.keyField = keyField;
     }
 
@@ -53,6 +73,22 @@ public class Word {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public PartOfSpeech getPartOfSpeech() {
+        return partOfSpeech;
+    }
+
+    public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
+        this.partOfSpeech = partOfSpeech;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     @Override

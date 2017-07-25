@@ -56,37 +56,35 @@ public class AddRecordWindow extends RecordWindow {
 
     protected void initSaveOperation(final java.util.List<Word> words) {
 
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        saveButton.addActionListener(e -> {
 
-                if (wordsTable.hasFocus() || wordsTable.isEditing()) {
-                    wordsTable.getCellEditor().stopCellEditing();
-                }
-                for (Word word : words) {
-                    if (existingTopicsCombo.getModel().getSize() == 0) {
-                        word.setTheme(new EmptyTheme());
-                    } else {
-                        word.setTheme(new Theme(existingTopicsCombo.getSelectedItem().toString(), "empty description"));
-                    }
-                }
-
-                String pictureName;
-                if(copiedPictureFile == null || !copiedPictureFile.exists()) {
-                    pictureName = "";
-                } else {
-                    pictureName = copiedPictureFile.getName();
-                }
-
-                try {
-                    appController.addRecord(words, pictureName, description.getText());
-                    mainWindow.updateFormData();
-                    dispose();
-                } catch (IOException ex) {
-                    LOGGER.error(ex.getMessage());
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-
+            if (wordsTable.hasFocus() || wordsTable.isEditing()) {
+                wordsTable.getCellEditor().stopCellEditing();
             }
+            for (Word word : words) {
+                if (existingTopicsCombo.getModel().getSize() == 0) {
+                    word.setTheme(new EmptyTheme());
+                } else {
+                    word.setTheme(new Theme(existingTopicsCombo.getSelectedItem().toString(), "empty description"));
+                }
+            }
+
+            String pictureName;
+            if(copiedPictureFile == null || !copiedPictureFile.exists()) {
+                pictureName = "";
+            } else {
+                pictureName = copiedPictureFile.getName();
+            }
+
+            try {
+                appController.addRecord(words, pictureName, description.getText());
+                mainWindow.updateFormData();
+                dispose();
+            } catch (IOException ex) {
+                LOGGER.error(ex.getMessage());
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+
         });
     }
 

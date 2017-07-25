@@ -1,10 +1,14 @@
 package controller
 
 import datamodel.Dictionary
+import datamodel.language.Gender
+import datamodel.language.GenderValue
 import datamodel.language.Language
 import datamodel.Record
 import datamodel.Theme
 import datamodel.Word
+import datamodel.language.PartOfSpeech
+import datamodel.language.PartOfSpeechValue
 import org.apache.commons.lang3.StringUtils
 
 class DictionaryXmlContentHandler implements DictionaryContentHandler {
@@ -18,17 +22,35 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
             record.words.word.each { word ->
                 Word readWord
 
-                if(word.@keyField == null) {
-                    readWord = new Word(
-                            (java.lang.String) word.text(),
-                            Language.getByName((java.lang.String) word.@language),
-                            new Theme(topic, "emptyDescription"))
+                boolean keyField
+                String partOfSpeech
+                String gender
+
+                if(word.@keyField == null || word.@keyField == "") {
+                    keyField = false
                 } else {
-                    readWord = new Word(
-                            (java.lang.String) word.text(),
-                            Language.getByName((java.lang.String) word.@language),
-                            new Theme(topic, "emptyDescription"), Boolean.parseBoolean(word.@keyField))
+                    keyField = Boolean.parseBoolean(word.@keyField)
                 }
+
+                if(word.@partOfSpeech == null) {
+                    partOfSpeech = ""
+                } else {
+                    partOfSpeech = word.@partOfSpeech
+                }
+
+                if(word.@gender == null) {
+                    gender = ""
+                } else {
+                    gender = word.@gender
+                }
+
+                readWord = new Word(
+                        (java.lang.String) word.text(),
+                        Language.getByName((java.lang.String) word.@language),
+                        new Theme(topic, "emptyDescription"),
+                        new PartOfSpeech(PartOfSpeechValue.getByValue(partOfSpeech)),
+                        new Gender(GenderValue.getByValue(gender)),
+                        keyField)
                 words.add(readWord)
             }
             String picturePath = record.picture.text()
@@ -48,7 +70,11 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
                 record {
                     words() {
                         currentRecord.getWords().each { currentWord ->
-                            word(language:currentWord.getLanguage().toString().toLowerCase(), currentWord.getWord())
+                            word(
+                                    language:currentWord.getLanguage().toString().toLowerCase(),
+                                    partOfSpeech:currentWord.getPartOfSpeech().getValue().getDisplayValue().toString().toLowerCase(),
+                                    gender:currentWord.getGender().getValue().getDisplayValue().toString().toLowerCase(),
+                                    currentWord.getWord())
                         }
                     }
                     if(!currentRecord.getWords().isEmpty()) {

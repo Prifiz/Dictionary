@@ -6,9 +6,6 @@ import datamodel.Record;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by PrifizGamer on 21.05.2017.
- */
 public class ImportFilePriorityMergeStrategy implements RecordMergeStrategy {
     @Override
     public void merge(Dictionary dictionary, Record recordToAdd) {
