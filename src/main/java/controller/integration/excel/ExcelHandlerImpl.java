@@ -19,6 +19,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import utils.Constants;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -137,22 +138,25 @@ public class ExcelHandlerImpl implements ExcelHandler {
 //                    dataCell.setCellComment(comment);
 
                     dataCell.setCellStyle(dataCellStyle);
+
                     if(File.class.equals(mainTableModel.getColumnClass(cols))) {
                         String picturePath = mainTableModel.getValueAt(rows, cols).toString();
-                        InputStream inputStream = new FileInputStream(picturePath);
-                        byte[] bytes = IOUtils.toByteArray(inputStream);
-                        int pictureIdx = dictionaryWorkbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-                        inputStream.close();
-                        CreationHelper helper = dictionaryWorkbook.getCreationHelper();
-                        Drawing drawing = sheet.createDrawingPatriarch();
-                        row.setHeightInPoints((float) pixelsToPoints(150));
-                        sheet.setColumnWidth(columnIdx, pixel2WidthUnits(150));
-                        ClientAnchor anchor = helper.createClientAnchor();
-                        anchor.setCol1(columnIdx);
-                        anchor.setRow1(rows + 1);
-                        anchor.setCol2(columnIdx + 1);
-                        anchor.setRow2(rows + 2);
-                        Picture pict = drawing.createPicture(anchor, pictureIdx);
+                        if(picturePath != Constants.PICTURES_DIR_NAME) {
+                            InputStream inputStream = new FileInputStream(picturePath);
+                            byte[] bytes = IOUtils.toByteArray(inputStream);
+                            int pictureIdx = dictionaryWorkbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+                            inputStream.close();
+                            CreationHelper helper = dictionaryWorkbook.getCreationHelper();
+                            Drawing drawing = sheet.createDrawingPatriarch();
+                            row.setHeightInPoints((float) pixelsToPoints(150));
+                            sheet.setColumnWidth(columnIdx, pixel2WidthUnits(150));
+                            ClientAnchor anchor = helper.createClientAnchor();
+                            anchor.setCol1(columnIdx);
+                            anchor.setRow1(rows + 1);
+                            anchor.setCol2(columnIdx + 1);
+                            anchor.setRow2(rows + 2);
+                            Picture pict = drawing.createPicture(anchor, pictureIdx);
+                        }
                     } else {
                         dataCell.setCellValue(mainTableModel.getValueAt(rows, cols).toString());
                         sheet.autoSizeColumn(columnIdx);

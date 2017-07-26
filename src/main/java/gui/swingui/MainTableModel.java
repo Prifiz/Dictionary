@@ -4,6 +4,7 @@ import datamodel.Dictionary;
 import datamodel.language.Language;
 import datamodel.Record;
 import org.apache.commons.lang3.StringUtils;
+import utils.Constants;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -84,7 +85,7 @@ public class MainTableModel implements TableModel {
         if (columnIndex < recordList.get(rowIndex).getWords().size()) {
             return recordList.get(rowIndex).getWords().get(columnIndex).getWord();
         } else if (columnIndex == langsCount) {
-            return new File("pictures", recordList.get(rowIndex).getPictureName());
+            return new File(Constants.PICTURES_DIR_NAME, recordList.get(rowIndex).getPictureName());
         } else if(columnIndex == langsCount + 1) {
             return recordList.get(rowIndex).getTopicName();
         } else if(columnIndex == langsCount + 2) {
