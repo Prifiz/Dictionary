@@ -4,6 +4,7 @@ import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
 import datamodel.Record;
+import datamodel.language.Language;
 import gui.swingui.record.AddRecordWindow;
 import gui.swingui.record.EditRecordWindow;
 import gui.swingui.record.RecordWindow;
@@ -26,7 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
@@ -41,6 +43,13 @@ public class MainWindow extends JFrame implements Customizable {
     private JTable mainTable;
     private JLabel byTopicLabel;
 
+    private JLabel searchLabel;
+    private JLabel languageLabel;
+    private JComboBox<String> searchCombo;
+    private JComboBox<String> languageCombo;
+    private JButton searchButton;
+
+
     private JScrollPane scrollPane;
     private JButton newButton;
     private JButton removeButton;
@@ -48,11 +57,13 @@ public class MainWindow extends JFrame implements Customizable {
 
 
     private JButton resetButton;
-    private JComboBox byTopicCombo;
+    private JComboBox<String> byTopicCombo;
     private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
-    private java.util.Set<String> topics = new TreeSet<>();
+    private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
+    private Set<String> topics = new TreeSet<>();
 
-    private ComboBoxModel comboBoxModel = new DefaultComboBoxModel<>(topics.toArray());
+    private ComboBoxModel<String> comboBoxModel =
+            new DefaultComboBoxModel<>(topics.toArray(new String[topics.size()]));
 
     public MainWindow() throws HeadlessException {
         initMainForm();
@@ -64,6 +75,20 @@ public class MainWindow extends JFrame implements Customizable {
         loadDictionaryData();
     }
 
+    private ComboBoxModel<String> getLanguagesComboModel() {
+        Set<String> languages = new LinkedHashSet<>();
+        languages.add(Constants.ANY_LANGUAGE);
+
+        ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()
+                .forEach(entry -> {
+                    String columnHeader = entry.getValue();
+                    if (!isHidden(entry.getKey()) && Language.isLanguage(columnHeader)) {
+                        languages.add(Language.getByName(columnHeader).toString());
+                    }
+                });
+
+        return new DefaultComboBoxModel<>(languages.toArray(new String[languages.size()]));
+    }
 
     private void configureViewCustomization() {
         CustomizeViewWindow customizeViewWindow = new CustomizeViewWindow(this);
@@ -73,17 +98,19 @@ public class MainWindow extends JFrame implements Customizable {
     @Override
     public void customize(java.util.List<ViewCustomizationRecord> customizationData) {
         for (ViewCustomizationRecord record : customizationData) {
-            for (Map.Entry<Integer, String> entry : ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()) {
-                if (entry.getValue().equals(record.getColumnName())) {
-                    Integer columnIdx = entry.getKey();
-                    if (record.isVisible()) {
-                        unhideColumn(columnIdx);
-                    } else {
-                        hideColumn(columnIdx);
-                    }
+            ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue().equals(record.getColumnName()))
+                    .forEach(entry -> {
+                Integer columnIdx = entry.getKey();
+                if (record.isVisible()) {
+                    unhideColumn(columnIdx);
+                } else {
+                    hideColumn(columnIdx);
                 }
-            }
+            });
         }
+        updateFormData();
     }
 
     private void initMainForm() {
@@ -103,8 +130,13 @@ public class MainWindow extends JFrame implements Customizable {
         newButton = new JButton("New...");
         removeButton = new JButton("Remove");
         resetButton = new JButton("Show All");
-        byTopicCombo = new JComboBox(comboBoxModel);
+        byTopicCombo = new JComboBox<>(comboBoxModel);
         removeTopicButton = new JButton("Remove Topic");
+        searchLabel = new JLabel("Search:");
+        languageLabel = new JLabel("Language:");
+        searchCombo = new JComboBox<>();
+        languageCombo = new JComboBox<>(getLanguagesComboModel());
+        searchButton = new JButton("Search");
         LOGGER.info("Controls initialization complete");
     }
 
@@ -113,13 +145,15 @@ public class MainWindow extends JFrame implements Customizable {
         topics.clear();
         topics.add(Constants.NO_TOPIC);
         topics.addAll(new SimpleSearch().findAllTopics(appController.getDictionary()));
-        byTopicCombo.setModel(new DefaultComboBoxModel<>(topics.toArray()));
+        byTopicCombo.setModel(new DefaultComboBoxModel<>(topics.toArray(new String[topics.size()])));
         if (topics.contains(byTopicComboCurrentlySelected)) {
             byTopicCombo.setSelectedItem(byTopicComboCurrentlySelected);
         } else {
             byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
         }
         byTopicCombo.updateUI();
+        languageCombo.setModel(getLanguagesComboModel());
+        languageCombo.updateUI();
     }
 
     public JTable getMainTable() {
@@ -193,6 +227,10 @@ public class MainWindow extends JFrame implements Customizable {
             mainTable.setRowSorter(sorter);
             byTopicComboCurrentlySelected = byTopicCombo.getSelectedItem().toString();
         });
+
+        languageCombo.addActionListener((e) ->
+                languageComboCurrentlySelected = languageCombo.getSelectedItem().toString());
+
         LOGGER.info("Controls actions initialization complete");
     }
 
@@ -366,10 +404,14 @@ public class MainWindow extends JFrame implements Customizable {
         }
     }
 
+    private boolean isHidden(int columnIdx) {
+        return mainTable.getColumnModel().getColumn(columnIdx).getMaxWidth() == Constants.ZERO_COLUMN_WIDTH &&
+                mainTable.getColumnModel().getColumn(columnIdx).getMinWidth() == Constants.ZERO_COLUMN_WIDTH;
+    }
+
     private void hideColumn(int columnIdx) {
-        final int ZERO_WIDTH = 0;
-        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(ZERO_WIDTH);
-        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(ZERO_WIDTH);
+        mainTable.getColumnModel().getColumn(columnIdx).setMinWidth(Constants.ZERO_COLUMN_WIDTH);
+        mainTable.getColumnModel().getColumn(columnIdx).setMaxWidth(Constants.ZERO_COLUMN_WIDTH);
         updateColumnsWidth();
         mainTable.updateUI();
     }
@@ -392,7 +434,7 @@ public class MainWindow extends JFrame implements Customizable {
 
         TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
             final int IMAGE_WIDTH = 150;
-            final int IMAGE_HEIGHT = IMAGE_WIDTH;
+            final int IMAGE_HEIGHT = 150;
             try {
                 JLabel label = new JLabel();
 
@@ -451,7 +493,14 @@ public class MainWindow extends JFrame implements Customizable {
                 .addGroup(groupLayout.createSequentialGroup()
                         .addComponent(byTopicCombo)
                         .addComponent(removeTopicButton))
-                .addComponent(resetButton));
+                .addComponent(resetButton)
+                .addGroup(groupLayout.createSequentialGroup()
+                        .addComponent(searchLabel)
+                        .addComponent(searchCombo))
+                .addGroup(groupLayout.createSequentialGroup()
+                        .addComponent(languageLabel)
+                        .addComponent(languageCombo))
+                .addComponent(searchButton));
 
         groupLayout.setHorizontalGroup(horizontalGroup);
 
@@ -466,7 +515,14 @@ public class MainWindow extends JFrame implements Customizable {
                         .addGroup(groupLayout.createParallelGroup()
                                 .addComponent(byTopicCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(removeTopicButton))
-                        .addComponent(resetButton)));
+                        .addComponent(resetButton)
+                        .addGroup(groupLayout.createParallelGroup()
+                                .addComponent(searchLabel)
+                                .addComponent(searchCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(groupLayout.createParallelGroup()
+                                .addComponent(languageLabel)
+                                .addComponent(languageCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(searchButton)));
 
         groupLayout.setVerticalGroup(vGroup);
         LOGGER.info("MainWindow layout initialization complete");

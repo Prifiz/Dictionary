@@ -11,4 +11,14 @@ public enum Language {
         }
         throw new IllegalArgumentException("No such language!");
     }
+
+    public static boolean isLanguage(String name) {
+        boolean result = false;
+        for(Language language : values()) {
+            if(name.toUpperCase().equals(language.toString())) {
+                return true;
+            }
+        }
+        return result;
+    }
 }
