@@ -27,10 +27,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class MainWindow extends JFrame implements Customizable {
 
@@ -61,6 +63,7 @@ public class MainWindow extends JFrame implements Customizable {
     private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
     private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
     private Set<String> topics = new TreeSet<>();
+    private Set<String> searchHistory = new LinkedHashSet<>();
 
     private ComboBoxModel<String> comboBoxModel =
             new DefaultComboBoxModel<>(topics.toArray(new String[topics.size()]));
@@ -79,15 +82,21 @@ public class MainWindow extends JFrame implements Customizable {
         Set<String> languages = new LinkedHashSet<>();
         languages.add(Constants.ANY_LANGUAGE);
 
-        ((MainTableModel) mainTable.getModel()).getHeaders().entrySet()
-                .forEach(entry -> {
-                    String columnHeader = entry.getValue();
-                    if (!isHidden(entry.getKey()) && Language.isLanguage(columnHeader)) {
-                        languages.add(Language.getByName(columnHeader).toString());
-                    }
-                });
+        ((MainTableModel) mainTable.getModel()).getHeaders().forEach((key, columnHeader) -> {
+            if (!isHidden(key) && Language.isLanguage(columnHeader)) {
+                languages.add(Language.getByName(columnHeader).toString());
+            }
+        });
 
         return new DefaultComboBoxModel<>(languages.toArray(new String[languages.size()]));
+    }
+
+    private ComboBoxModel<String> getSearchComboModel() {
+        return new DefaultComboBoxModel<>(searchHistory
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toSet())
+                .toArray(new String[searchHistory.size()]));
     }
 
     private void configureViewCustomization() {
@@ -134,7 +143,7 @@ public class MainWindow extends JFrame implements Customizable {
         removeTopicButton = new JButton("Remove Topic");
         searchLabel = new JLabel("Search:");
         languageLabel = new JLabel("Language:");
-        searchCombo = new JComboBox<>();
+        searchCombo = new JComboBox<>(getSearchComboModel());
         languageCombo = new JComboBox<>(getLanguagesComboModel());
         searchButton = new JButton("Search");
         LOGGER.info("Controls initialization complete");
@@ -156,7 +165,7 @@ public class MainWindow extends JFrame implements Customizable {
         languageCombo.updateUI();
     }
 
-    public JTable getMainTable() {
+    JTable getMainTable() {
         return mainTable;
     }
 
@@ -198,7 +207,7 @@ public class MainWindow extends JFrame implements Customizable {
 
         removeTopicButton.addActionListener(e -> {
             if (!topics.isEmpty()) {
-                String topic = byTopicCombo.getSelectedItem().toString();
+                String topic = (String) byTopicCombo.getSelectedItem();
                 if (!Constants.NO_TOPIC.equals(topic)) {
                     try {
                         appController.removeTopic(topic);
@@ -225,11 +234,23 @@ public class MainWindow extends JFrame implements Customizable {
             };
             sorter.setRowFilter(filter);
             mainTable.setRowSorter(sorter);
-            byTopicComboCurrentlySelected = byTopicCombo.getSelectedItem().toString();
+            byTopicComboCurrentlySelected = (String) byTopicCombo.getSelectedItem();
         });
 
         languageCombo.addActionListener((e) ->
-                languageComboCurrentlySelected = languageCombo.getSelectedItem().toString());
+                languageComboCurrentlySelected = (String) languageCombo.getSelectedItem());
+
+        searchCombo.setEditable(true);
+        searchCombo.addActionListener((e) -> {
+
+        });
+
+        searchButton.addActionListener((e) -> {
+            searchHistory.add((String) searchCombo.getSelectedItem());
+            searchCombo.setModel(getSearchComboModel());
+            appController.searchRecordsByLanguage((String)searchCombo.getSelectedItem(), languageComboCurrentlySelected);
+            updateFormData();
+        });
 
         LOGGER.info("Controls actions initialization complete");
     }
@@ -260,7 +281,7 @@ public class MainWindow extends JFrame implements Customizable {
 
         JFileChooser outPathChooser = new JFileChooser(prefs.get(LAST_USED_FOLDER,
                 new File(".").getAbsolutePath())) {
-            public static final String DEFAULT_EXCEL_EXT = Constants.XLSX;
+            final String DEFAULT_EXCEL_EXT = Constants.XLSX;
 
             @Override
             public void approveSelection() {

@@ -7,6 +7,8 @@ import controller.record.AddCommand;
 import controller.record.EditCommand;
 import controller.record.RemoveCommand;
 import controller.record.RemoveTopicCommand;
+import controller.search.Search;
+import controller.search.SimpleSearch;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
@@ -140,19 +142,19 @@ public class SwingApplicationController implements Controller {
         editCommand.execute(dictionary);
     }
 
-    @Override
-    public void removeRecord(int recordId) throws IOException {
-        Command removeCommand = new RemoveCommand(recordId);
-        removeCommand.execute(dictionary);
-    }
-
-    @Override
-    public void removeRecords(List<Integer> recordsIds) throws IOException {
-        for(Integer record : recordsIds) {
-            Command removeCommand = new RemoveCommand(record);
-            removeCommand.execute(dictionary);
-        }
-    }
+//    @Override
+//    public void removeRecord(int recordId) throws IOException {
+//        Command removeCommand = new RemoveCommand(recordId);
+//        removeCommand.execute(dictionary);
+//    }
+//
+//    @Override
+//    public void removeRecords(List<Integer> recordsIds) throws IOException {
+//        for(Integer record : recordsIds) {
+//            Command removeCommand = new RemoveCommand(record);
+//            removeCommand.execute(dictionary);
+//        }
+//    }
 
     @Override
     public void exportToExcel(String filePath, JTable currentDictionaryView) {
@@ -169,6 +171,12 @@ public class SwingApplicationController implements Controller {
         ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
         excelHandler.importToCurrentDictionaryView(dictionary, mainTableModel);
 
+    }
+
+    @Override
+    public List<Record> searchRecordsByLanguage(String searchPhrase, String language) {
+        Search search = new SimpleSearch();
+        return search.findAnyWordOccurrence(dictionary, searchPhrase, language);
     }
 
 

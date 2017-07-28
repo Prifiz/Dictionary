@@ -1,4 +1,9 @@
 target
 .idea
+config
+logs
+pictures
 log.txt
 *.iml
+*.xls
+Dictionary.xml

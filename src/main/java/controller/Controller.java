@@ -8,7 +8,6 @@ import gui.swingui.MainTableModel;
 import gui.swingui.ViewCustomizationRecord;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +27,9 @@ public interface Controller {
     @Deprecated
     void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName) throws IOException;
     void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName, String description) throws IOException;
-    void removeRecord(int recordId) throws IOException;
-    void removeRecords(List<Integer> recordsIds) throws IOException;
+    //void removeRecord(int recordId) throws IOException;
+    //void removeRecords(List<Integer> recordsIds) throws IOException;
     void exportToExcel(String filePath, JTable currentDictionaryView);
     void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException;
+    List<Record> searchRecordsByLanguage(String searchPhrase, String language);
 }

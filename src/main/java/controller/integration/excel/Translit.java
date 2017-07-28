@@ -1,8 +1,5 @@
 package controller.integration.excel;
 
-/**
- * Created by vaba1010 on 21.06.2017.
- */
 public class Translit {
     public static String cyr2lat(char ch){
         switch (ch){
