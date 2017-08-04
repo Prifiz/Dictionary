@@ -1,7 +1,8 @@
-package controller.filesystem;
+package controller.filesystem.impl.parsers;
 
 import controller.DictionaryContentHandler;
 import controller.DictionaryXmlContentHandler;
+import controller.filesystem.FileContentParser;
 import datamodel.Dictionary;
 
 public class DictionaryFileContentParser implements FileContentParser {

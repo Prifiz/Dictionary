@@ -1,10 +1,11 @@
-package gui.swingui.record;
+package gui.swingui.record.impl;
 
 import datamodel.EmptyTheme;
 import datamodel.Record;
 import datamodel.Theme;
 import datamodel.Word;
 import gui.swingui.MainWindow;
+import gui.swingui.record.RecordWindow;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

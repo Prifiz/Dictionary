@@ -5,8 +5,8 @@ import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
 import datamodel.Record;
 import datamodel.language.Language;
-import gui.swingui.record.AddRecordWindow;
-import gui.swingui.record.EditRecordWindow;
+import gui.swingui.record.impl.AddRecordWindow;
+import gui.swingui.record.impl.EditRecordWindow;
 import gui.swingui.record.RecordWindow;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.List;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -132,7 +131,7 @@ public class MainWindow extends JFrame implements Customizable {
     }
 
     private void initControls() {
-        model = new MainTableModel(appController.getDictionary());
+        model = new MainTableModel(appController.getDictionary(), appController.getSupportedLanguages());
         sorter = new TableRowSorter<>((MainTableModel) model);
         mainTable = new JTable(model);
         scrollPane = new JScrollPane(mainTable);

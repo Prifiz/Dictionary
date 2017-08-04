@@ -1,7 +1,8 @@
-package controller.filesystem;
+package controller.filesystem.impl.generators;
 
 import controller.DictionaryContentHandler;
 import controller.DictionaryXmlContentHandler;
+import controller.filesystem.FileContentGenerator;
 import datamodel.Dictionary;
 
 public class DictionaryFileContentGenerator implements FileContentGenerator {

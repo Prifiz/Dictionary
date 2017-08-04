@@ -3,10 +3,9 @@ package gui.swingui.record;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
-import datamodel.language.GenderValue;
 import datamodel.language.Language;
 import datamodel.Word;
-import datamodel.language.PartOfSpeechValue;
+import datamodel.language.LanguageInfo;
 import gui.swingui.MainWindow;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +25,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -135,13 +136,12 @@ public abstract class RecordWindow extends JFrame {
     protected abstract void setSelectedTopic();
 
     protected boolean isLineContainsUmlaut(String line) {
-        boolean result = false;
         for (JButton umlaut : umlauts) {
             if (line.contains(umlaut.getText())) {
                 return true;
             }
         }
-        return result;
+        return false;
     }
 
     protected void initUmlauts() {
@@ -256,23 +256,42 @@ public abstract class RecordWindow extends JFrame {
         words = initWords();
 
         saveButton = new JButton("Save");
-        wordsTable = new JTable(new WordsTableModel(words));
-        TableColumn partOfSpeechColumn = wordsTable.getColumnModel().getColumn(2);
-        TableColumn genderColumn = wordsTable.getColumnModel().getColumn(3);
-        JComboBox partOfSpeechCombo = new JComboBox();
-        JComboBox genderCombo = new JComboBox();
-        for(PartOfSpeechValue value : PartOfSpeechValue.values()) {
-            partOfSpeechCombo.addItem(value.getDisplayValue());
-        }
-        for(GenderValue value : GenderValue.values()) {
-            genderCombo.addItem(value.getDisplayValue());
-        }
-        partOfSpeechColumn.setCellEditor(new DefaultCellEditor(partOfSpeechCombo));
-        genderColumn.setCellEditor(new DefaultCellEditor(genderCombo));
+        Set<LanguageInfo> supportedLanguages = appController.getSupportedLanguages();
+
+        Map<String, TableCellEditor> partsOfSpeechMapping = new HashMap<>();
+        Map<String, TableCellEditor> gendersMapping = new HashMap<>();
+        supportedLanguages.forEach( supportedLanguage -> {
+            String currentLang = supportedLanguage.getLanguage().toLowerCase();
+            JComboBox<String> partOfSpeechCombo = new JComboBox<>();
+            partOfSpeechCombo.addItem(Constants.NOT_SET);
+            supportedLanguage.getPartsOfSpeech().forEach(partOfSpeech -> {
+                partOfSpeechCombo.addItem(partOfSpeech.getValue());
+            });
+            partsOfSpeechMapping.put(currentLang, new DefaultCellEditor(partOfSpeechCombo));
+            JComboBox<String> gendersCombo = new JComboBox<>();
+            gendersCombo.addItem(Constants.NOT_SET);
+            supportedLanguage.getGenders().forEach(gender -> {
+                gendersCombo.addItem(gender.getValue());
+            });
+            gendersMapping.put(currentLang, new DefaultCellEditor(gendersCombo));
+        });
+
+        wordsTable = new JTable(new WordsTableModel(words)) {
+            public TableCellEditor getCellEditor(int row, int column) {
+                int modelColumn = convertColumnIndexToModel(column);
+
+                if("Part Of Speech".equals(getModel().getColumnName(modelColumn))) {
+                    return partsOfSpeechMapping.get(getValueAt(row, 1).toString().toLowerCase());
+                } else if("Gender".equals(getModel().getColumnName(modelColumn))) {
+                    return gendersMapping.get(getValueAt(row, 1).toString().toLowerCase());
+                } else {
+                    return super.getCellEditor(row, column);
+                }
+            }
+        };
+
         scrollPane = new JScrollPane(wordsTable);
-
         initTopics();
-
         pictureLabel = new JLabel();
         pictureLabel.setSize(300, 300);
         choosePicture = new JButton("Choose Picture");

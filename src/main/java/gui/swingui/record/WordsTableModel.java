@@ -2,10 +2,9 @@ package gui.swingui.record;
 
 import datamodel.Word;
 import datamodel.language.Gender;
-import datamodel.language.GenderValue;
 import datamodel.language.PartOfSpeech;
-import datamodel.language.PartOfSpeechValue;
 import org.apache.commons.lang3.StringUtils;
+import utils.Constants;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
@@ -16,7 +15,7 @@ import java.util.Set;
 
 public class WordsTableModel extends AbstractTableModel implements TableModel {
 
-    private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
+    private Set<TableModelListener> listeners = new HashSet<>();
 
     private List<Word> words;
 
@@ -69,9 +68,23 @@ public class WordsTableModel extends AbstractTableModel implements TableModel {
             case 1:
                 return words.get(rowIndex).getLanguage().toString();
             case 2:
-                return words.get(rowIndex).getPartOfSpeech().getValue().getDisplayValue();
+            {
+                String partOfSpeechValue = words.get(rowIndex).getPartOfSpeech().getValue();
+                if(Constants.NOT_SET.equalsIgnoreCase(partOfSpeechValue)) {
+                    return "";
+                } else {
+                    return partOfSpeechValue;
+                }
+            }
             case 3:
-                return words.get(rowIndex).getGender().getValue().getDisplayValue();
+            {
+                String genderValue = words.get(rowIndex).getGender().getValue();
+                if(Constants.NOT_SET.equalsIgnoreCase(genderValue)) {
+                    return "";
+                } else {
+                    return genderValue;
+                }
+            }
         }
         return StringUtils.EMPTY;
     }
@@ -80,9 +93,9 @@ public class WordsTableModel extends AbstractTableModel implements TableModel {
         if(columnIndex == 0) {
             words.get(rowIndex).setWord(aValue.toString());
         } else if(columnIndex == 2) {
-            words.get(rowIndex).setPartOfSpeech(new PartOfSpeech(PartOfSpeechValue.getByValue(aValue.toString())));
+            words.get(rowIndex).setPartOfSpeech(new PartOfSpeech(aValue.toString()));
         } else if(columnIndex == 3) {
-            words.get(rowIndex).setGender(new Gender(GenderValue.getByValue(aValue.toString())));
+            words.get(rowIndex).setGender(new Gender(aValue.toString()));
         }
         fireTableRowsUpdated(rowIndex, columnIndex);
     }

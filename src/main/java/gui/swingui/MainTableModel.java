@@ -3,6 +3,7 @@ package gui.swingui;
 import datamodel.Dictionary;
 import datamodel.language.Language;
 import datamodel.Record;
+import datamodel.language.LanguageInfo;
 import org.apache.commons.lang3.StringUtils;
 import utils.Constants;
 
@@ -11,6 +12,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.File;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,21 +21,32 @@ import java.util.Set;
 public class MainTableModel implements TableModel {
 
     private Dictionary dictionary;
+    private Set<LanguageInfo> supportedLanguages;
+    private final Map<Integer, String> headerMap;
 
     private Set<TableModelListener> listeners = new HashSet<>();
+
+    public MainTableModel(Dictionary dictionary, Set<LanguageInfo> supportedLanguages) {
+        this.dictionary = dictionary;
+        this.supportedLanguages = supportedLanguages;
+        this.headerMap = new LinkedHashMap<Integer, String>() {{
+            int headerIdx = 0;
+            Iterator iterator = supportedLanguages.iterator();
+            while (iterator.hasNext()) {
+                put(headerIdx, ((LanguageInfo)iterator.next()).getLanguage());
+                headerIdx++;
+            }
+            put(headerIdx, Constants.PICTURE_COLUMN_TITLE);
+            headerIdx++;
+            put(headerIdx, "Topic");
+            headerIdx++;
+            put(headerIdx, "Description");
+        }};
+    }
 
     public Map<Integer, String> getHeaders() {
         return headerMap;
     }
-
-    private final Map<Integer, String> headerMap = new LinkedHashMap<Integer, String>() {{
-        put(0, "English");
-        put(1, "German");
-        put(2, "Russian");
-        put(3, "Picture");
-        put(4, "Topic");
-        put(5, "Description");
-    }};
 
 
     public void setDictionary(Dictionary dictionary) {
@@ -42,10 +55,6 @@ public class MainTableModel implements TableModel {
 
     public Dictionary getDictionary() {
         return dictionary;
-    }
-
-    public MainTableModel(Dictionary dictionary) {
-        this.dictionary = dictionary;
     }
 
     public int getRowCount() {
@@ -65,7 +74,7 @@ public class MainTableModel implements TableModel {
     }
 
     public Class<?> getColumnClass(int columnIndex) {
-        if(columnIndex == 3) {
+        if(Constants.PICTURE_COLUMN_TITLE.equals(getColumnName(columnIndex))) {
             return File.class;
         } else {
             return String.class;

@@ -9,27 +9,27 @@ import java.util.Set;
  */
 public class LanguageInfo {
 
-    private Language language;
+    private String language;
     private Set<PartOfSpeech> partsOfSpeech;
     private Set<Gender> genders;
 
-    public LanguageInfo(Language language) {
+    public LanguageInfo(String language) {
         this.language = language;
         this.partsOfSpeech = new HashSet<>();
         this.genders = new HashSet<>();
     }
 
-    public LanguageInfo addPartOfSpeech(PartOfSpeechValue value) {
-        this.partsOfSpeech.add(new PartOfSpeech(value));
+    public LanguageInfo addPartOfSpeech(PartOfSpeech partOfSpeech) {
+        this.partsOfSpeech.add(partOfSpeech);
         return this;
     }
 
-    public LanguageInfo addGender(GenderValue value) {
-        this.genders.add(new Gender(value));
+    public LanguageInfo addGender(Gender gender) {
+        this.genders.add(gender);
         return this;
     }
 
-    public Language getLanguage() {
+    public String getLanguage() {
         return language;
     }
 

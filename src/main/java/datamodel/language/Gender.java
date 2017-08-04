@@ -2,13 +2,13 @@ package datamodel.language;
 
 public class Gender {
 
-    private GenderValue value;
+    private String value;
 
-    public Gender(GenderValue value) {
+    public Gender(String value) {
         this.value = value;
     }
 
-    public GenderValue getValue() {
+    public String getValue() {
         return value;
     }
 }

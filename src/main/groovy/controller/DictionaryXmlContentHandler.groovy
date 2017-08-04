@@ -1,14 +1,11 @@
 package controller
 
 import datamodel.Dictionary
-import datamodel.language.Gender
-import datamodel.language.GenderValue
-import datamodel.language.Language
 import datamodel.Record
 import datamodel.Theme
 import datamodel.Word
-import datamodel.language.PartOfSpeech
-import datamodel.language.PartOfSpeechValue
+import datamodel.language.*
+import groovy.xml.MarkupBuilder
 import org.apache.commons.lang3.StringUtils
 
 class DictionaryXmlContentHandler implements DictionaryContentHandler {
@@ -48,8 +45,8 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
                         (java.lang.String) word.text(),
                         Language.getByName((java.lang.String) word.@language),
                         new Theme(topic, "emptyDescription"),
-                        new PartOfSpeech(PartOfSpeechValue.getByValue(partOfSpeech)),
-                        new Gender(GenderValue.getByValue(gender)),
+                        new PartOfSpeech(partOfSpeech),
+                        new Gender(gender),
                         keyField)
                 words.add(readWord)
             }
@@ -63,7 +60,7 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
     @Override
     String buildFormattedString(Dictionary dictionary) {
         def sw = new StringWriter()
-        def xml = new groovy.xml.MarkupBuilder(sw)
+        def xml = new MarkupBuilder(sw)
         xml.setDoubleQuotes(true)
         xml.records() {
             dictionary.getAllRecordsAsList().each { currentRecord ->
@@ -72,8 +69,8 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
                         currentRecord.getWords().each { currentWord ->
                             word(
                                     language:currentWord.getLanguage().toString().toLowerCase(),
-                                    partOfSpeech:currentWord.getPartOfSpeech().getValue().getDisplayValue().toString().toLowerCase(),
-                                    gender:currentWord.getGender().getValue().getDisplayValue().toString().toLowerCase(),
+                                    partOfSpeech:currentWord.getPartOfSpeech().getValue().toString().toLowerCase(),
+                                    gender:currentWord.getGender().getValue().toString().toLowerCase(),
                                     currentWord.getWord())
                         }
                     }

@@ -1,10 +1,8 @@
 package datamodel;
 
 import datamodel.language.Gender;
-import datamodel.language.GenderValue;
 import datamodel.language.Language;
 import datamodel.language.PartOfSpeech;
-import datamodel.language.PartOfSpeechValue;
 import org.apache.commons.lang3.StringUtils;
 
 public class Word {
@@ -25,8 +23,8 @@ public class Word {
         this.language = language;
         this.theme = theme;
         this.keyField = false;
-        this.partOfSpeech = new PartOfSpeech(PartOfSpeechValue.NOT_SET);
-        this.gender = new Gender(GenderValue.NOT_SET);
+        this.partOfSpeech = new PartOfSpeech("");
+        this.gender = new Gender("");
     }
 
     public Word(String word, Language language, Theme theme, PartOfSpeech partOfSpeech, Gender gender, boolean keyField) {
@@ -42,8 +40,8 @@ public class Word {
         this.word = word;
         this.language = language;
         this.theme = theme;
-        this.partOfSpeech = new PartOfSpeech(PartOfSpeechValue.NOT_SET);
-        this.gender = new Gender(GenderValue.NOT_SET);
+        this.partOfSpeech = new PartOfSpeech("");
+        this.gender = new Gender("");
         this.keyField = keyField;
     }
 

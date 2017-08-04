@@ -1,7 +1,8 @@
-package controller.filesystem;
+package controller.filesystem.impl.parsers;
 
 import controller.CustomizationContentHandler;
 import controller.CustomizationXmlContentHandler;
+import controller.filesystem.FileContentParser;
 import gui.swingui.ViewCustomizationRecord;
 
 import java.util.List;

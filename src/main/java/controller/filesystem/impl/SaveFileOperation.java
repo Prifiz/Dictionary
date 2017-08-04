@@ -1,5 +1,7 @@
-package controller.filesystem;
+package controller.filesystem.impl;
 
+import controller.filesystem.AbstractFileOperation;
+import controller.filesystem.FileOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

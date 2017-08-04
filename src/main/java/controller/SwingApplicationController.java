@@ -1,21 +1,24 @@
 package controller;
 
 import controller.filesystem.*;
+import controller.filesystem.impl.LoadFileOperation;
+import controller.filesystem.impl.SaveFileOperation;
+import controller.filesystem.impl.generators.CustomizationFileContentGenerator;
+import controller.filesystem.impl.generators.DictionaryFileContentGenerator;
+import controller.filesystem.impl.parsers.CustomizationFileContentParser;
+import controller.filesystem.impl.parsers.DictionaryFileContentParser;
+import controller.filesystem.impl.parsers.LanguagesFileContentParser;
 import controller.integration.excel.ExcelHandler;
 import controller.integration.excel.ExcelHandlerImpl;
 import controller.record.AddCommand;
 import controller.record.EditCommand;
-import controller.record.RemoveCommand;
 import controller.record.RemoveTopicCommand;
 import controller.search.Search;
 import controller.search.SimpleSearch;
 import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.Word;
-import datamodel.language.GenderValue;
-import datamodel.language.Language;
 import datamodel.language.LanguageInfo;
-import datamodel.language.PartOfSpeechValue;
 import gui.swingui.MainTableModel;
 import gui.swingui.MainWindow;
 import gui.swingui.ViewCustomizationRecord;
@@ -45,15 +48,17 @@ public class SwingApplicationController implements Controller {
     }
 
     private Set<LanguageInfo> initSupportedLanguages() {
-        Set<LanguageInfo> result = new HashSet<>();
-        LanguageInfo russian = new LanguageInfo(Language.RUSSIAN)
-                .addPartOfSpeech(PartOfSpeechValue.NOUN)
-                .addPartOfSpeech(PartOfSpeechValue.ADJECTIVE)
-                .addGender(GenderValue.FEMALE)
-                .addGender(GenderValue.MALE)
-                .addGender(GenderValue.NEUTER);
-        result.add(russian);
-        return result;
+        try {
+            FileOperation loadOperation = new LoadFileOperation("config/Languages.xml");
+            loadOperation.doFileOperation();
+            String languagesFileContent = ((AbstractFileOperation)loadOperation).getFileContent();
+            FileContentParser parser = new LanguagesFileContentParser();
+            parser.parseXml(languagesFileContent);
+            return ((LanguagesFileContentParser)parser).getLanguages();
+        } catch (IOException ex) {
+            LOGGER.error(ex.getMessage());
+            return new HashSet<>();
+        }
     }
 
     private SwingApplicationController() {
