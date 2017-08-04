@@ -66,7 +66,7 @@ public abstract class RecordWindow extends JFrame {
 
     private static final Logger LOGGER = LogManager.getLogger(RecordWindow.class);
 
-    protected abstract java.util.List<Word> initWords();
+    protected abstract java.util.List<Word> initWords(Set<LanguageInfo> supportedLanguages);
 
     protected abstract String getWindowTitle();
 
@@ -215,8 +215,8 @@ public abstract class RecordWindow extends JFrame {
     }
 
     private boolean isGermanSelected(int selectedRow) {
-        return (Language.GERMAN.name().equals(
-                ((WordsTableModel) wordsTable.getModel()).getWords().get(selectedRow).getLanguage().name()));
+        return (Language.GERMAN.name().equalsIgnoreCase(
+                ((WordsTableModel) wordsTable.getModel()).getWords().get(selectedRow).getLanguage()));
     }
 
     protected class UmlautButtonActionListener implements ActionListener {
@@ -252,7 +252,7 @@ public abstract class RecordWindow extends JFrame {
     }
 
     protected void initOperations() {
-        words = initWords();
+        words = initWords(appController.getSupportedLanguages());
 
         saveButton = new JButton("Save");
         Set<LanguageInfo> supportedLanguages = appController.getSupportedLanguages();

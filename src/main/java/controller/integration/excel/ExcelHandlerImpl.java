@@ -245,9 +245,10 @@ public class ExcelHandlerImpl implements ExcelHandler {
     }
 
     @Override
+    // FIXME Hardcoded like HELL!!!
     public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel) throws IOException {
 
-        FileInputStream inputStream = new FileInputStream(filename);
+        /*FileInputStream inputStream = new FileInputStream(filename);
         try {
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
 
@@ -317,6 +318,6 @@ public class ExcelHandlerImpl implements ExcelHandler {
             // TODO
             System.out.println("Exception!");
         }
-        System.out.println("DONE");
+        System.out.println("DONE");*/
     }
 }

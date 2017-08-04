@@ -25,12 +25,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
@@ -64,6 +59,7 @@ public class MainWindow extends JFrame implements Customizable {
     private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
     private Set<String> topics = new TreeSet<>();
     private Set<String> searchHistory = appController.loadSearchHistory();
+    //private String searchComboCurrentlySelected = searchHistory.isEmpty() ? "" : searchHistory.iterator().next();
 
     private ComboBoxModel<String> comboBoxModel =
             new DefaultComboBoxModel<>(topics.toArray(new String[topics.size()]));
@@ -242,9 +238,7 @@ public class MainWindow extends JFrame implements Customizable {
                 languageComboCurrentlySelected = (String) languageCombo.getSelectedItem());
 
         searchCombo.setEditable(true);
-        searchCombo.addActionListener((e) -> {
-
-        });
+        //searchCombo.addActionListener((e) -> searchComboCurrentlySelected = (String) searchCombo.getSelectedItem());
 
         searchButton.addActionListener((e) -> {
             //searchHistory.add((String) searchCombo.getSelectedItem());
@@ -455,13 +449,12 @@ public class MainWindow extends JFrame implements Customizable {
 
     private void initMainTable() {
         mainTable.setRowHeight(160);
-        hideColumn(4);
         mainTable.setAutoCreateRowSorter(true);
         mainTable.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 20));
         TextTableRenderer textRenderer = new TextTableRenderer();
         mainTable.setDefaultRenderer(String.class, textRenderer);
 
-        TableCellRenderer renderer = (table, value, isSelected, hasFocus, row, column) -> {
+        TableCellRenderer renderer = (JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) -> {
             final int IMAGE_WIDTH = 150;
             final int IMAGE_HEIGHT = 150;
             try {

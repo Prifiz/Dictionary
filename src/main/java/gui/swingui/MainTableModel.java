@@ -22,11 +22,13 @@ public class MainTableModel implements TableModel {
 
     private Dictionary dictionary;
     private final Map<Integer, String> headerMap;
+    private final Set<LanguageInfo> supportedLanguages;
 
     private Set<TableModelListener> listeners = new HashSet<>();
 
     public MainTableModel(Dictionary dictionary, Set<LanguageInfo> supportedLanguages) {
         this.dictionary = dictionary;
+        this.supportedLanguages = supportedLanguages;
         this.headerMap = new LinkedHashMap<Integer, String>() {{
             int headerIdx = 0;
             Iterator iterator = supportedLanguages.iterator();
@@ -86,9 +88,9 @@ public class MainTableModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         List<Record> recordList = dictionary.getAllRecordsAsList();
 
-        int langsCount = Language.values().length;
+        int langsCount = supportedLanguages.size();
 
-        // FIXME words can come into into incorrect languages during import!!!
+        // FIXME words can come into into incorrect languages during Excel import!!!
         if (columnIndex < recordList.get(rowIndex).getWords().size()) {
             return recordList.get(rowIndex).getWords().get(columnIndex).getWord();
         } else if (columnIndex == langsCount) {

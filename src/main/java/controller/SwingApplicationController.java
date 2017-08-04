@@ -1,6 +1,5 @@
 package controller;
 
-import com.sun.istack.internal.NotNull;
 import controller.filesystem.*;
 import controller.filesystem.impl.LoadFileOperation;
 import controller.filesystem.impl.SaveFileOperation;
@@ -78,8 +77,8 @@ public class SwingApplicationController implements Controller {
     public void startApplication() {
         LOGGER.info("Starting application...");
         MainWindow mainWindow = new MainWindow();
-        mainWindow.setVisible(true);
         mainWindow.customize(CustomizationUtils.loadViewCustomization());
+        mainWindow.setVisible(true);
     }
 
     @Override
@@ -202,7 +201,7 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
-    public void saveSearchHistory(@NotNull Set<String> history) {
+    public void saveSearchHistory(Set<String> history) {
         StringBuilder historyBuilder = new StringBuilder();
         history.forEach(historyBuilder::append);
         FileOperation saveOperation = new SaveFileOperation(

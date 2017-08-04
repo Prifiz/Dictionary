@@ -4,6 +4,7 @@ import datamodel.EmptyTheme;
 import datamodel.Record;
 import datamodel.Theme;
 import datamodel.Word;
+import datamodel.language.LanguageInfo;
 import gui.swingui.MainWindow;
 import gui.swingui.record.RecordWindow;
 import org.apache.commons.io.FileUtils;
@@ -19,7 +20,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class EditRecordWindow extends RecordWindow {
 
@@ -37,9 +40,20 @@ public class EditRecordWindow extends RecordWindow {
         this.pack();
     }
 
+    private boolean isWordLanguageSupported(Word word, Set<LanguageInfo> supportedLanguages) {
+        for (LanguageInfo languageInfo : supportedLanguages) {
+            if (word.getLanguage().equalsIgnoreCase(languageInfo.getLanguage())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
-    protected List<Word> initWords() {
-        return recordToEdit.getWords();
+    protected List<Word> initWords(Set<LanguageInfo> supportedLanguages) {
+        return recordToEdit.getWords().stream().filter(
+                word -> isWordLanguageSupported(word, supportedLanguages))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -54,11 +68,11 @@ public class EditRecordWindow extends RecordWindow {
 
     @Override
     protected void setSelectedTopic() {
-        if(recordToEdit.getWords().isEmpty()) {
+        if (recordToEdit.getWords().isEmpty()) {
             existingTopicsCombo.setSelectedItem(Constants.NO_TOPIC);
         } else {
             String firstWordTopic = recordToEdit.getWords().get(0).getTheme().getName();
-            if(StringUtils.isBlank(firstWordTopic)) {
+            if (StringUtils.isBlank(firstWordTopic)) {
                 existingTopicsCombo.setSelectedItem(Constants.NO_TOPIC);
             } else {
                 existingTopicsCombo.setSelectedItem(firstWordTopic);

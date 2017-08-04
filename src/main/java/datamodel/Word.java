@@ -1,14 +1,13 @@
 package datamodel;
 
 import datamodel.language.Gender;
-import datamodel.language.Language;
 import datamodel.language.PartOfSpeech;
 import org.apache.commons.lang3.StringUtils;
 
 public class Word {
 
     private String word;
-    private Language language;
+    private String language;
     private Theme theme;
     private boolean keyField;
     private PartOfSpeech partOfSpeech;
@@ -18,7 +17,7 @@ public class Word {
         return keyField;
     }
 
-    public Word(String word, Language language, Theme theme) {
+    public Word(String word, String language, Theme theme) {
         this.word = word;
         this.language = language;
         this.theme = theme;
@@ -27,7 +26,7 @@ public class Word {
         this.gender = new Gender("");
     }
 
-    public Word(String word, Language language, Theme theme, PartOfSpeech partOfSpeech, Gender gender, boolean keyField) {
+    public Word(String word, String language, Theme theme, PartOfSpeech partOfSpeech, Gender gender, boolean keyField) {
         this.word = word;
         this.language = language;
         this.theme = theme;
@@ -36,7 +35,7 @@ public class Word {
         this.keyField = keyField;
     }
 
-    public Word(String word, Language language, Theme theme, boolean keyField) {
+    public Word(String word, String language, Theme theme, boolean keyField) {
         this.word = word;
         this.language = language;
         this.theme = theme;
@@ -53,7 +52,7 @@ public class Word {
         this.word = word;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 
@@ -65,7 +64,7 @@ public class Word {
         return word;
     }
 
-    public Language getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
@@ -94,7 +93,7 @@ public class Word {
         StringBuilder wordBuilder = new StringBuilder();
         wordBuilder.append(word);
         wordBuilder.append(" [");
-        wordBuilder.append(language.name());
+        wordBuilder.append(language);
         wordBuilder.append("] ");
         return wordBuilder.toString();
     }

@@ -4,6 +4,7 @@ import datamodel.EmptyTheme;
 import datamodel.language.Language;
 import datamodel.Theme;
 import datamodel.Word;
+import datamodel.language.LanguageInfo;
 import gui.swingui.MainWindow;
 import gui.swingui.record.RecordWindow;
 import org.apache.commons.io.FileUtils;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 public class AddRecordWindow extends RecordWindow {
@@ -104,11 +106,15 @@ public class AddRecordWindow extends RecordWindow {
     }
 
     @Override
-    protected List<Word> initWords() {
+    protected List<Word> initWords(Set<LanguageInfo> supportedLanguages) {
         final java.util.List<Word> words = new ArrayList<>();
-        for(Language language : Language.values()) {
-            words.add(new Word(StringUtils.EMPTY, language, new EmptyTheme(), false));
-        }
+        supportedLanguages.forEach(languageInfo ->
+                words.add(
+                        new Word(
+                                StringUtils.EMPTY,
+                                languageInfo.getLanguage(),
+                                new EmptyTheme(),
+                                false)));
         return words;
     }
 

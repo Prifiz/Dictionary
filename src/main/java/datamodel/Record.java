@@ -111,15 +111,15 @@ public class Record implements Equivalent {
         return result;
     }
 
-    protected Set<Language> getLanguages(List<Word> words) {
-        Set<Language> result = new HashSet<>();
+    protected Set<String> getLanguages(List<Word> words) {
+        Set<String> result = new HashSet<>();
         for(Word word : words) {
             result.add(word.getLanguage());
         }
         return result;
     }
 
-    protected Word getByLanguage(Language language, List<Word> words) {
+    protected Word getByLanguage(String language, List<Word> words) {
         Word word = null;
         for(Word currentWord : words) {
             if(language.equals(currentWord.getLanguage())) {
@@ -148,7 +148,7 @@ public class Record implements Equivalent {
         if(EquivalenceStrategy.ALL.equals(equivalenceStrategy)) {
             return this.getWords().equals(record.getWords());
         } else if(EquivalenceStrategy.ANY.equals(equivalenceStrategy)) {
-            for(Language language : getLanguages(record.getWords())) {
+            for(String language : getLanguages(record.getWords())) {
                 if(!getByLanguage(language, record.getWords()).equals(getByLanguage(language, this.getWords()))) {
                     return false;
                 }
