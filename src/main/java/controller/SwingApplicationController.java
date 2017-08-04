@@ -23,17 +23,14 @@ import gui.swingui.MainTableModel;
 import gui.swingui.MainWindow;
 import gui.swingui.ViewCustomizationRecord;
 import gui.swingui.record.CustomizationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.Constants;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SwingApplicationController implements Controller {
@@ -201,9 +198,18 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
-    public void saveSearchHistory(Set<String> history) {
+    public void saveSearchHistory(Collection<? extends String> history) {
         StringBuilder historyBuilder = new StringBuilder();
-        history.forEach(historyBuilder::append);
+        Iterator historyIterator = history.iterator();
+        while (historyIterator.hasNext()){
+            String nextItem = (String) historyIterator.next();
+            if(StringUtils.isNotBlank(nextItem)) {
+                historyBuilder.append(nextItem);
+            }
+            if(historyIterator.hasNext()) {
+                historyBuilder.append(Constants.EOL);
+            }
+        }
         FileOperation saveOperation = new SaveFileOperation(
                 Constants.SEARCH_HISTORY_FILEPATH, historyBuilder.toString());
         try {
@@ -215,18 +221,19 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
-    public Set<String> loadSearchHistory() {
-        Set<String> result = new HashSet<>();
+    public List<String> loadSearchHistory() {
         FileOperation loadOperation = new LoadFileOperation(Constants.SEARCH_HISTORY_FILEPATH, true);
         try {
             loadOperation.doFileOperation();
             String historyContent = ((AbstractFileOperation)loadOperation).getFileContent();
-            Collections.addAll(result, historyContent.split(Constants.EOL));
+            return Arrays.stream(historyContent.split(Constants.EOL))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toList());
         } catch (IOException ex) {
             LOGGER.error("Couldn't load search history");
             LOGGER.error(ex.getMessage());
         }
-        return result;
+        return new LinkedList<>();
     }
 
 }

@@ -26,8 +26,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 public class MainWindow extends JFrame implements Customizable {
 
@@ -58,7 +58,7 @@ public class MainWindow extends JFrame implements Customizable {
     private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
     private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
     private Set<String> topics = new TreeSet<>();
-    private Set<String> searchHistory = appController.loadSearchHistory();
+    private List<String> searchHistory = appController.loadSearchHistory();
     //private String searchComboCurrentlySelected = searchHistory.isEmpty() ? "" : searchHistory.iterator().next();
 
     private ComboBoxModel<String> comboBoxModel =
@@ -88,11 +88,7 @@ public class MainWindow extends JFrame implements Customizable {
     }
 
     private ComboBoxModel<String> getSearchComboModel() {
-        return new DefaultComboBoxModel<>(searchHistory
-                .stream()
-                .sorted(Comparator.reverseOrder())
-                .collect(Collectors.toSet())
-                .toArray(new String[searchHistory.size()]));
+        return new DefaultComboBoxModel<>(searchHistory.toArray(new String[searchHistory.size()]));
     }
 
     private void configureViewCustomization() {
@@ -107,13 +103,13 @@ public class MainWindow extends JFrame implements Customizable {
                     .stream()
                     .filter(entry -> entry.getValue().equals(record.getColumnName()))
                     .forEach(entry -> {
-                Integer columnIdx = entry.getKey();
-                if (record.isVisible()) {
-                    unhideColumn(columnIdx);
-                } else {
-                    hideColumn(columnIdx);
-                }
-            });
+                        Integer columnIdx = entry.getKey();
+                        if (record.isVisible()) {
+                            unhideColumn(columnIdx);
+                        } else {
+                            hideColumn(columnIdx);
+                        }
+                    });
         }
         updateFormData();
     }
@@ -160,6 +156,8 @@ public class MainWindow extends JFrame implements Customizable {
         byTopicCombo.updateUI();
         languageCombo.setModel(getLanguagesComboModel());
         languageCombo.updateUI();
+        searchCombo.setModel(getSearchComboModel());
+        searchCombo.updateUI();
     }
 
     JTable getMainTable() {
@@ -179,14 +177,16 @@ public class MainWindow extends JFrame implements Customizable {
 
 
     private void initButtonsActions() {
+        final int MAX_SEARCH_HISTORY_SIZE = 5;
+
         newButton.addActionListener(e -> createNewRecord());
 
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MainTableModel model = (MainTableModel) mainTable.getModel();
                 int[] rows = mainTable.getSelectedRows();
-                for(int i=0;i<rows.length;i++){
-                    model.removeRow(rows[i]-i);
+                for (int i = 0; i < rows.length; i++) {
+                    model.removeRow(rows[i] - i);
                 }
                 updateFormData();
                 for (ActionListener a : byTopicCombo.getActionListeners()) {
@@ -241,11 +241,21 @@ public class MainWindow extends JFrame implements Customizable {
         //searchCombo.addActionListener((e) -> searchComboCurrentlySelected = (String) searchCombo.getSelectedItem());
 
         searchButton.addActionListener((e) -> {
-            //searchHistory.add((String) searchCombo.getSelectedItem());
-            //searchCombo.setModel(getSearchComboModel());
-            appController.searchRecordsByLanguage(
-                    (String)searchCombo.getSelectedItem(), languageComboCurrentlySelected);
-            appController.saveSearchHistory(searchHistory);
+            String searchComboCurrentlySelected = (String) searchCombo.getSelectedItem();
+            while (searchHistory.contains(searchComboCurrentlySelected)) {
+                searchHistory.remove(searchComboCurrentlySelected);
+            }
+            while (searchHistory.size() >= MAX_SEARCH_HISTORY_SIZE) {
+                searchHistory.remove(searchHistory.size() - 1);
+            }
+
+            searchHistory.add(searchComboCurrentlySelected);
+            searchCombo.setModel(getSearchComboModel());
+            appController.searchRecordsByLanguage(searchComboCurrentlySelected, languageComboCurrentlySelected);
+            appController.saveSearchHistory(searchHistory/*.stream()
+                    .sorted(Collections.reverseOrder())
+                    .collect(Collectors.toList())*/);
+            searchHistory = appController.loadSearchHistory();
             updateFormData();
         });
 

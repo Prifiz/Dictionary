@@ -9,6 +9,7 @@ import gui.swingui.ViewCustomizationRecord;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,6 @@ public interface Controller {
     void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException;
     void searchRecordsByLanguage(String searchPhrase, String language);
     void resetSearch();
-    void saveSearchHistory(Set<String> history);
-    Set<String> loadSearchHistory();
+    void saveSearchHistory(Collection<? extends String> history);
+    List<String> loadSearchHistory();
 }
