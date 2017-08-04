@@ -75,7 +75,7 @@ public class SimpleSearch implements Search {
             });
         });
         // FIXME only for tests!!!
-        dictionary.resetWithNewData(new Dictionary(result));
+        //dictionary.resetWithNewData(new Dictionary(result));
         return result;
     }
 }

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Dictionary {
 
@@ -21,7 +20,12 @@ public class Dictionary {
 
     public void resetWithNewData(Dictionary dictionary) {
         this.records.clear();
-        this.records.addAll(dictionary.getAllRecordsAsList().stream().collect(Collectors.toList()));
+        this.records.addAll(new ArrayList<>(dictionary.getAllRecordsAsList()));
+    }
+
+    public void resetWithNewData(List<Record> records) {
+        this.records.clear();
+        this.records.addAll(records);
     }
 
 

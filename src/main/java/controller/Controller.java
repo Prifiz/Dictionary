@@ -31,5 +31,6 @@ public interface Controller {
     //void removeRecords(List<Integer> recordsIds) throws IOException;
     void exportToExcel(String filePath, JTable currentDictionaryView);
     void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException;
-    List<Record> searchRecordsByLanguage(String searchPhrase, String language);
+    void searchRecordsByLanguage(String searchPhrase, String language);
+    void resetSearch();
 }

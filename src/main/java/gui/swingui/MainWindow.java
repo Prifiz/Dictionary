@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ public class MainWindow extends JFrame implements Customizable {
     private JComboBox<String> searchCombo;
     private JComboBox<String> languageCombo;
     private JButton searchButton;
-
+    private JButton resetSearchButton;
 
     private JScrollPane scrollPane;
     private JButton newButton;
@@ -146,6 +147,7 @@ public class MainWindow extends JFrame implements Customizable {
         searchCombo = new JComboBox<>(getSearchComboModel());
         languageCombo = new JComboBox<>(getLanguagesComboModel());
         searchButton = new JButton("Search");
+        resetSearchButton = new JButton("Reset");
         LOGGER.info("Controls initialization complete");
     }
 
@@ -246,9 +248,15 @@ public class MainWindow extends JFrame implements Customizable {
         });
 
         searchButton.addActionListener((e) -> {
-            searchHistory.add((String) searchCombo.getSelectedItem());
-            searchCombo.setModel(getSearchComboModel());
-            appController.searchRecordsByLanguage((String)searchCombo.getSelectedItem(), languageComboCurrentlySelected);
+            //searchHistory.add((String) searchCombo.getSelectedItem());
+            //searchCombo.setModel(getSearchComboModel());
+            appController.searchRecordsByLanguage(
+                    (String)searchCombo.getSelectedItem(), languageComboCurrentlySelected);
+            updateFormData();
+        });
+
+        resetSearchButton.addActionListener((e) -> {
+            appController.resetSearch();
             updateFormData();
         });
 
@@ -521,7 +529,9 @@ public class MainWindow extends JFrame implements Customizable {
                 .addGroup(groupLayout.createSequentialGroup()
                         .addComponent(languageLabel)
                         .addComponent(languageCombo))
-                .addComponent(searchButton));
+                .addGroup(groupLayout.createSequentialGroup()
+                        .addComponent(searchButton)
+                        .addComponent(resetSearchButton)));
 
         groupLayout.setHorizontalGroup(horizontalGroup);
 
@@ -543,7 +553,9 @@ public class MainWindow extends JFrame implements Customizable {
                         .addGroup(groupLayout.createParallelGroup()
                                 .addComponent(languageLabel)
                                 .addComponent(languageCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                        .addComponent(searchButton)));
+                        .addGroup(groupLayout.createParallelGroup()
+                                .addComponent(searchButton)
+                                .addComponent(resetSearchButton))));
 
         groupLayout.setVerticalGroup(vGroup);
         LOGGER.info("MainWindow layout initialization complete");

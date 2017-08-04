@@ -33,6 +33,7 @@ import java.util.Set;
 public class SwingApplicationController implements Controller {
 
     private Dictionary dictionary;
+    private Dictionary dictionaryBackup;
     private Set<LanguageInfo> supportedLanguages;
     private static final Logger LOGGER = LogManager.getLogger(SwingApplicationController.class);
 
@@ -57,6 +58,7 @@ public class SwingApplicationController implements Controller {
 
     private SwingApplicationController() {
         this.dictionary = new Dictionary();
+        this.dictionaryBackup = new Dictionary();
         this.supportedLanguages = initSupportedLanguages();
     }
 
@@ -174,10 +176,20 @@ public class SwingApplicationController implements Controller {
     }
 
     @Override
-    public List<Record> searchRecordsByLanguage(String searchPhrase, String language) {
+    public void searchRecordsByLanguage(String searchPhrase, String language) {
         Search search = new SimpleSearch();
-        return search.findAnyWordOccurrence(dictionary, searchPhrase, language);
+        if(dictionaryBackup.isEmpty()) {
+            dictionaryBackup.resetWithNewData(dictionary);
+        }
+        List<Record> foundRecords = search.findAnyWordOccurrence(dictionaryBackup, searchPhrase, language);
+        dictionary.resetWithNewData(foundRecords);
     }
 
+    @Override
+    public void resetSearch() {
+        if(!dictionaryBackup.isEmpty()) {
+            dictionary.resetWithNewData(dictionaryBackup);
+        }
+    }
 
 }
