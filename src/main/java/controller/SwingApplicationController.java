@@ -1,5 +1,6 @@
 package controller;
 
+import com.sun.istack.internal.NotNull;
 import controller.filesystem.*;
 import controller.filesystem.impl.LoadFileOperation;
 import controller.filesystem.impl.SaveFileOperation;
@@ -29,9 +30,12 @@ import utils.Constants;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SwingApplicationController implements Controller {
 
@@ -195,6 +199,35 @@ public class SwingApplicationController implements Controller {
         if(!dictionaryBackup.isEmpty()) {
             dictionary.resetWithNewData(dictionaryBackup);
         }
+    }
+
+    @Override
+    public void saveSearchHistory(@NotNull Set<String> history) {
+        StringBuilder historyBuilder = new StringBuilder();
+        history.forEach(historyBuilder::append);
+        FileOperation saveOperation = new SaveFileOperation(
+                Constants.SEARCH_HISTORY_FILEPATH, historyBuilder.toString());
+        try {
+            saveOperation.doFileOperation();
+        } catch (IOException ex) {
+            LOGGER.error("Couldn't save search history");
+            LOGGER.error(ex.getMessage());
+        }
+    }
+
+    @Override
+    public Set<String> loadSearchHistory() {
+        Set<String> result = new HashSet<>();
+        FileOperation loadOperation = new LoadFileOperation(Constants.SEARCH_HISTORY_FILEPATH, true);
+        try {
+            loadOperation.doFileOperation();
+            String historyContent = ((AbstractFileOperation)loadOperation).getFileContent();
+            Collections.addAll(result, historyContent.split(Constants.EOL));
+        } catch (IOException ex) {
+            LOGGER.error("Couldn't load search history");
+            LOGGER.error(ex.getMessage());
+        }
+        return result;
     }
 
 }

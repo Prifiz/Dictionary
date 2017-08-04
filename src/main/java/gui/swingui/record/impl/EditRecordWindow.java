@@ -107,27 +107,25 @@ public class EditRecordWindow extends RecordWindow {
     }
 
     protected void initSaveOperation(final List<Word> words) {
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (wordsTable.hasFocus() || wordsTable.isEditing()) {
-                    wordsTable.getCellEditor().stopCellEditing();
+        saveButton.addActionListener(e -> {
+            if (wordsTable.hasFocus() || wordsTable.isEditing()) {
+                wordsTable.getCellEditor().stopCellEditing();
+            }
+            for (Word word : words) {
+                if (existingTopicsCombo.getModel().getSize() == 0) {
+                    word.setTheme(new EmptyTheme());
+                } else {
+                    word.setTheme(new Theme(existingTopicsCombo.getSelectedItem().toString(), "empty description"));
                 }
-                for (Word word : words) {
-                    if (existingTopicsCombo.getModel().getSize() == 0) {
-                        word.setTheme(new EmptyTheme());
-                    } else {
-                        word.setTheme(new Theme(existingTopicsCombo.getSelectedItem().toString(), "empty description"));
-                    }
-                }
+            }
 
-                try {
-                    appController.editRecord(recordToEdit, words, copiedPictureFile.getName(), description.getText());
-                    mainWindow.updateFormData();
-                    dispose();
-                } catch (IOException ex) {
-                    LOGGER.error(ex.getMessage());
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
+            try {
+                appController.editRecord(recordToEdit, words, copiedPictureFile.getName(), description.getText());
+                mainWindow.updateFormData();
+                dispose();
+            } catch (IOException ex) {
+                LOGGER.error(ex.getMessage());
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
     }

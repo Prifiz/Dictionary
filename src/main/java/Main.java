@@ -1,7 +1,5 @@
 import controller.Controller;
 import controller.SwingApplicationController;
-import datamodel.EquivalenceStrategy;
-import datamodel.Record;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

@@ -21,14 +21,12 @@ import java.util.Set;
 public class MainTableModel implements TableModel {
 
     private Dictionary dictionary;
-    private Set<LanguageInfo> supportedLanguages;
     private final Map<Integer, String> headerMap;
 
     private Set<TableModelListener> listeners = new HashSet<>();
 
     public MainTableModel(Dictionary dictionary, Set<LanguageInfo> supportedLanguages) {
         this.dictionary = dictionary;
-        this.supportedLanguages = supportedLanguages;
         this.headerMap = new LinkedHashMap<Integer, String>() {{
             int headerIdx = 0;
             Iterator iterator = supportedLanguages.iterator();

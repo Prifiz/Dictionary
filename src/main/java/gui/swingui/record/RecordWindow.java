@@ -15,7 +15,6 @@ import utils.Constants;
 import javax.swing.*;
 
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -264,15 +263,12 @@ public abstract class RecordWindow extends JFrame {
             String currentLang = supportedLanguage.getLanguage().toLowerCase();
             JComboBox<String> partOfSpeechCombo = new JComboBox<>();
             partOfSpeechCombo.addItem(Constants.NOT_SET);
-            supportedLanguage.getPartsOfSpeech().forEach(partOfSpeech -> {
-                partOfSpeechCombo.addItem(partOfSpeech.getValue());
-            });
+            supportedLanguage.getPartsOfSpeech().forEach(
+                    partOfSpeech -> partOfSpeechCombo.addItem(partOfSpeech.getValue()));
             partsOfSpeechMapping.put(currentLang, new DefaultCellEditor(partOfSpeechCombo));
             JComboBox<String> gendersCombo = new JComboBox<>();
             gendersCombo.addItem(Constants.NOT_SET);
-            supportedLanguage.getGenders().forEach(gender -> {
-                gendersCombo.addItem(gender.getValue());
-            });
+            supportedLanguage.getGenders().forEach(gender -> gendersCombo.addItem(gender.getValue()));
             gendersMapping.put(currentLang, new DefaultCellEditor(gendersCombo));
         });
 

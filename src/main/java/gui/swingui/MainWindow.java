@@ -63,7 +63,7 @@ public class MainWindow extends JFrame implements Customizable {
     private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
     private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
     private Set<String> topics = new TreeSet<>();
-    private Set<String> searchHistory = new LinkedHashSet<>();
+    private Set<String> searchHistory = appController.loadSearchHistory();
 
     private ComboBoxModel<String> comboBoxModel =
             new DefaultComboBoxModel<>(topics.toArray(new String[topics.size()]));
@@ -251,6 +251,7 @@ public class MainWindow extends JFrame implements Customizable {
             //searchCombo.setModel(getSearchComboModel());
             appController.searchRecordsByLanguage(
                     (String)searchCombo.getSelectedItem(), languageComboCurrentlySelected);
+            appController.saveSearchHistory(searchHistory);
             updateFormData();
         });
 

@@ -33,4 +33,6 @@ public interface Controller {
     void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException;
     void searchRecordsByLanguage(String searchPhrase, String language);
     void resetSearch();
+    void saveSearchHistory(Set<String> history);
+    Set<String> loadSearchHistory();
 }

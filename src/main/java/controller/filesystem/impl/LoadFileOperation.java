@@ -12,8 +12,16 @@ public class LoadFileOperation extends AbstractFileOperation implements FileOper
 
     private static final Logger LOGGER = LogManager.getLogger(LoadFileOperation.class);
 
+    private boolean appendLineBreak;
+
     public LoadFileOperation(String filePath) {
         super(filePath);
+        appendLineBreak = false;
+    }
+
+    public LoadFileOperation(String filePath, boolean appendLineBreak) {
+        super(filePath);
+        this.appendLineBreak = appendLineBreak;
     }
 
     @Override
@@ -27,6 +35,9 @@ public class LoadFileOperation extends AbstractFileOperation implements FileOper
             StringBuilder stringBuilder = new StringBuilder();
             while ((str = in.readLine()) != null) {
                 stringBuilder.append(str);
+                if(appendLineBreak) {
+                    stringBuilder.append(Constants.EOL);
+                }
             }
             fileContent = stringBuilder.toString();
             in.close();
