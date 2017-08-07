@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SwingApplicationController implements Controller {
 
@@ -233,13 +232,20 @@ public class SwingApplicationController implements Controller {
 
     @Override
     public List<String> loadSearchHistory() {
+        List<String> result = new LinkedList<>();
         FileOperation loadOperation = new LoadFileOperation(Constants.SEARCH_HISTORY_FILEPATH, true);
         try {
             loadOperation.doFileOperation();
             String historyContent = ((AbstractFileOperation)loadOperation).getFileContent();
-            return Arrays.stream(historyContent.split(Constants.EOL))
-                    .filter(StringUtils::isNotBlank)
-                    .collect(Collectors.toCollection(LinkedList::new));
+            Scanner scanner = new Scanner(historyContent);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if(StringUtils.isNotBlank(line.trim())) {
+                    result.add(line);
+                }
+            }
+            scanner.close();
+            return result;
         } catch (IOException ex) {
             LOGGER.error("Couldn't load search history");
             LOGGER.error(ex.getMessage());

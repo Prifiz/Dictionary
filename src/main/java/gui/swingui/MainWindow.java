@@ -59,7 +59,7 @@ public class MainWindow extends JFrame implements Customizable {
     private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
     private Set<String> topics = new TreeSet<>();
     private List<String> searchHistory = appController.loadSearchHistory();
-    //private String searchComboCurrentlySelected = searchHistory.isEmpty() ? "" : searchHistory.iterator().next();
+    private String searchComboCurrentlySelected;
 
     private ComboBoxModel<String> comboBoxModel =
             new DefaultComboBoxModel<>(topics.toArray(new String[topics.size()]));
@@ -88,7 +88,13 @@ public class MainWindow extends JFrame implements Customizable {
     }
 
     private ComboBoxModel<String> getSearchComboModel() {
-        return new DefaultComboBoxModel<>(searchHistory.toArray(new String[searchHistory.size()]));
+        List<String> reverseList = new LinkedList<>();
+        ListIterator listIterator = searchHistory.listIterator(searchHistory.size());
+        while(listIterator.hasPrevious()) {
+            reverseList.add((String)listIterator.previous());
+        }
+
+        return new DefaultComboBoxModel<>(reverseList.toArray(new String[reverseList.size()]));
     }
 
     private void configureViewCustomization() {
@@ -139,6 +145,7 @@ public class MainWindow extends JFrame implements Customizable {
         languageCombo = new JComboBox<>(getLanguagesComboModel());
         searchButton = new JButton("Search");
         resetSearchButton = new JButton("Reset");
+        searchComboCurrentlySelected = (String) searchCombo.getSelectedItem();
         LOGGER.info("Controls initialization complete");
     }
 
@@ -156,7 +163,6 @@ public class MainWindow extends JFrame implements Customizable {
         byTopicCombo.updateUI();
         languageCombo.setModel(getLanguagesComboModel());
         languageCombo.updateUI();
-        searchCombo.setModel(getSearchComboModel());
         searchCombo.updateUI();
     }
 
@@ -238,10 +244,9 @@ public class MainWindow extends JFrame implements Customizable {
                 languageComboCurrentlySelected = (String) languageCombo.getSelectedItem());
 
         searchCombo.setEditable(true);
-        //searchCombo.addActionListener((e) -> searchComboCurrentlySelected = (String) searchCombo.getSelectedItem());
+        searchCombo.addActionListener((e) -> searchComboCurrentlySelected = (String) searchCombo.getSelectedItem());
 
         searchButton.addActionListener((e) -> {
-            String searchComboCurrentlySelected = (String) searchCombo.getSelectedItem();
             while (searchHistory.contains(searchComboCurrentlySelected)) {
                 searchHistory.remove(searchComboCurrentlySelected);
             }
@@ -250,12 +255,10 @@ public class MainWindow extends JFrame implements Customizable {
             }
 
             searchHistory.add(searchComboCurrentlySelected);
+
             searchCombo.setModel(getSearchComboModel());
             appController.searchRecordsByLanguage(searchComboCurrentlySelected, languageComboCurrentlySelected);
-            appController.saveSearchHistory(searchHistory/*.stream()
-                    .sorted(Collections.reverseOrder())
-                    .collect(Collectors.toList())*/);
-            searchHistory = appController.loadSearchHistory();
+            appController.saveSearchHistory(searchHistory);
             updateFormData();
         });
 
