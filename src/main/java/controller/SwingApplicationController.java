@@ -29,8 +29,11 @@ import org.apache.logging.log4j.Logger;
 import utils.Constants;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SwingApplicationController implements Controller {
@@ -73,9 +76,17 @@ public class SwingApplicationController implements Controller {
 
     public void startApplication() {
         LOGGER.info("Starting application...");
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.customize(CustomizationUtils.loadViewCustomization());
-        mainWindow.setVisible(true);
+        try
+        {
+            SwingUtilities.invokeAndWait(() -> EventQueue.invokeLater(() -> {
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.setVisible(true);
+                mainWindow.customize(CustomizationUtils.loadViewCustomization());
+
+            }));
+        } catch (InvocationTargetException | InterruptedException e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 
     @Override
@@ -228,7 +239,7 @@ public class SwingApplicationController implements Controller {
             String historyContent = ((AbstractFileOperation)loadOperation).getFileContent();
             return Arrays.stream(historyContent.split(Constants.EOL))
                     .filter(StringUtils::isNotBlank)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toCollection(LinkedList::new));
         } catch (IOException ex) {
             LOGGER.error("Couldn't load search history");
             LOGGER.error(ex.getMessage());

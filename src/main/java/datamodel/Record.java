@@ -2,6 +2,7 @@ package datamodel;
 
 import exceptions.RecordHasNotSingleThemeException;
 import org.apache.commons.lang3.StringUtils;
+import utils.Constants;
 
 import java.util.HashSet;
 import java.util.List;
@@ -158,5 +159,14 @@ public class Record implements Equivalent {
         }
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        words.forEach(stringBuilder::append);
+        stringBuilder.append(Constants.EOL);
+        stringBuilder.append(pictureName);
+        stringBuilder.append(Constants.EOL);
+        stringBuilder.append(description);
+        return stringBuilder.toString();
+    }
 }

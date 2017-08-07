@@ -43,7 +43,7 @@ class DictionaryXmlContentHandler implements DictionaryContentHandler {
 
                 readWord = new Word(
                         (java.lang.String) word.text(),
-                        Language.getByName((java.lang.String) word.@language),
+                        (java.lang.String) word.@language,
                         new Theme(topic, "emptyDescription"),
                         new PartOfSpeech(partOfSpeech),
                         new Gender(gender),

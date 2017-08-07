@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,7 @@ public class SimpleSearch implements Search {
     private boolean isThemeFoundInWords(List<Word> words, String themeName) {
         boolean result = false;
         for(Word word : words) {
-            if(word.getTheme().getName().equals(themeName)) {
+            if(word.getTheme().getName().equalsIgnoreCase(themeName)) {
                 return true;
             }
         }
@@ -53,29 +52,30 @@ public class SimpleSearch implements Search {
         return result;
     }
 
+    private boolean checkRecord(List<Word> wordsToCheck, String phrase) {
+        return wordsToCheck
+                .stream()
+                .anyMatch(word ->
+                        Pattern.compile(phrase).matcher(word.getWord()).find());
+    }
+
     @Override
     public List<Record> findAnyWordOccurrence(Dictionary dictionary, String phrase, String language) {
         List<Record> result = new ArrayList<>();
-        dictionary.getAllRecordsAsList().forEach((record) -> {
+        for(Record record : dictionary.getAllRecordsAsList()) {
             List<Word> wordsToCheck;
             if(Constants.ANY_LANGUAGE.equalsIgnoreCase(language)) {
                 wordsToCheck = record.getWords();
             } else {
-                wordsToCheck = record.getWords()
+                wordsToCheck = (record.getWords())
                         .stream()
-                        .filter(word -> word.getLanguage().toString().equalsIgnoreCase(language))
+                        .filter(word -> word.getLanguage().equalsIgnoreCase(language))
                         .collect(Collectors.toList());
             }
-            wordsToCheck.forEach(word -> {
-                Pattern pattern = Pattern.compile(phrase);
-                Matcher matcher = pattern.matcher(word.getWord());
-                if(matcher.find()) {
-                    result.add(record);
-                }
-            });
-        });
-        // FIXME only for tests!!!
-        //dictionary.resetWithNewData(new Dictionary(result));
+            if(checkRecord(wordsToCheck, phrase)) {
+                result.add(record);
+            }
+        }
         return result;
     }
 }
