@@ -132,6 +132,7 @@ public class MainWindow extends JFrame implements Customizable {
         model = new MainTableModel(appController.getDictionary(), appController.getSupportedLanguages());
         sorter = new TableRowSorter<>((MainTableModel) model);
         mainTable = new JTable(model);
+        mainTable.setName("mainTable");
         scrollPane = new JScrollPane(mainTable);
         byTopicLabel = new JLabel("By Topic");
         newButton = new JButton("New...");
@@ -142,8 +143,10 @@ public class MainWindow extends JFrame implements Customizable {
         searchLabel = new JLabel("Search:");
         languageLabel = new JLabel("Language:");
         searchCombo = new JComboBox<>(getSearchComboModel());
+        searchCombo.setName("searchCombo");
         languageCombo = new JComboBox<>(getLanguagesComboModel());
         searchButton = new JButton("Search");
+        searchButton.setName("searchButton");
         resetSearchButton = new JButton("Reset");
         searchComboCurrentlySelected = (String) searchCombo.getSelectedItem();
         LOGGER.info("Controls initialization complete");
