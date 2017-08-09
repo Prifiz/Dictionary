@@ -88,8 +88,6 @@ public class MainTableModel implements TableModel {
         List<Record> recordList = dictionary.getAllRecordsAsList();
         Record record = recordList.get(rowIndex);
         int langsCount = supportedLanguages.size();
-
-        // FIXME words can come into into incorrect languages during Excel import!!!
         if (columnIndex < langsCount) {
             return record.getWords().get(columnIndex).getWord();
         } else if (columnIndex == langsCount) {
