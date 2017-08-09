@@ -24,8 +24,6 @@ public class CustomizeViewWindow extends JFrame {
     private Controller appController = SwingApplicationController.getInstance();
 
     public CustomizeViewWindow(MainWindow parentForm) throws HeadlessException {
-
-        // TODO read customization from file
         this.mainWindow = parentForm;
         initForm();
         initControls();

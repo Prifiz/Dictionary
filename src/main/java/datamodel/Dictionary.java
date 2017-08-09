@@ -62,12 +62,12 @@ public class Dictionary {
         }
     }
 
-    public void replaceUnique(Record recordToEdit, Record newRecord) {
-        int idx = getRecordIndex(recordToEdit);
-        if(idx >= 0) {
-            // TODO
-        }
-    }
+//    public void replaceUnique(Record recordToEdit, Record newRecord) {
+//        int idx = getRecordIndex(recordToEdit);
+//        if(idx >= 0) {
+//
+//        }
+//    }
 
     public void removeRecord(int number) {
         if(number >= 0 && number < records.size()) {
@@ -76,7 +76,7 @@ public class Dictionary {
     }
 
     public void removeAll(Collection<Record> records) {
-        records.removeAll(records);
+        this.records.removeAll(records);
     }
 
     public void removeAllTopicOccurences(String topicName) {

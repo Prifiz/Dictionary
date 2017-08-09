@@ -4,11 +4,13 @@ import controller.integration.excel.mergestrategies.ImportFilePriorityMergeStrat
 import controller.integration.excel.mergestrategies.RecordMergeStrategy;
 import datamodel.Dictionary;
 import datamodel.EmptyTheme;
-import datamodel.language.Language;
 import datamodel.Record;
 import datamodel.Theme;
 import datamodel.Word;
+import datamodel.language.LanguageInfo;
 import gui.swingui.MainTableModel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFPicture;
 import org.apache.poi.hssf.usermodel.HSSFPictureData;
@@ -20,23 +22,33 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import utils.Constants;
+import utils.LanguageUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ExcelHandlerImpl implements ExcelHandler {
 
-    private String filename;
+    private final String filename;
+    private final Set<LanguageInfo> supportedLanguages;
+    private static final Logger LOGGER = LogManager.getLogger(ExcelHandlerImpl.class);
 
-    public ExcelHandlerImpl(String filename) {
+    public ExcelHandlerImpl(String filename, Set<LanguageInfo> supportedLanguages) {
         this.filename = filename;
+        this.supportedLanguages = supportedLanguages;
     }
 
     protected Workbook createWorkbook() throws IOException {
@@ -245,18 +257,12 @@ public class ExcelHandlerImpl implements ExcelHandler {
     }
 
     @Override
-    // FIXME Hardcoded like HELL!!!
-    public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel) throws IOException {
-
-        /*FileInputStream inputStream = new FileInputStream(filename);
-        try {
+    public void importToCurrentDictionaryView(Dictionary dictionary, MainTableModel mainTableModel)
+            throws IOException, InvalidFormatException {
+        FileInputStream inputStream = new FileInputStream(filename);
             Workbook dictionaryWorkbook = WorkbookFactory.create(inputStream);
-
-
             Sheet sheet = dictionaryWorkbook.getSheetAt(0);
-
             Row header = sheet.getRow(0);
-
             Map<Integer, String> columnNamesMapping = mainTableModel.getHeaders();
 
             for(int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); rowNumber++) {
@@ -265,39 +271,36 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
                 //String topic = "";// FIXME unbind topic from word!
                 String description = "";
-
                 // should be at least 1 russian word
                 String pictureName = "";
-                for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
-                    String headerValue = header.getCell(colNum).getStringCellValue();
-                    if(columnNamesMapping.containsValue(headerValue)) {
-                        Cell cell = row.getCell(colNum);
 
-                        switch (headerValue) {
-                            case "Picture": {
-                                pictureName = saveCellPicture(sheet, cell);
-                                break;
+                //int wordIdx = 0;
+                for(int colNum = 0; colNum < row.getLastCellNum(); colNum++) {
+                    String excelTableHeaderValue = header.getCell(colNum).getStringCellValue();
+
+                    if(columnNamesMapping.containsValue(excelTableHeaderValue)) {
+                        Cell cell = row.getCell(colNum);
+                        if(Constants.PICTURE_COLUMN_TITLE.equalsIgnoreCase(excelTableHeaderValue)) {
+                            pictureName = saveCellPicture(sheet, cell);
+                        } else if("Topic".equalsIgnoreCase(excelTableHeaderValue)) {
+                            final String topic = cell.getStringCellValue();
+                            wordsMapping.forEach((integer, wrd) -> wrd.setTheme(new Theme(topic, "empty")));
+                        } else if("Description".equalsIgnoreCase(excelTableHeaderValue)) {
+                            description = cell.getStringCellValue();
+                        } else if(LanguageUtils.isLanguage(excelTableHeaderValue, supportedLanguages)) {
+                            int wordIdx = -1;
+                            for(Map.Entry<Integer, String> entry : columnNamesMapping.entrySet()) {
+                                if(entry.getValue().equalsIgnoreCase(excelTableHeaderValue)) {
+                                    wordIdx = entry.getKey();
+                                }
                             }
-                            case "English": {
-                                wordsMapping.put(0, new Word(cell.getStringCellValue(), Language.ENGLISH, new EmptyTheme(), false));
-                                break;
-                            }
-                            case "German": {
-                                wordsMapping.put(1, new Word(cell.getStringCellValue(), Language.GERMAN, new EmptyTheme(), false));
-                                break;
-                            }
-                            case "Russian": {
-                                wordsMapping.put(2, new Word(cell.getStringCellValue(), Language.RUSSIAN, new EmptyTheme(), false));
-                                break;
-                            }
-                            case "Topic": {
-                                final String topic = cell.getStringCellValue();
-                                wordsMapping.forEach((integer, wrd) -> wrd.setTheme(new Theme(topic, "empty")));
-                                break;
-                            }
-                            case "Description": {
-                                description = cell.getStringCellValue();
-                                break;
+                            if(wordIdx != -1) {
+                                wordsMapping.put(
+                                        wordIdx, new Word(
+                                                cell.getStringCellValue(),
+                                                excelTableHeaderValue,
+                                                new EmptyTheme(),
+                                                false));
                             }
                         }
                     }
@@ -311,13 +314,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
 
                 RecordMergeStrategy mergeStrategy = new ImportFilePriorityMergeStrategy();
                 mergeStrategy.merge(dictionary, new Record(words, pictureName, description));
-                //inputStream.close();
             }
-
-        } catch (InvalidFormatException ex) {
-            // TODO
-            System.out.println("Exception!");
-        }
-        System.out.println("DONE");*/
+        LOGGER.info("Export from excel done!");
     }
 }

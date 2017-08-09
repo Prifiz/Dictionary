@@ -11,6 +11,7 @@ import gui.swingui.record.RecordWindow;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import utils.Constants;
 import utils.ImageUtils;
 
@@ -353,7 +354,13 @@ public class MainWindow extends JFrame implements Customizable {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File selectedFile = outPathChooser.getSelectedFile();
-            appController.exportToExcel(selectedFile.getAbsolutePath(), mainTable);
+            try {
+                appController.exportToExcel(selectedFile.getAbsolutePath(), mainTable);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null,
+                        "Error occurred during export to Excel:\n" +
+                        ex.getMessage());
+            }
             prefs.put(LAST_USED_FOLDER, outPathChooser.getSelectedFile().getParent());
             JOptionPane.showMessageDialog(null, "Successfully saved");
         }
@@ -399,9 +406,10 @@ public class MainWindow extends JFrame implements Customizable {
             try {
                 appController.importFromExcel(selectedFile.getAbsolutePath(), (MainTableModel) mainTable.getModel());
                 prefs.put(LAST_USED_FOLDER, inputPathChooser.getSelectedFile().getParent());
+                //customize(appController.loadCustomization());
                 updateFormData();
                 JOptionPane.showMessageDialog(null, "Successfully loaded");
-            } catch (IOException e) {
+            } catch (IOException | InvalidFormatException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
             }
         }

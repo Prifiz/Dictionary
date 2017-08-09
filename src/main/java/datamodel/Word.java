@@ -19,7 +19,7 @@ public class Word {
 
     public Word(String word, String language, Theme theme) {
         this.word = word;
-        this.language = language;
+        this.language = language.toLowerCase();
         this.theme = theme;
         this.keyField = false;
         this.partOfSpeech = new PartOfSpeech("");
@@ -28,7 +28,7 @@ public class Word {
 
     public Word(String word, String language, Theme theme, PartOfSpeech partOfSpeech, Gender gender, boolean keyField) {
         this.word = word;
-        this.language = language;
+        this.language = language.toLowerCase();
         this.theme = theme;
         this.partOfSpeech = partOfSpeech;
         this.gender = gender;
@@ -37,7 +37,7 @@ public class Word {
 
     public Word(String word, String language, Theme theme, boolean keyField) {
         this.word = word;
-        this.language = language;
+        this.language = language.toLowerCase();
         this.theme = theme;
         this.partOfSpeech = new PartOfSpeech("");
         this.gender = new Gender("");

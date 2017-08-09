@@ -6,7 +6,6 @@ import utils.Constants;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Record implements Equivalent {
@@ -77,17 +76,6 @@ public class Record implements Equivalent {
         this.pictureName = pictureName;
         this.description = description;
     }
-
-    public Record(Map<String, String> recordParams) {
-//        List<Word> words = new ArrayList<>();
-//        for(Language language : Language.values()) {
-//            if(recordParams.containsKey(language.name())) {
-//                Word word = new Word()
-//            }
-//        }
-        // TODO
-    }
-
 
     @Override
     public boolean equals(Object o) {

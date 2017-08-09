@@ -6,6 +6,7 @@ import datamodel.Word;
 import datamodel.language.LanguageInfo;
 import gui.swingui.MainTableModel;
 import gui.swingui.ViewCustomizationRecord;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -30,8 +31,8 @@ public interface Controller {
     void editRecord(Record recordToEdit, List<Word> editedWords, String editedPictureName, String description) throws IOException;
     //void removeRecord(int recordId) throws IOException;
     //void removeRecords(List<Integer> recordsIds) throws IOException;
-    void exportToExcel(String filePath, JTable currentDictionaryView);
-    void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException;
+    void exportToExcel(String filePath, JTable currentDictionaryView) throws IOException;
+    void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException, InvalidFormatException;
     void searchRecordsByLanguage(String searchPhrase, String language);
     void resetSearch();
     void saveSearchHistory(Collection<? extends String> history);

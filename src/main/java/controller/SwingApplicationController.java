@@ -26,6 +26,7 @@ import gui.swingui.record.CustomizationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import utils.Constants;
 
 import javax.swing.*;
@@ -174,20 +175,16 @@ public class SwingApplicationController implements Controller {
 //    }
 
     @Override
-    public void exportToExcel(String filePath, JTable currentDictionaryView) {
-        ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
-        try {
-            excelHandler.exportCurrentDictionaryView(currentDictionaryView);
-        } catch (IOException ex) {
-            // TODO
-        }
+    public void exportToExcel(String filePath, JTable currentDictionaryView) throws IOException {
+        ExcelHandler excelHandler = new ExcelHandlerImpl(filePath, supportedLanguages);
+        excelHandler.exportCurrentDictionaryView(currentDictionaryView);
+
     }
 
     @Override
-    public void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException {
-        ExcelHandler excelHandler = new ExcelHandlerImpl(filePath);
+    public void importFromExcel(String filePath, MainTableModel mainTableModel) throws IOException, InvalidFormatException {
+        ExcelHandler excelHandler = new ExcelHandlerImpl(filePath, supportedLanguages);
         excelHandler.importToCurrentDictionaryView(dictionary, mainTableModel);
-
     }
 
     @Override

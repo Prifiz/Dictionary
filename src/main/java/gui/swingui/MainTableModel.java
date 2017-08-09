@@ -1,7 +1,6 @@
 package gui.swingui;
 
 import datamodel.Dictionary;
-import datamodel.language.Language;
 import datamodel.Record;
 import datamodel.language.LanguageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -87,41 +86,41 @@ public class MainTableModel implements TableModel {
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         List<Record> recordList = dictionary.getAllRecordsAsList();
-
+        Record record = recordList.get(rowIndex);
         int langsCount = supportedLanguages.size();
 
         // FIXME words can come into into incorrect languages during Excel import!!!
-        if (columnIndex < recordList.get(rowIndex).getWords().size()) {
-            return recordList.get(rowIndex).getWords().get(columnIndex).getWord();
+        if (columnIndex < langsCount) {
+            return record.getWords().get(columnIndex).getWord();
         } else if (columnIndex == langsCount) {
-            return new File(Constants.PICTURES_DIR_NAME, recordList.get(rowIndex).getPictureName());
+            return new File(Constants.PICTURES_DIR_NAME, record.getPictureName());
         } else if(columnIndex == langsCount + 1) {
-            return recordList.get(rowIndex).getTopicName();
+            return record.getTopicName();
         } else if(columnIndex == langsCount + 2) {
-            return recordList.get(rowIndex).getDescription();
+            return record.getDescription();
         }
         return StringUtils.EMPTY;
     }
 
     // Got from AbstractTableModel
-    public void fireTableChanged(TableModelEvent e) {
+    private void fireTableChanged(TableModelEvent e) {
         // Guaranteed to return a non-null array
 
         // Process the listeners last to first, notifying
         // those that are interested in this event
-        for (int i = listeners.size()-2; i >= 0; i -= 2) {
+        for (int i = listeners.size() - 2; i >= 0; i -= 2) {
             if (listeners.toArray()[i] == TableModelListener.class) {
                 ((TableModelListener)listeners.toArray()[i + 1]).tableChanged(e);
             }
         }
     }
 
-    public void fireTableRowsDeleted(int firstRow, int lastRow) {
+    private void fireTableRowsDeleted(int firstRow, int lastRow) {
         fireTableChanged(new TableModelEvent(this, firstRow, lastRow,
                 TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE));
     }
 
-    public void removeRow(int row) {
+    void removeRow(int row) {
         dictionary.removeRecord(row);
         fireTableRowsDeleted(row, row);
     }
