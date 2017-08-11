@@ -166,6 +166,7 @@ public class MainWindow extends JFrame implements Customizable {
         }
         byTopicCombo.updateUI();
         languageCombo.setModel(getLanguagesComboModel());
+        languageCombo.setSelectedItem(languageComboCurrentlySelected);
         languageCombo.updateUI();
         searchCombo.updateUI();
     }
@@ -251,6 +252,8 @@ public class MainWindow extends JFrame implements Customizable {
         searchCombo.addActionListener((e) -> searchComboCurrentlySelected = (String) searchCombo.getSelectedItem());
 
         searchButton.addActionListener((e) -> {
+            languageComboCurrentlySelected = (String) languageCombo.getSelectedItem();
+
             while (searchHistory.contains(searchComboCurrentlySelected)) {
                 searchHistory.remove(searchComboCurrentlySelected);
             }
