@@ -57,6 +57,21 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-jre</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/distributive/jre1.8.0_112</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>jre1.8.0_112</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -144,18 +159,20 @@
                         <configuration>
                             <headerType>gui</headerType>
                             <jar>${project.build.directory}/distributive/${project.artifactId}-${project.version}.jar</jar>
-                            <outfile>${project.build.directory}/Dictionary.exe</outfile>
+                            <outfile>${project.build.directory}/distributive/Dictionary.exe</outfile>
                             <chdir>.</chdir>
                             <priority>normal</priority>
                             <!--downloadUrl>http://java.com/download</downloadUrl-->
                             <classPath>
                                 <mainClass>Main</mainClass>
+                                <preCp>anything</preCp>
+                                <addDependencies>true</addDependencies>
                             </classPath>
                             <icon>${project.build.directory}/distributive/dictionary.ico</icon>
                             <jre>
-                                <path>${project.basedir}/jre1.8.0_112</path>
+                                <path>jre1.8.0_112</path>
                                 <bundledJre64Bit>false</bundledJre64Bit>
-                                <bundledJreAsFallback>false</bundledJreAsFallback>
+                                <bundledJreAsFallback>true</bundledJreAsFallback>
                                 <minVersion>1.8.0_111</minVersion>
                                 <maxVersion>1.8.0_112</maxVersion>
                                 <jdkPreference>preferJre</jdkPreference>
@@ -172,6 +189,22 @@
                                 <internalName>Dictionary</internalName>
                                 <originalFilename>Dictionary.exe</originalFilename>
                             </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>assembly</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>
