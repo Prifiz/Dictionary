@@ -133,15 +133,18 @@ public class MainWindow extends JFrame implements Customizable {
                             null,
                             "Would You Like to Save Changes before exit?",
                             "Warning",
-                            JOptionPane.YES_NO_OPTION);
-                    if (dialogResult == JOptionPane.YES_OPTION) {
-                        saveDictionaryData();
+                            JOptionPane.YES_NO_CANCEL_OPTION);
+                    if(dialogResult != JOptionPane.CANCEL_OPTION) {
+                        if (dialogResult == JOptionPane.YES_OPTION) {
+                            saveDictionaryData();
+                        }
+                        e.getWindow().dispose();
                     }
                 }
-                e.getWindow().dispose();
+
             }
         });
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         LOGGER.info("Common settings initialization complete");
     }
 
