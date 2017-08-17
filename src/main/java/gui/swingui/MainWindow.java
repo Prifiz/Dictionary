@@ -3,6 +3,7 @@ package gui.swingui;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
+import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.language.Language;
 import gui.swingui.record.impl.AddRecordWindow;
@@ -24,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -125,6 +128,22 @@ public class MainWindow extends JFrame implements Customizable {
         setTitle("Dictionary - Main Page");
         setSize(1024, 768);
         setResizable(false);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if(appController.isDictionaryNeedSaving()) {
+                    int dialogResult = JOptionPane.showConfirmDialog(
+                            null,
+                            "Would You Like to Save Changes before exit?",
+                            "Warning",
+                            JOptionPane.YES_NO_OPTION);
+                    if (dialogResult == JOptionPane.YES_OPTION) {
+                        saveDictionaryData();
+                    }
+                }
+                e.getWindow().dispose();
+            }
+        });
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         LOGGER.info("Common settings initialization complete");
     }

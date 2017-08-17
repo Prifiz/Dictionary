@@ -94,4 +94,33 @@ public class Dictionary {
     public List<Record> getAllRecordsAsList() {
         return records;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Dictionary)) return false;
+
+        Dictionary that = (Dictionary) o;
+
+        if(that.getAllRecordsAsList() == null && records == null) {
+            return true;
+        } else if(that.getAllRecordsAsList() != null && records != null
+                && that.getAllRecordsAsList().size() == records.size()) {
+            for(int i = 0; i < that.getAllRecordsAsList().size(); i++) {
+                if(that.getAllRecordsAsList().get(i) != null && records.get(i) != null) {
+                    if(!that.getAllRecordsAsList().get(i).equals(records.get(i))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return records != null ? records.hashCode() : 0;
+    }
 }

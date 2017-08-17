@@ -4,6 +4,8 @@ import datamodel.language.Gender;
 import datamodel.language.PartOfSpeech;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 public class Word {
 
     private String word;
@@ -106,7 +108,7 @@ public class Word {
         Word word1 = (Word) o;
 
         if (word != null ? !word.equals(word1.word) : word1.word != null) return false;
-        if (language != word1.language) return false;
+        if (!Objects.equals(language, word1.language)) return false;
         return theme != null ? theme.equals(word1.theme) : word1.theme == null;
 
     }

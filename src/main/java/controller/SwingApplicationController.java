@@ -94,13 +94,17 @@ public class SwingApplicationController implements Controller {
         return dictionary;
     }
 
-    public void loadDictionary() throws IOException {
+    private Dictionary getDictionaryFromFile() throws IOException {
         FileOperation loadOperation = new LoadFileOperation("Dictionary.xml");
         loadOperation.doFileOperation();
         String dictionaryFileContent = ((AbstractFileOperation)loadOperation).getFileContent();
         FileContentParser parser = new DictionaryFileContentParser();
         parser.parseXml(dictionaryFileContent);
-        dictionary.resetWithNewData(((DictionaryFileContentParser)parser).getDictionary());
+        return ((DictionaryFileContentParser)parser).getDictionary();
+    }
+
+    public void loadDictionary() throws IOException {
+        dictionary.resetWithNewData(getDictionaryFromFile());
     }
 
     @Override
@@ -248,6 +252,15 @@ public class SwingApplicationController implements Controller {
             LOGGER.error(ex.getMessage());
         }
         return new LinkedList<>();
+    }
+
+    @Override
+    public boolean isDictionaryNeedSaving() {
+        try {
+            return !dictionary.equals(getDictionaryFromFile());
+        } catch (IOException ex) {
+            return true;
+        }
     }
 
 }

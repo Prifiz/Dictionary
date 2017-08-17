@@ -37,4 +37,5 @@ public interface Controller {
     void resetSearch();
     void saveSearchHistory(Collection<? extends String> history);
     List<String> loadSearchHistory();
+    boolean isDictionaryNeedSaving();
 }

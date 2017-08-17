@@ -84,7 +84,20 @@ public class Record implements Equivalent {
 
         Record record = (Record) o;
 
-        if (words != null ? !words.equals(record.words) : record.words != null) return false;
+        if((words == null && record.words != null)
+                || (words != null && record.words == null)
+                || words.size() != record.words.size()) {
+            return false;
+        } else {
+            if(words != null && record.words != null) {
+                for(int i = 0; i < words.size(); i++) {
+                    if(!words.get(i).equals(record.words.get(i))) {
+                        return false;
+                    }
+                }
+            }
+        }
+
         if (pictureName != null ? !pictureName.equals(record.pictureName) : record.pictureName != null) return false;
         if (description != null ? !description.equals(record.description) : record.description != null) return false;
         return similarity == record.similarity;
