@@ -3,7 +3,6 @@ package gui.swingui;
 import controller.Controller;
 import controller.SwingApplicationController;
 import controller.search.SimpleSearch;
-import datamodel.Dictionary;
 import datamodel.Record;
 import datamodel.language.Language;
 import gui.swingui.record.impl.AddRecordWindow;
@@ -56,8 +55,6 @@ public class MainWindow extends JFrame implements Customizable {
     private JButton removeButton;
     private JButton removeTopicButton;
 
-
-    private JButton resetButton;
     private JComboBox<String> byTopicCombo;
     private String byTopicComboCurrentlySelected = Constants.NO_TOPIC;
     private String languageComboCurrentlySelected = Constants.ANY_LANGUAGE;
@@ -157,7 +154,6 @@ public class MainWindow extends JFrame implements Customizable {
         byTopicLabel = new JLabel("By Topic");
         newButton = new JButton("New...");
         removeButton = new JButton("Remove");
-        resetButton = new JButton("Show All");
         byTopicCombo = new JComboBox<>(comboBoxModel);
         removeTopicButton = new JButton("Remove Topic");
         searchLabel = new JLabel("Search:");
@@ -224,12 +220,6 @@ public class MainWindow extends JFrame implements Customizable {
                     });
                 }
             }
-        });
-
-        resetButton.addActionListener(e -> {
-            sorter.setRowFilter(null);
-            byTopicCombo.setSelectedItem(Constants.NO_TOPIC);
-            mainTable.setRowSorter(sorter);
         });
 
         removeTopicButton.addActionListener(e -> {
@@ -561,7 +551,6 @@ public class MainWindow extends JFrame implements Customizable {
                 .addGroup(groupLayout.createSequentialGroup()
                         .addComponent(byTopicCombo)
                         .addComponent(removeTopicButton))
-                .addComponent(resetButton)
                 .addGroup(groupLayout.createSequentialGroup()
                         .addComponent(searchLabel)
                         .addComponent(searchCombo))
@@ -585,7 +574,6 @@ public class MainWindow extends JFrame implements Customizable {
                         .addGroup(groupLayout.createParallelGroup()
                                 .addComponent(byTopicCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(removeTopicButton))
-                        .addComponent(resetButton)
                         .addGroup(groupLayout.createParallelGroup()
                                 .addComponent(searchLabel)
                                 .addComponent(searchCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
