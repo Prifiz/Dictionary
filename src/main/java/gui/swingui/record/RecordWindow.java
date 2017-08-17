@@ -292,6 +292,7 @@ public abstract class RecordWindow extends JFrame {
         pictureLabel.setSize(300, 300);
         choosePicture = new JButton("Choose Picture");
         description = new JTextArea(getDescription());
+        description.setLineWrap(true);
         descriptionPane = new JScrollPane(description);
         descriptionLabel = new JLabel("Description:");
         descriptionCaretPos = description.getText().length();
