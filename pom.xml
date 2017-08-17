@@ -10,6 +10,7 @@
 		<deploy.snapshot.repo.path>c:\testMavenDeploySnapshots</deploy.snapshot.repo.path>
 		<deploy.release.repo.path>c:\testMavenDeployReleases</deploy.release.repo.path>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jre.dir.name>jre</jre.dir.name>
 	</properties>
 
 	<scm>
@@ -18,8 +19,6 @@
         <url>https://github.com/Prifiz/Dictionary.git</url>
       <tag>HEAD</tag>
   </scm>
-
-
 
 	<distributionManagement>
         <repository>
@@ -34,46 +33,33 @@
 
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/distributive</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources/icon</directory>
-                                    <includes>
-                                        <include>dictionary.ico</include>
-                                    </includes>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jre</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/distributive/jre1.8.0_112</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>jre1.8.0_112</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>enforce-environment</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.3.9,)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>[1.8.0, 1.9.0)</version>
+								</requireJavaVersion>
+								<requireOS>
+									<family>windows</family>
+								</requireOS>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
@@ -86,6 +72,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
+					<!--source></source-->
                     <providerSelection>2.0</providerSelection>
                 </configuration>
                 <executions>
@@ -145,72 +132,149 @@
                 <version>1.2.0</version>
             </plugin-->
             <!-- LAUNCH4J START-->
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.15</version>
-                <executions>
-                    <execution>
-                        <id>l4j-clui</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <jar>${project.build.directory}/distributive/${project.artifactId}-${project.version}.jar</jar>
-                            <outfile>${project.build.directory}/distributive/Dictionary.exe</outfile>
-                            <chdir>.</chdir>
-                            <priority>normal</priority>
-                            <!--downloadUrl>http://java.com/download</downloadUrl-->
-                            <classPath>
-                                <mainClass>Main</mainClass>
-                                <preCp>anything</preCp>
-                                <addDependencies>true</addDependencies>
-                            </classPath>
-                            <icon>${project.build.directory}/distributive/dictionary.ico</icon>
-                            <jre>
-                                <path>jre1.8.0_112</path>
-                                <bundledJre64Bit>false</bundledJre64Bit>
-                                <bundledJreAsFallback>true</bundledJreAsFallback>
-                                <minVersion>1.8.0_111</minVersion>
-                                <maxVersion>1.8.0_112</maxVersion>
-                                <jdkPreference>preferJre</jdkPreference>
-                                <runtimeBits>32/64</runtimeBits>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>${project.version}</txtFileVersion>
-                                <fileDescription>${project.name}</fileDescription>
-                                <copyright>C</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>${project.name}</productName>
-                                <internalName>Dictionary</internalName>
-                                <originalFilename>Dictionary.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>assembly</id>
-                        <phase>package</phase>
-                        <goals><goal>single</goal></goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly.xml</descriptor>
-                            </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>pack-release-for-users</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+            <build>
+                <plugins>
+					<!--plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>3.0.0-M1</version>
+						<executions>
+							<execution>
+								<id>enforce-jre</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireFilesExist>
+											<files>
+												<file>jre1.8.0_112</file>
+											</files>
+										</requireFilesExist>
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin-->
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.0.2</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/distributive</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/resources/icon</directory>
+                                            <includes>
+                                                <include>dictionary.ico</include>
+                                            </includes>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-jre</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/distributive/${jre.dir.name}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${java.home}</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                        <artifactId>launch4j-maven-plugin</artifactId>
+                        <version>1.7.15</version>
+                        <executions>
+                            <execution>
+                                <id>l4j-clui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>gui</headerType>
+                                    <jar>${project.build.directory}/distributive/${project.artifactId}-${project.version}.jar</jar>
+                                    <outfile>${project.build.directory}/distributive/Dictionary.exe</outfile>
+                                    <chdir>.</chdir>
+                                    <priority>normal</priority>
+                                    <!--downloadUrl>http://java.com/download</downloadUrl-->
+                                    <classPath>
+                                        <mainClass>Main</mainClass>
+                                        <preCp>anything</preCp>
+                                        <addDependencies>true</addDependencies>
+                                    </classPath>
+                                    <icon>${project.build.directory}/distributive/dictionary.ico</icon>
+                                    <jre>
+                                        <path>${jre.dir.name}</path>
+                                        <bundledJre64Bit>false</bundledJre64Bit>
+                                        <bundledJreAsFallback>true</bundledJreAsFallback>
+                                        <minVersion>1.8.0_111</minVersion>
+                                        <maxVersion>1.8.0_112</maxVersion>
+                                        <jdkPreference>preferJre</jdkPreference>
+                                        <runtimeBits>32/64</runtimeBits>
+                                    </jre>
+                                    <versionInfo>
+                                        <fileVersion>1.0.0.0</fileVersion>
+                                        <txtFileVersion>${project.version}</txtFileVersion>
+                                        <fileDescription>${project.name}</fileDescription>
+                                        <copyright>C</copyright>
+                                        <productVersion>1.0.0.0</productVersion>
+                                        <txtProductVersion>1.0.0.0</txtProductVersion>
+                                        <productName>${project.name}</productName>
+                                        <internalName>Dictionary</internalName>
+                                        <originalFilename>Dictionary.exe</originalFilename>
+                                    </versionInfo>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>assembly</id>
+                                <phase>package</phase>
+                                <goals><goal>single</goal></goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/main/resources/descriptors/assembly.xml</descriptor>
+                                    </descriptors>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>

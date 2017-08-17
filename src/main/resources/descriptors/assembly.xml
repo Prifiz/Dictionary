@@ -12,7 +12,7 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>*.exe</include>
-                <include>jre1.8.0_112/**</include>
+                <include>${jre.dir.name}/**</include>
                 <include>dependency/**</include>
                 <include>${project.artifactId}-${project.version}.jar</include>
             </includes>
