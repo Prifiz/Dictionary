@@ -140,8 +140,9 @@ public class MainWindow extends JFrame implements Customizable {
                         }
                         e.getWindow().dispose();
                     }
+                } else {
+                    e.getWindow().dispose();
                 }
-
             }
         });
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
