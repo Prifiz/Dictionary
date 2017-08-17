@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.Constants;
+import utils.LanguageUtils;
 
 import javax.swing.*;
 
@@ -256,6 +257,12 @@ public abstract class RecordWindow extends JFrame {
 
         saveButton = new JButton("Save");
         Set<LanguageInfo> supportedLanguages = appController.getSupportedLanguages();
+
+        if(LanguageUtils.isSupportedLanguage("german", supportedLanguages)) {
+            showUmlauts();
+        } else {
+            hideUmlauts();
+        }
 
         Map<String, TableCellEditor> partsOfSpeechMapping = new HashMap<>();
         Map<String, TableCellEditor> gendersMapping = new HashMap<>();

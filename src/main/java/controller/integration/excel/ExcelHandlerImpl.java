@@ -287,7 +287,7 @@ public class ExcelHandlerImpl implements ExcelHandler {
                             wordsMapping.forEach((integer, wrd) -> wrd.setTheme(new Theme(topic, "empty")));
                         } else if("Description".equalsIgnoreCase(excelTableHeaderValue)) {
                             description = cell.getStringCellValue();
-                        } else if(LanguageUtils.isLanguage(excelTableHeaderValue, supportedLanguages)) {
+                        } else if(LanguageUtils.isSupportedLanguage(excelTableHeaderValue, supportedLanguages)) {
                             int wordIdx = -1;
                             for(Map.Entry<Integer, String> entry : columnNamesMapping.entrySet()) {
                                 if(entry.getValue().equalsIgnoreCase(excelTableHeaderValue)) {
