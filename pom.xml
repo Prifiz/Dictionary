@@ -172,7 +172,7 @@
                         <version>3.0.2</version>
                         <executions>
                             <execution>
-                                <id>copy-resources</id>
+                                <id>copy-icon</id>
                                 <phase>validate</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
@@ -190,6 +190,25 @@
                                     </resources>
                                 </configuration>
                             </execution>
+							<execution>
+								<id>copy-config</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/distributive/config</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/resources/config</directory>
+											<includes>
+												<include>**.*</include>
+											</includes>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
                             <execution>
                                 <id>copy-jre</id>
                                 <phase>prepare-package</phase>

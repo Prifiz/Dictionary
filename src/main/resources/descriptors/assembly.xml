@@ -15,6 +15,7 @@
                 <include>${jre.dir.name}/**</include>
                 <include>dependency/**</include>
                 <include>${project.artifactId}-${project.version}.jar</include>
+                <include>config/**</include>
             </includes>
         </fileSet>
     </fileSets>

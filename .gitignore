@@ -1,6 +1,7 @@
 target
 .idea
 config
+!src/main/resources/config
 logs
 pictures
 log.txt
