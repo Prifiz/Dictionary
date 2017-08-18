@@ -15,7 +15,6 @@ public class CustomizeViewWindow extends JFrame {
     private static final Logger LOGGER = LogManager.getLogger(CustomizeViewWindow.class);
     private MainWindow mainWindow;
 
-    private TableModel model;
     private JTable customizationTable;
     private JScrollPane scrollPane;
     private JButton submitButton;
@@ -31,17 +30,16 @@ public class CustomizeViewWindow extends JFrame {
         initLayout();
     }
 
+    private void customizeMainWindow() {
+        mainWindow.customize(
+                ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
+    }
+
     private void initButtonsActions() {
-        previewButton.addActionListener(e -> {
-            mainWindow.customize(
-                    ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
-            //mainWindow.toFront();
-        });
+        previewButton.addActionListener(e -> customizeMainWindow());
 
         submitButton.addActionListener(e -> {
-            mainWindow.customize(
-                    ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
-
+            customizeMainWindow();
             try {
                 appController.saveCustomization(
                         ((CustomizeViewTableModel)customizationTable.getModel()).getCustomizationRecords());
@@ -61,7 +59,7 @@ public class CustomizeViewWindow extends JFrame {
     }
 
     private void initControls() {
-        model = new CustomizeViewTableModel(mainWindow.getMainTable());
+        TableModel model = new CustomizeViewTableModel(mainWindow.getMainTable());
         customizationTable = new JTable(model);
         scrollPane = new JScrollPane(customizationTable);
         customizationTable.updateUI();

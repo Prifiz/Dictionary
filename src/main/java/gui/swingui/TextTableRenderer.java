@@ -14,7 +14,7 @@ import java.awt.*;
     private Color unselectedForeground;
     private Color unselectedBackground;
 
-    public TextTableRenderer() {
+    TextTableRenderer() {
 
         super();
         setBorder(getNoFocusBorder());

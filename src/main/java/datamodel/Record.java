@@ -47,7 +47,7 @@ public class Record implements Equivalent {
         this.words = words;
     }
 
-    public void setPictureName(String pictureName) {
+    void setPictureName(String pictureName) {
         this.pictureName = pictureName;
     }
 
@@ -89,11 +89,9 @@ public class Record implements Equivalent {
                 || words.size() != record.words.size()) {
             return false;
         } else {
-            if(words != null && record.words != null) {
-                for(int i = 0; i < words.size(); i++) {
-                    if(!words.get(i).equals(record.words.get(i))) {
-                        return false;
-                    }
+            for(int i = 0; i < words.size(); i++) {
+                if(!words.get(i).equals(record.words.get(i))) {
+                    return false;
                 }
             }
         }

@@ -46,7 +46,7 @@ public class Word {
         this.keyField = keyField;
     }
 
-    public void removeTheme() {
+    void removeTheme() {
         this.theme.setName(StringUtils.EMPTY);
     }
 

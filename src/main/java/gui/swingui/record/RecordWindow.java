@@ -34,36 +34,33 @@ public abstract class RecordWindow extends JFrame {
 
     protected Controller appController = SwingApplicationController.getInstance();
 
+    private JLabel topicLabel, newTopicLabel;
+    private JTextField newTopicField;
+    private JButton addTopicButton;
+    private JScrollPane scrollPane;
+    private JLabel descriptionLabel;
+    private JScrollPane descriptionPane;
+
     protected JTable wordsTable;
-    protected JLabel topicLabel, newTopicLabel;
-    protected JComboBox existingTopicsCombo;
-    protected JTextField newTopicField;
-    protected JButton addTopicButton;
+    protected JComboBox<String> existingTopicsCombo;
     protected JButton saveButton;
-    protected JScrollPane scrollPane;
     protected JButton choosePicture;
     protected JLabel pictureLabel;
-    protected JLabel descriptionLabel;
     protected JTextArea description;
-    protected JScrollPane descriptionPane;
-
     protected File pictureFile;
     protected File copiedPictureFile;
-
     protected MainWindow mainWindow;
-
-    protected JButton umlaut_a;
-    protected JButton umlaut_A;
-    protected JButton umlaut_o;
-    protected JButton umlaut_O;
-    protected JButton umlaut_u;
-    protected JButton umlaut_U;
-    protected JButton umlaut_B;
-
     protected java.util.List<Word> words;
-    protected int descriptionCaretPos;
 
-    java.util.List<JButton> umlauts = new ArrayList<>();
+    private java.util.List<JButton> umlauts = new ArrayList<>();
+    private JButton umlaut_a;
+    private JButton umlaut_A;
+    private JButton umlaut_o;
+    private JButton umlaut_O;
+    private JButton umlaut_u;
+    private JButton umlaut_U;
+    private JButton umlaut_B;
+
 
     private static final Logger LOGGER = LogManager.getLogger(RecordWindow.class);
 
@@ -73,12 +70,18 @@ public abstract class RecordWindow extends JFrame {
 
     protected abstract String getDescription();
 
+    protected abstract void setSelectedTopic();
+
+    protected abstract void initPictureChooser();
+
+    protected abstract void initSaveOperation(final java.util.List<Word> words);
+
     public RecordWindow(MainWindow parentForm) throws HeadlessException {
         this.mainWindow = parentForm;
         initForm();
     }
 
-    protected void initUmlautsPasteAction() {
+    private void initUmlautsPasteAction() {
         JTextField cell = new JTextField();
         final TableCellEditor cellEditor = new DefaultCellEditor(cell);
         wordsTable.getColumnModel().getColumn(0).setCellEditor(cellEditor);
@@ -133,9 +136,7 @@ public abstract class RecordWindow extends JFrame {
         initUmlautsPasteAction();
     }
 
-    protected abstract void setSelectedTopic();
-
-    protected boolean isLineContainsUmlaut(String line) {
+    private boolean isLineContainsUmlaut(String line) {
         for (JButton umlaut : umlauts) {
             if (line.contains(umlaut.getText())) {
                 return true;
@@ -166,7 +167,7 @@ public abstract class RecordWindow extends JFrame {
         }
     }
 
-    protected void initTopics() {
+    private void initTopics() {
 
         newTopicLabel = new JLabel("New Topic");
         newTopicField = new JTextField();
@@ -176,8 +177,9 @@ public abstract class RecordWindow extends JFrame {
         final Set<String> existingTopics = new TreeSet<>();
         existingTopics.add(Constants.NO_TOPIC);
         existingTopics.addAll(new SimpleSearch().findAllTopics(appController.getDictionary()));
-        final ComboBoxModel existingTopicsModel = new DefaultComboBoxModel(existingTopics.toArray());
-        existingTopicsCombo = new JComboBox(existingTopicsModel);
+        final ComboBoxModel<String> existingTopicsModel = new DefaultComboBoxModel<>(
+                existingTopics.toArray(new String[existingTopics.size()]));
+        existingTopicsCombo = new JComboBox<>(existingTopicsModel);
         setSelectedTopic();
         addTopicButton.addActionListener(e -> {
             String newTopicValue = newTopicField.getText();
@@ -190,8 +192,6 @@ public abstract class RecordWindow extends JFrame {
             }
         });
     }
-
-    protected abstract void initPictureChooser();
 
     private void initForm() {
         setTitle(getWindowTitle());
@@ -221,7 +221,6 @@ public abstract class RecordWindow extends JFrame {
     }
 
     protected class UmlautButtonActionListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
 
@@ -250,6 +249,7 @@ public abstract class RecordWindow extends JFrame {
             }
 
         }
+
     }
 
     protected void initOperations() {
@@ -302,13 +302,10 @@ public abstract class RecordWindow extends JFrame {
         description.setLineWrap(true);
         descriptionPane = new JScrollPane(description);
         descriptionLabel = new JLabel("Description:");
-        descriptionCaretPos = description.getText().length();
         initPictureChooser();
 
         initSaveOperation(words);
     }
-
-    protected abstract void initSaveOperation(final java.util.List<Word> words);
 
     protected void initLayout() {
         Container pane = getContentPane();

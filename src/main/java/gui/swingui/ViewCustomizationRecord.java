@@ -36,7 +36,7 @@ public class ViewCustomizationRecord {
         this.columnDescription = columnDescription;
     }
 
-    public void setColumnDescription(String columnDescription) {
+    void setColumnDescription(String columnDescription) {
         this.columnDescription = columnDescription;
     }
 
@@ -50,7 +50,7 @@ public class ViewCustomizationRecord {
         return columnName;
     }
 
-    public String getColumnDescription() {
+    String getColumnDescription() {
         return columnDescription;
     }
 

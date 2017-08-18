@@ -129,7 +129,9 @@ public class EditRecordWindow extends RecordWindow {
                 if (existingTopicsCombo.getModel().getSize() == 0) {
                     word.setTheme(new EmptyTheme());
                 } else {
-                    word.setTheme(new Theme(existingTopicsCombo.getSelectedItem().toString(), "empty description"));
+                    word.setTheme(new Theme(
+                            (String) existingTopicsCombo.getSelectedItem(),
+                            "empty description"));
                 }
             }
 

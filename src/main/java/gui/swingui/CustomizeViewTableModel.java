@@ -14,13 +14,13 @@ public class CustomizeViewTableModel implements TableModel {
 
     private Set<TableModelListener> listeners = new HashSet<>();
 
-    public List<ViewCustomizationRecord> getCustomizationRecords() {
+    List<ViewCustomizationRecord> getCustomizationRecords() {
         return customizationRecords;
     }
 
     private List<ViewCustomizationRecord> customizationRecords = new ArrayList<>();
 
-    public CustomizeViewTableModel(JTable mainTable) {
+    CustomizeViewTableModel(JTable mainTable) {
         for(int columnIdx = 0; columnIdx < mainTable.getModel().getColumnCount(); columnIdx++) {
             customizationRecords.add(new ViewCustomizationRecord(
                     mainTable.getColumnModel().getColumn(columnIdx).getMaxWidth() > 0,

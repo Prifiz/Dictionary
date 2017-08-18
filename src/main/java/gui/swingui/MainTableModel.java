@@ -25,7 +25,7 @@ public class MainTableModel implements TableModel {
 
     private Set<TableModelListener> listeners = new HashSet<>();
 
-    public MainTableModel(Dictionary dictionary, Set<LanguageInfo> supportedLanguages) {
+    MainTableModel(Dictionary dictionary, Set<LanguageInfo> supportedLanguages) {
         this.dictionary = dictionary;
         this.supportedLanguages = supportedLanguages;
         this.headerMap = new LinkedHashMap<Integer, String>() {{

@@ -23,7 +23,7 @@ public class WordsTableModel extends AbstractTableModel implements TableModel {
         return words;
     }
 
-    public WordsTableModel(List<Word> words) {
+    WordsTableModel(List<Word> words) {
         this.words = words;
     }
 
@@ -54,11 +54,7 @@ public class WordsTableModel extends AbstractTableModel implements TableModel {
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if(columnIndex == 1) {
-            return false;
-        } else {
-            return true;
-        }
+        return columnIndex != 1;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -66,7 +62,7 @@ public class WordsTableModel extends AbstractTableModel implements TableModel {
             case 0:
                 return words.get(rowIndex).getWord();
             case 1:
-                return words.get(rowIndex).getLanguage().toString();
+                return words.get(rowIndex).getLanguage();
             case 2:
             {
                 String partOfSpeechValue = words.get(rowIndex).getPartOfSpeech().getValue();
