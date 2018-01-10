@@ -1,0 +1,26 @@
+<customizationRecords>
+  <record>
+    <columnName>English111</columnName>
+    <visible>true</visible>
+  </record>
+  <record>
+    <columnName>German</columnName>
+    <visible>true</visible>
+  </record>
+  <record>
+    <columnName>Russian</columnName>
+    <visible>true</visible>
+  </record>
+  <record>
+    <columnName>Picture</columnName>
+    <visible>true</visible>
+  </record>
+  <record>
+    <columnName>Topic</columnName>
+    <visible>true</visible>
+  </record>
+  <record>
+    <columnName>Description</columnName>
+    <visible>true</visible>
+  </record>
+</customizationRecords>

@@ -1,10 +1,15 @@
-/**
- * Created by vaba1010 on 09.01.2017.
- */
+import controller.Controller;
+import controller.SwingApplicationController;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class Main {
 
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+
     public static void main(String[] args) {
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.setVisible(true);
+        LOGGER.info("Initializing controller...");
+        Controller appController = SwingApplicationController.getInstance();
+        appController.startApplication();
     }
 }

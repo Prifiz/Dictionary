@@ -1,19 +1,60 @@
 package datamodel;
 
-/**
- * Created by Prifiz on 03.01.2017.
- */
+import datamodel.language.Gender;
+import datamodel.language.PartOfSpeech;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
+
 public class Word {
 
-    public void removeTheme() {
-        this.theme.setName("");
+    private String word;
+    private String language;
+    private Theme theme;
+    private boolean keyField;
+    private PartOfSpeech partOfSpeech;
+    private Gender gender;
+
+    public boolean isKeyField() {
+        return keyField;
+    }
+
+    public Word(String word, String language, Theme theme) {
+        this.word = word;
+        this.language = language.toLowerCase();
+        this.theme = theme;
+        this.keyField = false;
+        this.partOfSpeech = new PartOfSpeech("");
+        this.gender = new Gender("");
+    }
+
+    public Word(String word, String language, Theme theme, PartOfSpeech partOfSpeech, Gender gender, boolean keyField) {
+        this.word = word;
+        this.language = language.toLowerCase();
+        this.theme = theme;
+        this.partOfSpeech = partOfSpeech;
+        this.gender = gender;
+        this.keyField = keyField;
+    }
+
+    public Word(String word, String language, Theme theme, boolean keyField) {
+        this.word = word;
+        this.language = language.toLowerCase();
+        this.theme = theme;
+        this.partOfSpeech = new PartOfSpeech("");
+        this.gender = new Gender("");
+        this.keyField = keyField;
+    }
+
+    void removeTheme() {
+        this.theme.setName(StringUtils.EMPTY);
     }
 
     public void setWord(String word) {
         this.word = word;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 
@@ -22,27 +63,31 @@ public class Word {
     }
 
     public String getWord() {
-
         return word;
     }
 
-    public Language getLanguage() {
+    public String getLanguage() {
         return language;
     }
-
-    private String word;
-    private Language language;
-    private Theme theme;
 
     public Theme getTheme() {
         return theme;
     }
 
+    public PartOfSpeech getPartOfSpeech() {
+        return partOfSpeech;
+    }
 
-    public Word(String word, Language language, Theme theme) {
-        this.word = word;
-        this.language = language;
-        this.theme = theme;
+    public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
+        this.partOfSpeech = partOfSpeech;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     @Override
@@ -50,7 +95,7 @@ public class Word {
         StringBuilder wordBuilder = new StringBuilder();
         wordBuilder.append(word);
         wordBuilder.append(" [");
-        wordBuilder.append(language.name());
+        wordBuilder.append(language);
         wordBuilder.append("] ");
         return wordBuilder.toString();
     }
@@ -63,7 +108,7 @@ public class Word {
         Word word1 = (Word) o;
 
         if (word != null ? !word.equals(word1.word) : word1.word != null) return false;
-        if (language != word1.language) return false;
+        if (!Objects.equals(language, word1.language)) return false;
         return theme != null ? theme.equals(word1.theme) : word1.theme == null;
 
     }

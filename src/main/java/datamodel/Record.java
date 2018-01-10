@@ -1,20 +1,39 @@
 package datamodel;
 
 import exceptions.RecordHasNotSingleThemeException;
+import org.apache.commons.lang3.StringUtils;
+import utils.Constants;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-/**
- * Created by Prifiz on 01.01.2017.
- */
-public class Record {
+public class Record implements Equivalent {
     public List<Word> getWords() {
         return words;
     }
 
     private List<Word> words;
     private String pictureName;
+    private String description;
     private Similarity similarity = Similarity.DIFFERENT;
+    private static EquivalenceStrategy equivalenceStrategy;
+    private static boolean strategyAlreadySet = false;
+
+    public static void setStrategy(EquivalenceStrategy strategy) {
+        if(!strategyAlreadySet) {
+            equivalenceStrategy = strategy;
+            strategyAlreadySet = true;
+        }
+    }
+
+    private static EquivalenceStrategy getEquivalenceStrategy() {
+        return EquivalenceStrategy.ALL;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
     public Similarity getSimilarity() {
         return similarity;
@@ -28,7 +47,7 @@ public class Record {
         this.words = words;
     }
 
-    public void setPictureName(String pictureName) {
+    void setPictureName(String pictureName) {
         this.pictureName = pictureName;
     }
 
@@ -36,13 +55,15 @@ public class Record {
         return pictureName;
     }
 
+    // FIXME different topics not supported
+    // word cannot belong to different topics
     public String getTopicName() {
         for(Word word : words) {
             if(word.getTheme().getName() != null) {
                 return word.getTheme().getName();
             }
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     public Record(List<Word> words, String pictureName) throws RecordHasNotSingleThemeException {
@@ -50,6 +71,11 @@ public class Record {
         this.pictureName = pictureName;
     }
 
+    public Record(List<Word> words, String pictureName, String description) throws RecordHasNotSingleThemeException {
+        this.words = words;
+        this.pictureName = pictureName;
+        this.description = description;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -58,17 +84,88 @@ public class Record {
 
         Record record = (Record) o;
 
-        if (words != null ? !words.equals(record.words) : record.words != null) return false;
-        if (pictureName != null ? !pictureName.equals(record.pictureName) : record.pictureName != null) return false;
-        return similarity == record.similarity;
+        if((words == null && record.words != null)
+                || (words != null && record.words == null)
+                || words.size() != record.words.size()) {
+            return false;
+        } else {
+            for(int i = 0; i < words.size(); i++) {
+                if(!words.get(i).equals(record.words.get(i))) {
+                    return false;
+                }
+            }
+        }
 
+        if (pictureName != null ? !pictureName.equals(record.pictureName) : record.pictureName != null) return false;
+        if (description != null ? !description.equals(record.description) : record.description != null) return false;
+        return similarity == record.similarity;
     }
 
     @Override
     public int hashCode() {
         int result = words != null ? words.hashCode() : 0;
         result = 31 * result + (pictureName != null ? pictureName.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (similarity != null ? similarity.hashCode() : 0);
         return result;
+    }
+
+    protected Set<String> getLanguages(List<Word> words) {
+        Set<String> result = new HashSet<>();
+        for(Word word : words) {
+            result.add(word.getLanguage());
+        }
+        return result;
+    }
+
+    protected Word getByLanguage(String language, List<Word> words) {
+        Word word = null;
+        for(Word currentWord : words) {
+            if(language.equals(currentWord.getLanguage())) {
+                return currentWord;
+            }
+        }
+        return word;
+    }
+
+    @Override
+    public boolean isEquivalent(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Record record = (Record) o;
+
+        if(record.getWords().size() != this.getWords().size()) {
+            return false;
+        }
+
+        if(!getLanguages(record.getWords()).equals(getLanguages(this.getWords()))) {
+            return false;
+        }
+
+        if(EquivalenceStrategy.ALL.equals(equivalenceStrategy)) {
+            return this.getWords().equals(record.getWords());
+        } else if(EquivalenceStrategy.ANY.equals(equivalenceStrategy)) {
+            for(String language : getLanguages(record.getWords())) {
+                if(!getByLanguage(language, record.getWords()).equals(getByLanguage(language, this.getWords()))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        words.forEach(stringBuilder::append);
+        stringBuilder.append(Constants.EOL);
+        stringBuilder.append(pictureName);
+        stringBuilder.append(Constants.EOL);
+        stringBuilder.append(description);
+        return stringBuilder.toString();
     }
 }
