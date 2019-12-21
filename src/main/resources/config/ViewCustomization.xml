@@ -1,10 +1,10 @@
 <customizationRecords>
   <record>
-    <columnName>English111</columnName>
+    <columnName>English</columnName>
     <visible>true</visible>
   </record>
   <record>
-    <columnName>German</columnName>
+    <columnName>French</columnName>
     <visible>true</visible>
   </record>
   <record>

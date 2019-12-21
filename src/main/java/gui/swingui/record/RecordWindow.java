@@ -53,13 +53,31 @@ public abstract class RecordWindow extends JFrame {
     protected java.util.List<Word> words;
 
     private java.util.List<JButton> umlauts = new ArrayList<>();
-    private JButton umlaut_a;
-    private JButton umlaut_A;
-    private JButton umlaut_o;
-    private JButton umlaut_O;
-    private JButton umlaut_u;
-    private JButton umlaut_U;
-    private JButton umlaut_B;
+
+    private JButton e_left;
+    private JButton e_right;
+    private JButton e_up;
+    private JButton e_double;
+    private JButton a_left;
+    private JButton a_up;
+    private JButton u_left;
+    private JButton u_up;
+    private JButton o_up;
+    private JButton i_double;
+    private JButton i_up;
+    private JButton c;
+    private JButton oe;
+    private JButton apo_top;
+    private JButton apo_bottom;
+
+//
+//    private JButton umlaut_a;
+//    private JButton umlaut_A;
+//    private JButton umlaut_o;
+//    private JButton umlaut_O;
+//    private JButton umlaut_u;
+//    private JButton umlaut_U;
+//    private JButton umlaut_B;
 
 
     private static final Logger LOGGER = LogManager.getLogger(RecordWindow.class);
@@ -146,20 +164,37 @@ public abstract class RecordWindow extends JFrame {
     }
 
     protected void initUmlauts() {
-        umlaut_a = new JButton("\u00e4"); // ä
-        umlauts.add(umlaut_a);
-        umlaut_A = new JButton("\u00c4"); // Ä
-        umlauts.add(umlaut_A);
-        umlaut_o = new JButton("\u00f6"); // ö
-        umlauts.add(umlaut_o);
-        umlaut_O = new JButton("\u00d6"); // Ö
-        umlauts.add(umlaut_O);
-        umlaut_u = new JButton("\u00fc"); // ü
-        umlauts.add(umlaut_u);
-        umlaut_U = new JButton("\u00dc"); // Ü
-        umlauts.add(umlaut_U);
-        umlaut_B = new JButton("\u00df"); // ß
-        umlauts.add(umlaut_B);
+
+        e_left = new JButton("\u00e8"); // è
+        umlauts.add(e_left);
+        e_right = new JButton("\u00e9"); // é
+        umlauts.add(e_right);
+        e_up = new JButton("\u00ea"); // ê
+        umlauts.add(e_up);
+        e_double = new JButton("\u00eb"); // ë
+        umlauts.add(e_double);
+        a_left = new JButton("\u00e0"); // à
+        umlauts.add(a_left);
+        a_up = new JButton("\u00e2"); // â
+        umlauts.add(a_up);
+        u_left = new JButton("\u00f9"); // ù
+        umlauts.add(u_left);
+        u_up = new JButton("\u00fb"); // û
+        umlauts.add(u_up);
+        o_up = new JButton("\u00f4"); // ô
+        umlauts.add(o_up);
+        i_double = new JButton("\u00ef"); // ï
+        umlauts.add(i_double);
+        i_up = new JButton("\u00ee"); // î
+        umlauts.add(i_up);
+        c = new JButton("\u00e7"); // ç
+        umlauts.add(c);
+        oe = new JButton("\u0153"); // œ
+        umlauts.add(oe);
+        apo_top = new JButton("\u02CA"); // ˊ
+        umlauts.add(apo_top);
+        apo_bottom = new JButton("\u02cf"); // ˏ
+        umlauts.add(apo_bottom);
 
         for (JButton umlaut : umlauts) {
             umlaut.setFocusable(false);
@@ -216,7 +251,7 @@ public abstract class RecordWindow extends JFrame {
     }
 
     private boolean isGermanSelected(int selectedRow) {
-        return (Language.GERMAN.name().equalsIgnoreCase(
+        return (Language.FRENCH.name().equalsIgnoreCase(
                 ((WordsTableModel) wordsTable.getModel()).getWords().get(selectedRow).getLanguage()));
     }
 
@@ -258,7 +293,7 @@ public abstract class RecordWindow extends JFrame {
         saveButton = new JButton("Save");
         Set<LanguageInfo> supportedLanguages = appController.getSupportedLanguages();
 
-        if(LanguageUtils.isSupportedLanguage("german", supportedLanguages)) {
+        if(LanguageUtils.isSupportedLanguage("french", supportedLanguages)) {
             showUmlauts();
         } else {
             hideUmlauts();
@@ -319,13 +354,21 @@ public abstract class RecordWindow extends JFrame {
         horizontalGroup.addGroup(gl.createParallelGroup()
                 .addComponent(scrollPane)
                 .addGroup(gl.createSequentialGroup()
-                        .addComponent(umlaut_a)
-                        .addComponent(umlaut_A)
-                        .addComponent(umlaut_o)
-                        .addComponent(umlaut_O)
-                        .addComponent(umlaut_u)
-                        .addComponent(umlaut_U)
-                        .addComponent(umlaut_B)));
+                        .addComponent(e_left)
+                        .addComponent(e_right)
+                        .addComponent(e_up)
+                        .addComponent(e_double)
+                        .addComponent(a_left)
+                        .addComponent(a_up)
+                        .addComponent(u_left)
+                        .addComponent(u_up)
+                        .addComponent(o_up)
+                        .addComponent(i_double)
+                        .addComponent(i_up)
+                        .addComponent(c)
+                        .addComponent(oe)
+                        .addComponent(apo_top)
+                        .addComponent(apo_bottom)));
         horizontalGroup.addGroup(gl.createParallelGroup()
                 .addComponent(topicLabel)
                 .addComponent(existingTopicsCombo)
@@ -350,13 +393,21 @@ public abstract class RecordWindow extends JFrame {
                 .addGroup(gl.createSequentialGroup()
                         .addComponent(scrollPane)
                         .addGroup(gl.createParallelGroup()
-                                .addComponent(umlaut_a)
-                                .addComponent(umlaut_A)
-                                .addComponent(umlaut_o)
-                                .addComponent(umlaut_O)
-                                .addComponent(umlaut_u)
-                                .addComponent(umlaut_U)
-                                .addComponent(umlaut_B)))
+                                .addComponent(e_left)
+                                .addComponent(e_right)
+                                .addComponent(e_up)
+                                .addComponent(e_double)
+                                .addComponent(a_left)
+                                .addComponent(a_up)
+                                .addComponent(u_left)
+                                .addComponent(u_up)
+                                .addComponent(o_up)
+                                .addComponent(i_double)
+                                .addComponent(i_up)
+                                .addComponent(c)
+                                .addComponent(oe)
+                                .addComponent(apo_top)
+                                .addComponent(apo_bottom)))
                 .addGroup(gl.createSequentialGroup()
                         .addComponent(topicLabel)
                         .addComponent(existingTopicsCombo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)

@@ -1,7 +1,7 @@
 package datamodel.language;
 
 public enum Language {
-    ENGLISH, GERMAN, RUSSIAN;
+    ENGLISH, FRENCH, RUSSIAN;
 
     public static Language getByName(String name) throws IllegalArgumentException {
         for(Language language : values()) {

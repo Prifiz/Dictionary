@@ -1,15 +1,4 @@
 <languages>
-	<language name="Russian">
-		<partsOfSpeech>
-			<partOfSpeech title="Noun"/>
-			<partOfSpeech title="Adjective"/>
-		</partsOfSpeech>
-		<genders>
-			<gender title="Male"/>
-			<gender title="Female"/>
-			<gender title="Neuter"/>
-		</genders>
-	</language>  
 	<language name="English">
 		<partsOfSpeech>
 			<partOfSpeech title="Noun"/>
@@ -21,7 +10,7 @@
 			<gender title="Neuter"/>
 		</genders>
 	</language>
-	<language name="German">
+	<language name="French">
 		<partsOfSpeech>
 			<partOfSpeech title="Noun"/>
 			<partOfSpeech title="Adjective"/>
@@ -31,5 +20,16 @@
 			<gender title="Female"/>
 			<gender title="Neuter"/>
 		</genders>
-	</language>  
+	</language>
+	<language name="Russian">
+		<partsOfSpeech>
+			<partOfSpeech title="Noun"/>
+			<partOfSpeech title="Adjective"/>
+		</partsOfSpeech>
+		<genders>
+			<gender title="Male"/>
+			<gender title="Female"/>
+			<gender title="Neuter"/>
+		</genders>
+	</language>
 </languages>
